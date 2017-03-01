@@ -4,7 +4,7 @@
     <file preprocess="xml-stripblanks">ui/pmu-window.ui</file>
     <file>css/pmu.css</file>
   </gresource>
-  <gresource prefix="/org/sadiqpk/pmu/gtk">
+  <gresource prefix="/org/sadiqpk/pmu">
     <file preprocess="xml-stripblanks">gtk/menus.ui</file>
   </gresource>
 </gresources>

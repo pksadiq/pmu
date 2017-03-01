@@ -29,6 +29,34 @@ struct _PmuApp
 
 G_DEFINE_TYPE (PmuApp, pmu_app, GTK_TYPE_APPLICATION)
 
+static void pmu_app_show_about (GSimpleAction *action,
+                                GVariant      *parameter,
+                                gpointer       userdata);
+
+static void pmu_app_quit       (GSimpleAction *action,
+                                GVariant      *parameter,
+                                gpointer       userdata);
+
+
+static const GActionEntry app_entries[] = {
+  { "about",  pmu_app_show_about },
+  { "quit",   pmu_app_quit       },
+};
+
+static void pmu_app_show_about (GSimpleAction *action,
+                                GVariant      *parameter,
+                                gpointer       userdata)
+{
+  g_print ("About\n");
+}
+
+static void pmu_app_quit (GSimpleAction *action,
+                          GVariant      *parameter,
+                          gpointer       userdata)
+{
+  g_print ("Quit\n");
+}
+
 static void
 pmu_app_finalize (GObject *object)
 {
@@ -50,6 +78,17 @@ pmu_app_activate (GApplication *app)
 }
 
 static void
+pmu_app_startup (GApplication *app)
+{
+  g_action_map_add_action_entries (G_ACTION_MAP (app),
+                                   app_entries,
+                                   G_N_ELEMENTS (app_entries),
+                                   app);
+
+  G_APPLICATION_CLASS (pmu_app_parent_class)->startup (app);
+}
+
+static void
 pmu_app_class_init (PmuAppClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -58,6 +97,7 @@ pmu_app_class_init (PmuAppClass *klass)
   object_class->finalize = pmu_app_finalize;
 
   application_class->activate = pmu_app_activate;
+  application_class->startup = pmu_app_startup;
 }
 
 static void

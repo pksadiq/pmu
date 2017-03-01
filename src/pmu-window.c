@@ -37,12 +37,31 @@ pmu_window_finalize (GObject *object)
 }
 
 static void
+pmu_window_constructed (GObject *object)
+{
+  PmuWindow  *window;
+  GtkBuilder *builder;
+  GMenuModel *menu;
+  GAction    *action;
+
+  window = PMU_WINDOW (object);
+
+  builder = gtk_builder_new_from_resource ("/org/sadiqpk/pmu/gtk/menus.ui");
+  menu = G_MENU_MODEL (gtk_builder_get_object (builder, "win-menu"));
+  gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (window->menu_button), menu);
+  g_object_unref (builder);
+
+  G_OBJECT_CLASS (pmu_window_parent_class)->constructed (object);
+}
+
+static void
 pmu_window_class_init (PmuWindowClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
   object_class->finalize = pmu_window_finalize;
+  object_class->constructed = pmu_window_constructed;
 
   gtk_widget_class_set_template_from_resource (widget_class, "/org/sadiqpk/pmu/ui/pmu-window.ui");
 
