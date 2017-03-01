@@ -2,6 +2,7 @@
 <gresources>
   <gresource prefix="/org/sadiqpk/pmu">
     <file preprocess="xml-stripblanks">ui/pmu-window.ui</file>
+    <file preprocess="xml-stripblanks">ui/pmu-setup-window.ui</file>
     <file>css/pmu.css</file>
   </gresource>
   <gresource prefix="/org/sadiqpk/pmu">

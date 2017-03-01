@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface domain="pmu">
+  <!-- interface-requires gtk 3.10 -->
+  <template class="PmuSetupWindow" parent="GtkApplicationWindow">
+    <property name="default-width">600</property>
+    <property name="default-height">400</property>
+    <property name="resizable">1</property>
+
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="headerbar">
+        <property name="title" translatable="yes">PMU</property>
+        <property name="subtitle" translatable="yes">PMU Setup</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="show-close-button">False</property>
+
+        <child>
+          <object class="GtkButton" id="cancel_button">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Cancel</property>
+            <property name="tooltip-text">Stop capturing serial data</property>
+            <signal name="clicked" handler="cancel_button_clicked_cb" object="PmuSetupWindow" swapped="no" />
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkButton" id="done_button">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Done</property>
+            <signal name="clicked" handler="done_button_clicked_cb" object="PmuSetupWindow" swapped="no" />
+            <style>
+             <class name="suggested-action"/>
+            </style>
+          </object>
+          <packing>
+            <property name="pack-type">end</property>
+          </packing>
+        </child>
+
+      </object> <!-- ./GtkHeaderBar headerbar -->
+    </child>
+
+  </template>
+</interface>

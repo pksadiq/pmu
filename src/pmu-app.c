@@ -17,6 +17,7 @@
  */
 
 #include "pmu-window.h"
+#include "pmu-setup-window.h"
 
 #include "pmu-app.h"
 
@@ -24,6 +25,8 @@
 struct _PmuApp
 {
   GtkApplication parent_instance;
+
+  GSettings *settings;
 };
 
 
@@ -92,14 +95,26 @@ pmu_app_finalize (GObject *object)
 static void
 pmu_app_activate (GApplication *app)
 {
-  PmuWindow *window;
+  GtkWidget *window;
+  gboolean   first_run;
 
   g_assert (GTK_IS_APPLICATION (app));
 
-  window = PMU_WINDOW (gtk_application_get_active_window (GTK_APPLICATION (app)));
+  first_run = g_settings_get_boolean (PMU_APP (app)->settings, "first-run");
 
-  if (window == NULL)
-    window = pmu_window_new (PMU_APP (app));
+  if (first_run)
+    {
+      window = GTK_WIDGET (pmu_setup_window_new (PMU_APP (app)));
+      gtk_window_present (GTK_WINDOW (window));
+    }
+  else
+    {
+      window = GTK_WIDGET (gtk_application_get_active_window (GTK_APPLICATION (app)));
+
+      if (window == NULL)
+        window = GTK_WIDGET (pmu_window_new (PMU_APP (app)));
+    }
+
   gtk_window_present (GTK_WINDOW (window));
 }
 
@@ -129,7 +144,7 @@ pmu_app_class_init (PmuAppClass *klass)
 static void
 pmu_app_init (PmuApp *self)
 {
-
+  self->settings = g_settings_new ("org.sadiqpk.pmu");
 }
 
 PmuApp *

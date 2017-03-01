@@ -8,6 +8,8 @@ pmu_SOURCES = \
 	pmu-app.c 		\
 	pmu-window.h 		\
 	pmu-window.c 		\
+	pmu-setup-window.h 		\
+	pmu-setup-window.c 		\
 	resources.c
 
 BUILT_SOURCES = \
