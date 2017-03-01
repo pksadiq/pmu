@@ -24,6 +24,8 @@ struct _PmuWindow
 {
   GtkApplicationWindow parent_instance;
 
+  GtkWidget *start_button;
+  GtkWidget *stop_button;
   GtkWidget *menu_button;
 };
 
@@ -54,6 +56,20 @@ pmu_window_constructed (GObject *object)
 }
 
 static void
+start_button_clicked_cb (GtkWidget *button,
+                         PmuWindow *window)
+{
+  g_print ("start button clicked\n");
+}
+
+static void
+stop_button_clicked_cb (GtkWidget *button,
+                        PmuWindow *window)
+{
+  g_print ("stop button clicked\n");
+}
+
+static void
 pmu_window_class_init (PmuWindowClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -65,6 +81,11 @@ pmu_window_class_init (PmuWindowClass *klass)
   gtk_widget_class_set_template_from_resource (widget_class, "/org/sadiqpk/pmu/ui/pmu-window.ui");
 
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, menu_button);
+  gtk_widget_class_bind_template_child (widget_class, PmuWindow, start_button);
+  gtk_widget_class_bind_template_child (widget_class, PmuWindow, stop_button);
+
+  gtk_widget_class_bind_template_callback (widget_class, start_button_clicked_cb);
+  gtk_widget_class_bind_template_callback (widget_class, stop_button_clicked_cb);
 }
 
 static void
