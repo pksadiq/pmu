@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/org/sadiqpk/pmu">
+    <file preprocess="xml-stripblanks">ui/pmu-window.ui</file>
+    <file>css/pmu.css</file>
+  </gresource>
+  <gresource prefix="/org/sadiqpk/pmu/gtk">
+    <file preprocess="xml-stripblanks">gtk/menus.ui</file>
+  </gresource>
+</gresources>
+

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface domain="pmu">
+  <!-- interface-requires gtk 3.10 -->
+  <template class="PmuWindow" parent="GtkApplicationWindow">
+    <property name="default-width">600</property>
+    <property name="default-height">400</property>
+    <property name="resizable">1</property>
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="headerbar">
+        <property name="title" translatable="yes">PMC</property>
+        <property name="subtitle" translatable="yes">pmc application</property>
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="show-close-button">True</property>
+      </object>
+    </child>
+  </template>
+</interface>

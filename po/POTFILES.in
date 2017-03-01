@@ -1,0 +1,3 @@
+data/org.sadiqpk.pmu.desktop.in
+src/resources/ui/pmu-window.ui
+src/resources/gtk/menus.ui

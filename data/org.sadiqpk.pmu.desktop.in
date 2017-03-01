@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=NIT PMU
+Comment=PMU Software
+Exec=pmu
+Icon=gtk3-widget-factory
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=GNOME;
