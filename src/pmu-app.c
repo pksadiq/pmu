@@ -54,7 +54,12 @@ static void pmu_app_quit (GSimpleAction *action,
                           GVariant      *parameter,
                           gpointer       userdata)
 {
-  g_print ("Quit\n");
+  GApplication *app = userdata;
+
+  g_assert (G_IS_APPLICATION (app));
+  g_assert (G_IS_SIMPLE_ACTION (action));
+
+  g_application_quit (app);
 }
 
 static void
