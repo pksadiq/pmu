@@ -33,6 +33,22 @@ struct _PmuWindow
 
 G_DEFINE_TYPE (PmuWindow, pmu_window, GTK_TYPE_APPLICATION_WINDOW)
 
+static void sync_ntp_time_cb (GSimpleAction       *action,
+                              GVariant            *param,
+                              gpointer             user_data);
+
+static const GActionEntry win_entries[] = {
+  { "sync-ntp",  sync_ntp_time_cb },
+};
+
+
+static void sync_ntp_time_cb (GSimpleAction *action,
+                              GVariant      *param,
+                              gpointer       user_data)
+{
+  g_print ("NTP time updated\n");
+}
+
 static void
 pmu_window_finalize (GObject *object)
 {
@@ -107,6 +123,11 @@ pmu_window_class_init (PmuWindowClass *klass)
 static void
 pmu_window_init (PmuWindow *self)
 {
+  g_action_map_add_action_entries (G_ACTION_MAP (self),
+                                   win_entries,
+                                   G_N_ELEMENTS (win_entries),
+                                   self);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 }
 
