@@ -40,16 +40,15 @@ static void
 pmu_window_constructed (GObject *object)
 {
   PmuWindow  *window;
-  GtkBuilder *builder;
   GMenuModel *menu;
   GAction    *action;
+  g_autoptr(GtkBuilder) builder = NULL;
 
   window = PMU_WINDOW (object);
 
   builder = gtk_builder_new_from_resource ("/org/sadiqpk/pmu/gtk/menus.ui");
   menu = G_MENU_MODEL (gtk_builder_get_object (builder, "win-menu"));
   gtk_menu_button_set_menu_model (GTK_MENU_BUTTON (window->menu_button), menu);
-  g_object_unref (builder);
 
   G_OBJECT_CLASS (pmu_window_parent_class)->constructed (object);
 }
