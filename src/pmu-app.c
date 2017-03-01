@@ -31,11 +31,11 @@ G_DEFINE_TYPE (PmuApp, pmu_app, GTK_TYPE_APPLICATION)
 
 static void pmu_app_show_about (GSimpleAction *action,
                                 GVariant      *parameter,
-                                gpointer       userdata);
+                                gpointer       user_data);
 
 static void pmu_app_quit       (GSimpleAction *action,
                                 GVariant      *parameter,
-                                gpointer       userdata);
+                                gpointer       user_data);
 
 
 static const GActionEntry app_entries[] = {
@@ -45,16 +45,16 @@ static const GActionEntry app_entries[] = {
 
 static void pmu_app_show_about (GSimpleAction *action,
                                 GVariant      *parameter,
-                                gpointer       userdata)
+                                gpointer       user_data)
 {
   g_print ("About\n");
 }
 
 static void pmu_app_quit (GSimpleAction *action,
                           GVariant      *parameter,
-                          gpointer       userdata)
+                          gpointer       user_data)
 {
-  GApplication *app = userdata;
+  GApplication *app = user_data;
 
   g_assert (G_IS_APPLICATION (app));
   g_assert (G_IS_SIMPLE_ACTION (action));
