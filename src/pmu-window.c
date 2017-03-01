@@ -27,6 +27,7 @@ struct _PmuWindow
   GtkWidget *start_button;
   GtkWidget *stop_button;
   GtkWidget *menu_button;
+  GtkWidget *revealer;
 };
 
 
@@ -59,7 +60,15 @@ static void
 start_button_clicked_cb (GtkWidget *button,
                          PmuWindow *window)
 {
+  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
   g_print ("start button clicked\n");
+}
+
+static void
+revealer_button_clicked_cb (GtkWidget *button,
+                            PmuWindow *window)
+{
+  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), FALSE);
 }
 
 static void
@@ -83,9 +92,11 @@ pmu_window_class_init (PmuWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, menu_button);
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, start_button);
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, stop_button);
+  gtk_widget_class_bind_template_child (widget_class, PmuWindow, revealer);
 
   gtk_widget_class_bind_template_callback (widget_class, start_button_clicked_cb);
   gtk_widget_class_bind_template_callback (widget_class, stop_button_clicked_cb);
+  gtk_widget_class_bind_template_callback (widget_class, revealer_button_clicked_cb);
 }
 
 static void

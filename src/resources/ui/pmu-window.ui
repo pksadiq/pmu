@@ -58,6 +58,76 @@
       </object> <!-- ./GtkHeaderBar headerbar -->
     </child>
 
+    <child>
+      <object class="GtkOverlay" id="overlay">
+        <property name="visible">True</property>
+
+        <child type="overlay">
+          <object class="GtkRevealer" id="revealer">
+            <property name="visible">True</property>
+            <property name="halign">center</property>
+            <property name="valign">start</property>
+
+            <child>
+              <object class="GtkFrame" id="frame">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">none</property>
+                <child>
+                  <object class="GtkBox" id="box">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="spacing">12</property>
+                    <child>
+                      <object class="GtkLabel" id="text_label">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="hexpand">True</property>
+                        <property name="use_markup">True</property>
+                        <property name="xalign">0</property>
+                        <property name="label">Server started</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="close_button">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="relief">none</property>
+                        <signal name="clicked" handler="revealer_button_clicked_cb" object="PmuWindow" swapped="no" />
+                        <child>
+                          <object class="GtkImage" id="close_button_image">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="icon_name">window-close-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                  </object>
+                </child>
+                <style>
+                 <class name="app-notification"/>
+                </style>
+              </object>
+            </child>
+
+          </object> <!-- ./GtkRevealer revealer -->
+        </child>
+
+      </object> <!-- ./GtkOverlay overlay -->
+    </child>
 
   </template>
 </interface>
