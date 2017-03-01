@@ -61,6 +61,8 @@ start_button_clicked_cb (GtkWidget *button,
                          PmuWindow *window)
 {
   gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
+  gtk_widget_hide (window->start_button);
+  gtk_widget_show (window->stop_button);
   g_print ("start button clicked\n");
 }
 
@@ -75,6 +77,9 @@ static void
 stop_button_clicked_cb (GtkWidget *button,
                         PmuWindow *window)
 {
+  gtk_widget_hide (window->stop_button);
+  gtk_widget_show (window->start_button);
+
   g_print ("stop button clicked\n");
 }
 
