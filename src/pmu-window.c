@@ -23,6 +23,8 @@
 struct _PmuWindow
 {
   GtkApplicationWindow parent_instance;
+
+  GtkWidget *menu_button;
 };
 
 
@@ -43,6 +45,8 @@ pmu_window_class_init (PmuWindowClass *klass)
   object_class->finalize = pmu_window_finalize;
 
   gtk_widget_class_set_template_from_resource (widget_class, "/org/sadiqpk/pmu/ui/pmu-window.ui");
+
+  gtk_widget_class_bind_template_child (widget_class, PmuWindow, menu_button);
 }
 
 static void
