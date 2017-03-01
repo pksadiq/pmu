@@ -47,7 +47,28 @@ static void pmu_app_show_about (GSimpleAction *action,
                                 GVariant      *parameter,
                                 gpointer       user_data)
 {
-  g_print ("About\n");
+  PmuApp      *self;
+  GtkWindow   *dialog;
+  const gchar *authors[] = {
+    "Mohammed Sadiq <sadiq@sadiqpk.org>",
+    NULL
+  };
+
+  self = PMU_APP (user_data);
+
+  g_assert (G_IS_APPLICATION (self));
+  g_assert (G_IS_SIMPLE_ACTION (action));
+
+  gtk_show_about_dialog (gtk_application_get_active_window (GTK_APPLICATION (self)),
+                         "program-name", ("PMU"),
+                         "version", "0.1.0",
+                         "copyright", "Copyright \xC2\xA9 2017 Mohammed Sadiq",
+                         "license-type", GTK_LICENSE_GPL_3_0,
+                         "authors", authors,
+                         // "artists", authors,
+                         "logo-icon-name", "org.gnome.Todo",
+                         "translator-credits", ("translator-credits"),
+                         NULL);
 }
 
 static void pmu_app_quit (GSimpleAction *action,
