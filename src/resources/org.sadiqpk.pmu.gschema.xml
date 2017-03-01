@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="pmu">
+  <schema id="org.sadiqpk.pmu" path="/org/sadiqpk/pmu/">
+    <key name="first-run" type="b">
+      <default>true</default>
+      <summary>First run of PMU</summary>
+      <description>Whether to do PMU intial setup or not</description>
+    </key>
+    <key name="admin-ip" type="s">
+      <default>"192.168.1.1"</default>
+      <summary>Nothing</summary>
+      <description>NOthing</description>
+    </key>
+  </schema>
+</schemalist>

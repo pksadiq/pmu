@@ -13,6 +13,10 @@ pmu_SOURCES = \
 BUILT_SOURCES = \
 	resources.c
 
+gsettings_SCHEMAS = $(srcdir)/resources/org.sadiqpk.pmu.gschema.xml
+
+@GSETTINGS_RULES@
+
 resource_files = $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir)/resources --generate-dependencies $(srcdir)/resources/pmu.gresource.xml)
 
 resources.c: resources/pmu.gresource.xml $(resource_files)
@@ -20,6 +24,7 @@ resources.c: resources/pmu.gresource.xml $(resource_files)
                 --target=$@ --sourcedir=$(srcdir)/resources --generate-source
 
 EXTRA_DIST = \
-	$(resource_files)
+	$(resource_files) \
+	$(gsettings_SCHEMAS)
 
 -include $(top_srcdir)/git.mk
