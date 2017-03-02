@@ -18,6 +18,7 @@
 
 #include "pmu-app.h"
 #include "pmu-details.h"
+#include "pmu-window.h"
 
 #include "pmu-setup-window.h"
 
@@ -58,7 +59,22 @@ static void
 save_button_clicked_cb (GtkWidget      *button,
                         PmuSetupWindow *window)
 {
+  GtkApplication *app;
+  gboolean is_first_run;
+
+  app = gtk_window_get_application (GTK_WINDOW (window));
+  is_first_run = pmu_details_get_is_first_run (window->details);
+
   pmu_details_save_settings (window->details);
+  gtk_window_close (GTK_WINDOW (window));
+
+  if (is_first_run)
+    {
+      GtkWidget *window;
+
+      window = GTK_WIDGET (pmu_window_new (PMU_APP (app)));
+      gtk_window_present (GTK_WINDOW (window));
+    }
 }
 
 static void
