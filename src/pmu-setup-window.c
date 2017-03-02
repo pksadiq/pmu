@@ -53,6 +53,24 @@ cancel_button_clicked_cb (GtkWidget      *button,
 }
 
 static void
+entry_text_changed_cb (GObject    *gobject,
+                       GParamSpec *pspec,
+                       gpointer    user_data)
+{
+  PmuSetupWindow *window = PMU_SETUP_WINDOW (user_data);
+
+  if (gtk_entry_get_text_length (GTK_ENTRY (window->station_name_entry)) == 0
+      || gtk_entry_get_text_length (GTK_ENTRY (window->admin_ip_entry)) == 0)
+    {
+      gtk_widget_set_sensitive (window->save_button, FALSE);
+      return;
+    }
+
+  if (g_hostname_is_ip_address (gtk_entry_get_text (GTK_ENTRY (window->admin_ip_entry))))
+    gtk_widget_set_sensitive (window->save_button, TRUE);
+}
+
+static void
 pmu_setup_window_class_init (PmuSetupWindowClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -70,6 +88,7 @@ pmu_setup_window_class_init (PmuSetupWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, admin_ip_entry);
 
   gtk_widget_class_bind_template_callback (widget_class, cancel_button_clicked_cb);
+  gtk_widget_class_bind_template_callback (widget_class, entry_text_changed_cb);
 
 }
 
@@ -77,12 +96,6 @@ static void
 pmu_setup_window_init (PmuSetupWindow *self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
-
-  g_object_bind_property_full (self->station_name_entry, "text-length",
-                               self->save_button, "sensitive",
-                               G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE,
-                               pmu_utils_uint_to_boolean,
-                               NULL, NULL, NULL);
 }
 
 PmuSetupWindow *

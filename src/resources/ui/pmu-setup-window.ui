@@ -96,6 +96,7 @@
               <property name="visible">True</property>
               <property name="valign">center</property>
               <property name="max-length">50</property>
+              <signal name="notify::text" handler="entry_text_changed_cb" object="PmuSetupWindow" swapped="no" />
             </object>
             <packing>
               <property name="left-attach">2</property>
@@ -217,6 +218,7 @@
               <property name="visible">True</property>
               <property name="valign">center</property>
               <property name="placeholder-text">IPv4 Address of PDC</property>
+              <signal name="notify::text" handler="entry_text_changed_cb" object="PmuSetupWindow" swapped="no" />
             </object>
             <packing>
               <property name="left-attach">2</property>
