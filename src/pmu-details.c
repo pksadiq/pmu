@@ -167,7 +167,6 @@ pmu_details_save_settings (PmuDetails *self)
   g_settings_set_string (settings, "admin-ip", self->admin_ip);
   g_settings_set_string (settings, "station-name", self->station_name);
   g_settings_set_boolean (settings, "first-run", 0);
-  g_print ("here\n");
 }
 
 static void
