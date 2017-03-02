@@ -17,7 +17,6 @@
  */
 
 #include "pmu-app.h"
-#include "pmu-utils.h"
 
 #include "pmu-setup-window.h"
 
