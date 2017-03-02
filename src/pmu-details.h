@@ -30,6 +30,7 @@ gchar      *pmu_details_get_station_name (PmuDetails *self);
 gchar      *pmu_details_get_admin_ip     (PmuDetails *self);
 guint       pmu_details_get_port_number  (PmuDetails *self);
 guint       pmu_details_get_pmu_id       (PmuDetails *self);
+gboolean    pmu_details_get_is_first_run (PmuDetails *self);
 PmuDetails *pmu_details_new              (void);
 
 G_END_DECLS

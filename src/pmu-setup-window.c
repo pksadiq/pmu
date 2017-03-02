@@ -84,6 +84,8 @@ pmu_setup_window_populate (PmuSetupWindow *self)
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (self->pmu_id_entry),
                              pmu_details_get_pmu_id (self->details));
 
+  if (!pmu_details_get_is_first_run (self->details))
+    gtk_widget_set_sensitive (self->save_button, FALSE);
 }
 
 static void

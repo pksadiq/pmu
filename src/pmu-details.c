@@ -211,6 +211,12 @@ pmu_details_get_pmu_id (PmuDetails *self)
   return self->pmu_id;
 }
 
+gboolean
+pmu_details_get_is_first_run (PmuDetails *self)
+{
+  return self->first_run;
+}
+
 PmuDetails *
 pmu_details_new (void)
 {
