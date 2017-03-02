@@ -12,6 +12,8 @@ pmu_SOURCES = \
 	pmu-setup-window.c 		\
 	pmu-details.h 		\
 	pmu-details.c 		\
+	pmu-utils.h 		\
+	pmu-utils.c 		\
 	resources.c
 
 BUILT_SOURCES = \
