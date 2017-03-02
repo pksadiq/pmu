@@ -29,6 +29,8 @@ struct _PmuWindow
   GtkWidget *menu_button;
   GtkWidget *info_label;
   GtkWidget *revealer;
+
+  guint revealer_timeout_id;
 };
 
 static GThread *ntp_thread;
@@ -44,15 +46,30 @@ static const GActionEntry win_entries[] = {
   { "sync-ntp",  sync_ntp_time_cb },
 };
 
+static gboolean
+revealer_timeout (gpointer user_data)
+{
+  PmuWindow *window = PMU_WINDOW (user_data);
+
+  if (window->revealer_timeout_id)
+    {
+      g_source_remove (window->revealer_timeout_id);
+      window->revealer_timeout_id = 0;
+    }
+
+  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), FALSE);
+  return G_SOURCE_REMOVE;
+}
 
 static gboolean
 show_ntp_update_revealer (gpointer user_data)
 {
   PmuWindow *window = PMU_WINDOW (user_data);
 
-  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), FALSE);
   gtk_label_set_label (GTK_LABEL (window->info_label), "NTP Sync completed");
   gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
+  window->revealer_timeout_id = g_timeout_add_seconds (5, revealer_timeout, window);
+
   return FALSE;
 }
 
@@ -113,9 +130,9 @@ static void
 start_button_clicked_cb (GtkWidget *button,
                          PmuWindow *window)
 {
-  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), FALSE);
   gtk_label_set_label (GTK_LABEL (window->info_label), "PMU Server started successfully");
   gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
+  window->revealer_timeout_id = g_timeout_add_seconds (5, revealer_timeout, window);
 
   gtk_widget_hide (window->start_button);
   gtk_widget_show (window->stop_button);
@@ -132,9 +149,9 @@ static void
 stop_button_clicked_cb (GtkWidget *button,
                         PmuWindow *window)
 {
-  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), FALSE);
   gtk_label_set_label (GTK_LABEL (window->info_label), "PMU Server stopped");
   gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
+  window->revealer_timeout_id = g_timeout_add_seconds (5, revealer_timeout, window);
 
   gtk_widget_hide (window->stop_button);
   gtk_widget_show (window->start_button);
