@@ -39,6 +39,15 @@ pmu_setup_window_finalize (GObject *object)
 }
 
 static void
+cancel_button_clicked_cb (GtkWidget      *button,
+                          PmuSetupWindow *window)
+{
+  GApplication *app = G_APPLICATION (gtk_window_get_application (GTK_WINDOW (window)));
+
+  g_application_quit (app);
+}
+
+static void
 pmu_setup_window_class_init (PmuSetupWindowClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -50,6 +59,9 @@ pmu_setup_window_class_init (PmuSetupWindowClass *klass)
 
   gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, done_button);
   gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, cancel_button);
+
+  gtk_widget_class_bind_template_callback (widget_class, cancel_button_clicked_cb);
+
 }
 
 static void
