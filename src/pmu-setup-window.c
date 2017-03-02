@@ -26,7 +26,7 @@ struct _PmuSetupWindow
   GtkApplicationWindow parent_instance;
 
   GtkWidget *cancel_button;
-  GtkWidget *done_button;
+  GtkWidget *save_button;
 };
 
 
@@ -57,7 +57,7 @@ pmu_setup_window_class_init (PmuSetupWindowClass *klass)
 
   gtk_widget_class_set_template_from_resource (widget_class, "/org/sadiqpk/pmu/ui/pmu-setup-window.ui");
 
-  gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, done_button);
+  gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, save_button);
   gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, cancel_button);
 
   gtk_widget_class_bind_template_callback (widget_class, cancel_button_clicked_cb);

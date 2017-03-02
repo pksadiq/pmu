@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface domain="pmu">
   <!-- interface-requires gtk 3.10 -->
+
+  <object class="GtkAdjustment" id="pmu_id_adjustment">
+    <property name="lower">1</property>
+    <property name="upper">1000</property>
+    <property name="step-increment">1</property>
+  </object>
+
+  <object class="GtkAdjustment" id="port_adjustment">
+    <property name="lower">1025</property>
+    <property name="upper">10000</property>
+    <property name="step-increment">1</property>
+  </object>
+
   <template class="PmuSetupWindow" parent="GtkApplicationWindow">
-    <property name="default-width">600</property>
-    <property name="default-height">400</property>
-    <property name="resizable">1</property>
+    <property name="resizable">True</property>
+    <property name="window-position">center</property>
 
     <child type="titlebar">
       <object class="GtkHeaderBar" id="headerbar">
@@ -18,16 +30,15 @@
           <object class="GtkButton" id="cancel_button">
             <property name="visible">True</property>
             <property name="label" translatable="yes">Cancel</property>
-            <property name="tooltip-text">Stop capturing serial data</property>
             <signal name="clicked" handler="cancel_button_clicked_cb" object="PmuSetupWindow" swapped="no" />
           </object>
         </child>
 
         <child>
-          <object class="GtkButton" id="done_button">
+          <object class="GtkButton" id="save_button">
             <property name="visible">True</property>
-            <property name="label" translatable="yes">Done</property>
-            <signal name="clicked" handler="done_button_clicked_cb" object="PmuSetupWindow" swapped="no" />
+            <property name="label" translatable="yes">Save</property>
+            <signal name="clicked" handler="save_button_clicked_cb" object="PmuSetupWindow" swapped="no" />
             <style>
              <class name="suggested-action"/>
             </style>
@@ -40,5 +51,253 @@
       </object> <!-- ./GtkHeaderBar headerbar -->
     </child>
 
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="halign">center</property>
+        <property name="valign">center</property>
+        <property name="margin">18</property>
+
+        <child>
+        <object class="GtkGrid">
+          <property name="visible">True</property>
+          <property name="halign">center</property>
+          <property name="valign">center</property>
+
+          <child>
+            <object class="GtkBox">
+              <property name="visible">True</property>
+              <property name="width-request">12</property>
+            </object>
+            <packing>
+              <property name="left-attach">1</property>
+              <property name="top-attach">0</property>
+            </packing>
+          </child>
+
+          <child>
+            <object class="GtkLabel">
+              <property name="visible">True</property>
+              <property name="label">Station Name</property>
+              <property name="halign">end</property>
+              <property name="valign">center</property>
+              <style>
+               <class name="dim-label"/>
+              </style>
+            </object>
+            <packing>
+              <property name="left-attach">0</property>
+              <property name="top-attach">0</property>
+            </packing>
+          </child>
+          <child>
+            <object class="GtkEntry">
+              <property name="visible">True</property>
+              <property name="valign">center</property>
+              <property name="max-length">50</property>
+            </object>
+            <packing>
+              <property name="left-attach">2</property>
+              <property name="top-attach">0</property>
+            </packing>
+          </child>
+
+          <child>
+            <object class="GtkBox">
+              <property name="visible">True</property>
+              <property name="width-request">12</property>
+              <property name="height-request">6</property>
+            </object>
+            <packing>
+              <property name="left-attach">1</property>
+              <property name="top-attach">1</property>
+            </packing>
+          </child>
+
+          <child>
+            <object class="GtkLabel">
+              <property name="visible">True</property>
+              <property name="label">PMU ID</property>
+              <property name="halign">end</property>
+              <property name="valign">center</property>
+              <style>
+               <class name="dim-label"/>
+              </style>
+            </object>
+            <packing>
+              <property name="left-attach">0</property>
+              <property name="top-attach">2</property>
+            </packing>
+          </child>
+          <child>
+            <object class="GtkSpinButton">
+              <property name="visible">True</property>
+              <property name="valign">center</property>
+              <property name="text">1</property>
+              <property name="numeric">True</property>
+              <property name="adjustment">pmu_id_adjustment</property>
+            </object>
+            <packing>
+              <property name="left-attach">2</property>
+              <property name="top-attach">2</property>
+            </packing>
+          </child>
+
+          <child>
+            <object class="GtkBox">
+              <property name="visible">True</property>
+              <property name="width-request">12</property>
+              <property name="height-request">6</property>
+            </object>
+            <packing>
+              <property name="left-attach">1</property>
+              <property name="top-attach">3</property>
+            </packing>
+          </child>
+
+          <child>
+            <object class="GtkLabel">
+              <property name="visible">True</property>
+              <property name="label">Port Number</property>
+              <property name="halign">end</property>
+              <property name="valign">center</property>
+              <style>
+               <class name="dim-label"/>
+              </style>
+            </object>
+            <packing>
+              <property name="left-attach">0</property>
+              <property name="top-attach">4</property>
+            </packing>
+          </child>
+          <child>
+            <object class="GtkSpinButton">
+              <property name="visible">True</property>
+              <property name="valign">center</property>
+              <property name="text">1</property>
+              <property name="numeric">True</property>
+              <property name="adjustment">port_adjustment</property>
+            </object>
+            <packing>
+              <property name="left-attach">2</property>
+              <property name="top-attach">4</property>
+            </packing>
+          </child>
+
+          <child>
+            <object class="GtkBox">
+              <property name="visible">True</property>
+              <property name="width-request">12</property>
+              <property name="height-request">12</property>
+            </object>
+            <packing>
+              <property name="left-attach">1</property>
+              <property name="top-attach">5</property>
+            </packing>
+          </child>
+
+          <child>
+            <object class="GtkLabel">
+              <property name="visible">True</property>
+              <property name="label">Admin IP</property>
+              <property name="halign">end</property>
+              <property name="valign">center</property>
+              <style>
+               <class name="dim-label"/>
+              </style>
+            </object>
+            <packing>
+              <property name="left-attach">0</property>
+              <property name="top-attach">6</property>
+            </packing>
+          </child>
+          <child>
+            <object class="GtkEntry">
+              <property name="visible">True</property>
+              <property name="valign">center</property>
+              <property name="placeholder-text">IPv4 Address of PDC</property>
+            </object>
+            <packing>
+              <property name="left-attach">2</property>
+              <property name="top-attach">6</property>
+            </packing>
+          </child>
+          <child>
+            <object class="GtkMenuButton" id="admin_ip_help_button">
+              <property name="visible">True</property>
+              <property name="relief">none</property>
+              <property name="halign">start</property>
+              <property name="valign">center</property>
+              <property name="margin-start">3</property>
+              <property name="popover">admin_ip_help_popover</property>
+              <style>
+               <class name="image-button"/>
+              </style>
+              <child>
+                <object class="GtkImage">
+                  <property name="visible">True</property>
+                  <property name="icon-name">dialog-question-symbolic</property>
+                </object>
+              </child>
+            </object>
+            <packing>
+              <property name="left-attach">3</property>
+              <property name="top-attach">6</property>
+            </packing>
+          </child>
+
+        </object> <!-- ./GtkGrid -->
+        </child>
+
+      </object> <!-- ./GtkBox -->
+    </child>
+
   </template>
+
+  <object class="GtkPopover" id="admin_ip_help_popover">
+    <property name="relative-to">admin_ip_help_button</property>
+    <property name="constrain-to">none</property>
+    <child>
+      <object class="GtkGrid">
+        <property name="visible">True</property>
+        <property name="margin">12</property>
+        <property name="margin-top">6</property>
+        <property name="column-spacing">20</property>
+
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="label">Admin IP</property>
+            <property name="halign">center</property>
+            <property name="margin-bottom">6</property>
+            <attributes>
+              <attribute name="weight" value="PANGO_WEIGHT_BOLD"/>
+            </attributes>
+            <style>
+             <class name="dim-label"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">0</property>
+          </packing>
+        </child>
+
+        <child>
+          <object class="GtkLabel">
+            <property name="visible">True</property>
+            <property name="max-width-chars">37</property>
+            <property name="wrap">True</property>
+            <property name="label">The IPv4 Address of the PDC. Only one IP will be allowed to be connected to this PMU.</property>
+          </object>
+          <packing>
+            <property name="left-attach">0</property>
+            <property name="top-attach">1</property>
+          </packing>
+        </child>
+
+      </object>
+    </child>
+  </object>
+
 </interface>
