@@ -19,12 +19,12 @@
 #include "pmu-utils.h"
 
 gboolean
-pmu_utils_gint_to_gboolean (GBinding     *binding,
+pmu_utils_uint_to_boolean (GBinding     *binding,
                             const GValue *from_value,
                             GValue       *to_value,
                             gpointer      user_data)
 {
   g_value_set_boolean (to_value, g_value_get_uint (from_value));
-  
+
   return TRUE;
 }

@@ -81,7 +81,7 @@ pmu_setup_window_init (PmuSetupWindow *self)
   g_object_bind_property_full (self->station_name_entry, "text-length",
                                self->save_button, "sensitive",
                                G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE,
-                               pmu_utils_gint_to_gboolean,
+                               pmu_utils_uint_to_boolean,
                                NULL, NULL, NULL);
 }
 

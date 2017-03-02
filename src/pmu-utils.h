@@ -22,10 +22,10 @@
 
 G_BEGIN_DECLS
 
-gboolean pmu_utils_gint_to_gboolean (GBinding     *binding,
-                                     const GValue *from_value,
-                                     GValue       *to_value,
-                                     gpointer      user_data);
+gboolean pmu_utils_uint_to_boolean (GBinding     *binding,
+                                    const GValue *from_value,
+                                    GValue       *to_value,
+                                    gpointer      user_data);
 
 
 G_END_DECLS
