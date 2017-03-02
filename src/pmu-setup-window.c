@@ -17,6 +17,7 @@
  */
 
 #include "pmu-app.h"
+#include "pmu-utils.h"
 
 #include "pmu-setup-window.h"
 
@@ -27,6 +28,10 @@ struct _PmuSetupWindow
 
   GtkWidget *cancel_button;
   GtkWidget *save_button;
+  GtkWidget *station_name_entry;
+  GtkWidget *pmu_id_entry;
+  GtkWidget *port_number_entry;
+  GtkWidget *admin_ip_entry;
 };
 
 
@@ -59,6 +64,10 @@ pmu_setup_window_class_init (PmuSetupWindowClass *klass)
 
   gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, save_button);
   gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, cancel_button);
+  gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, station_name_entry);
+  gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, pmu_id_entry);
+  gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, port_number_entry);
+  gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, admin_ip_entry);
 
   gtk_widget_class_bind_template_callback (widget_class, cancel_button_clicked_cb);
 
@@ -68,6 +77,12 @@ static void
 pmu_setup_window_init (PmuSetupWindow *self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  g_object_bind_property_full (self->station_name_entry, "text-length",
+                               self->save_button, "sensitive",
+                               G_BINDING_DEFAULT | G_BINDING_SYNC_CREATE,
+                               pmu_utils_gint_to_gboolean,
+                               NULL, NULL, NULL);
 }
 
 PmuSetupWindow *

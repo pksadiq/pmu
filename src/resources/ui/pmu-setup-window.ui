@@ -37,6 +37,7 @@
         <child>
           <object class="GtkButton" id="save_button">
             <property name="visible">True</property>
+            <property name="sensitive">False</property>
             <property name="label" translatable="yes">Save</property>
             <signal name="clicked" handler="save_button_clicked_cb" object="PmuSetupWindow" swapped="no" />
             <style>
@@ -73,7 +74,7 @@
               <property name="left-attach">1</property>
               <property name="top-attach">0</property>
             </packing>
-          </child>
+          </child> <!-- ./padding -->
 
           <child>
             <object class="GtkLabel">
@@ -91,7 +92,7 @@
             </packing>
           </child>
           <child>
-            <object class="GtkEntry">
+            <object class="GtkEntry" id="station_name_entry">
               <property name="visible">True</property>
               <property name="valign">center</property>
               <property name="max-length">50</property>
@@ -100,7 +101,7 @@
               <property name="left-attach">2</property>
               <property name="top-attach">0</property>
             </packing>
-          </child>
+          </child> <!-- ./station name -->
 
           <child>
             <object class="GtkBox">
@@ -112,7 +113,7 @@
               <property name="left-attach">1</property>
               <property name="top-attach">1</property>
             </packing>
-          </child>
+          </child> <!-- ./padding -->
 
           <child>
             <object class="GtkLabel">
@@ -130,7 +131,7 @@
             </packing>
           </child>
           <child>
-            <object class="GtkSpinButton">
+            <object class="GtkSpinButton" id="pmu_id_entry">
               <property name="visible">True</property>
               <property name="valign">center</property>
               <property name="text">1</property>
@@ -141,7 +142,7 @@
               <property name="left-attach">2</property>
               <property name="top-attach">2</property>
             </packing>
-          </child>
+          </child> <!-- ./pmu id -->
 
           <child>
             <object class="GtkBox">
@@ -153,7 +154,7 @@
               <property name="left-attach">1</property>
               <property name="top-attach">3</property>
             </packing>
-          </child>
+          </child> <!-- ./padding -->
 
           <child>
             <object class="GtkLabel">
@@ -171,7 +172,7 @@
             </packing>
           </child>
           <child>
-            <object class="GtkSpinButton">
+            <object class="GtkSpinButton" id="port_number_entry">
               <property name="visible">True</property>
               <property name="valign">center</property>
               <property name="text">1</property>
@@ -182,7 +183,7 @@
               <property name="left-attach">2</property>
               <property name="top-attach">4</property>
             </packing>
-          </child>
+          </child> <!-- ./port number -->
 
           <child>
             <object class="GtkBox">
@@ -194,7 +195,7 @@
               <property name="left-attach">1</property>
               <property name="top-attach">5</property>
             </packing>
-          </child>
+          </child> <!-- ./padding -->
 
           <child>
             <object class="GtkLabel">
@@ -212,7 +213,7 @@
             </packing>
           </child>
           <child>
-            <object class="GtkEntry">
+            <object class="GtkEntry" id="admin_ip_entry">
               <property name="visible">True</property>
               <property name="valign">center</property>
               <property name="placeholder-text">IPv4 Address of PDC</property>
@@ -239,12 +240,12 @@
                   <property name="icon-name">dialog-question-symbolic</property>
                 </object>
               </child>
-            </object>
+            </object> <!-- ./GtkMenuButton admin_ip_help_button -->
             <packing>
               <property name="left-attach">3</property>
               <property name="top-attach">6</property>
             </packing>
-          </child>
+          </child> <!-- ./admin ip -->
 
         </object> <!-- ./GtkGrid -->
         </child>
@@ -298,6 +299,6 @@
 
       </object>
     </child>
-  </object>
+  </object> <!-- ./GtkPopover admin_ip_help_popover -->
 
 </interface>
