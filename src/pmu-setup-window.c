@@ -55,6 +55,13 @@ cancel_button_clicked_cb (GtkWidget      *button,
 }
 
 static void
+save_button_clicked_cb (GtkWidget      *button,
+                        PmuSetupWindow *window)
+{
+  pmu_details_save_settings (window->details);
+}
+
+static void
 entry_text_changed_cb (GObject    *gobject,
                        GParamSpec *pspec,
                        gpointer    user_data)
@@ -106,6 +113,7 @@ pmu_setup_window_class_init (PmuSetupWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, PmuSetupWindow, admin_ip_entry);
 
   gtk_widget_class_bind_template_callback (widget_class, cancel_button_clicked_cb);
+  gtk_widget_class_bind_template_callback (widget_class, save_button_clicked_cb);
   gtk_widget_class_bind_template_callback (widget_class, entry_text_changed_cb);
 
 }

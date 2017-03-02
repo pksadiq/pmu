@@ -26,6 +26,7 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (PmuDetails, pmu_details, PMU, DETAILS, GObject)
 
+void        pmu_details_save_settings    (PmuDetails *self);
 gchar      *pmu_details_get_station_name (PmuDetails *self);
 gchar      *pmu_details_get_admin_ip     (PmuDetails *self);
 guint       pmu_details_get_port_number  (PmuDetails *self);

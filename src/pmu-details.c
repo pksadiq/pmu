@@ -159,14 +159,15 @@ pmu_details_class_init (PmuDetailsClass *klass)
 void
 pmu_details_save_settings (PmuDetails *self)
 {
-  if (!self->settings_modified)
+  if (!self->first_run && !self->settings_modified)
     return;
 
   g_settings_set_uint (settings, "pmu-id", self->pmu_id);
   g_settings_set_uint (settings, "port", self->port_number);
   g_settings_set_string (settings, "admin-ip", self->admin_ip);
-  g_settings_set_string (settings, "pmu-id", self->station_name);
-  g_settings_set_boolean (settings, "first-run", self->first_run);
+  g_settings_set_string (settings, "station-name", self->station_name);
+  g_settings_set_boolean (settings, "first-run", 0);
+  g_print ("here\n");
 }
 
 static void
