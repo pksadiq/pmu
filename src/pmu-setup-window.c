@@ -17,6 +17,7 @@
  */
 
 #include "pmu-app.h"
+#include "pmu-details.h"
 
 #include "pmu-setup-window.h"
 
@@ -31,6 +32,8 @@ struct _PmuSetupWindow
   GtkWidget *pmu_id_entry;
   GtkWidget *port_number_entry;
   GtkWidget *admin_ip_entry;
+
+  PmuDetails *details;
 };
 
 
@@ -70,6 +73,20 @@ entry_text_changed_cb (GObject    *gobject,
 }
 
 static void
+pmu_setup_window_populate (PmuSetupWindow *self)
+{
+  gtk_entry_set_text (GTK_ENTRY (self->station_name_entry),
+                      pmu_details_get_station_name (self->details));
+  gtk_entry_set_text (GTK_ENTRY (self->admin_ip_entry),
+                      pmu_details_get_admin_ip (self->details));
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (self->port_number_entry),
+                             pmu_details_get_port_number (self->details));
+  gtk_spin_button_set_value (GTK_SPIN_BUTTON (self->pmu_id_entry),
+                             pmu_details_get_pmu_id (self->details));
+
+}
+
+static void
 pmu_setup_window_class_init (PmuSetupWindowClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
@@ -95,6 +112,9 @@ static void
 pmu_setup_window_init (PmuSetupWindow *self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->details = pmu_details_new ();
+  pmu_setup_window_populate (self);
 }
 
 PmuSetupWindow *
