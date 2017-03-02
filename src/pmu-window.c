@@ -27,6 +27,7 @@ struct _PmuWindow
   GtkWidget *start_button;
   GtkWidget *stop_button;
   GtkWidget *menu_button;
+  GtkWidget *info_label;
   GtkWidget *revealer;
 };
 
@@ -47,7 +48,11 @@ static const GActionEntry win_entries[] = {
 static gboolean
 show_ntp_update_revealer (gpointer user_data)
 {
-  gtk_revealer_set_reveal_child (GTK_REVEALER (PMU_WINDOW (user_data)->revealer), TRUE);
+  PmuWindow *window = PMU_WINDOW (user_data);
+
+  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), FALSE);
+  gtk_label_set_label (GTK_LABEL (window->info_label), "NTP Sync completed");
+  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
   return FALSE;
 }
 
@@ -108,10 +113,12 @@ static void
 start_button_clicked_cb (GtkWidget *button,
                          PmuWindow *window)
 {
+  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), FALSE);
+  gtk_label_set_label (GTK_LABEL (window->info_label), "PMU Server started successfully");
   gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
+
   gtk_widget_hide (window->start_button);
   gtk_widget_show (window->stop_button);
-  g_print ("start button clicked\n");
 }
 
 static void
@@ -125,10 +132,12 @@ static void
 stop_button_clicked_cb (GtkWidget *button,
                         PmuWindow *window)
 {
+  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), FALSE);
+  gtk_label_set_label (GTK_LABEL (window->info_label), "PMU Server stopped");
+  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
+
   gtk_widget_hide (window->stop_button);
   gtk_widget_show (window->start_button);
-
-  g_print ("stop button clicked\n");
 }
 
 static void
@@ -145,6 +154,7 @@ pmu_window_class_init (PmuWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, menu_button);
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, start_button);
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, stop_button);
+  gtk_widget_class_bind_template_child (widget_class, PmuWindow, info_label);
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, revealer);
 
   gtk_widget_class_bind_template_callback (widget_class, start_button_clicked_cb);
