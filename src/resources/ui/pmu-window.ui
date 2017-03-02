@@ -4,6 +4,7 @@
   <template class="PmuWindow" parent="GtkApplicationWindow">
     <property name="default-width">600</property>
     <property name="default-height">400</property>
+    <property name="window-position">center</property>
     <property name="resizable">1</property>
 
     <child type="titlebar">
