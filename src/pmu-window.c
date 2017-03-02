@@ -30,6 +30,8 @@ struct _PmuWindow
   GtkWidget *revealer;
 };
 
+static GThread *ntp_thread;
+
 
 G_DEFINE_TYPE (PmuWindow, pmu_window, GTK_TYPE_APPLICATION_WINDOW)
 
@@ -42,11 +44,41 @@ static const GActionEntry win_entries[] = {
 };
 
 
+static gboolean
+show_ntp_update_revealer (gpointer user_data)
+{
+  gtk_revealer_set_reveal_child (GTK_REVEALER (PMU_WINDOW (user_data)->revealer), TRUE);
+  return FALSE;
+}
+
+static gpointer
+sync_ntp_time (gpointer user_data)
+{
+  GError *error = NULL;
+  gint exit_status = 1;
+
+  if (!g_spawn_command_line_sync ("/usr/bin/pkexec good.sh",
+                                  NULL, NULL,
+                                  &exit_status,
+                                  &error))
+    {
+      g_warning ("%s", error->message);
+      g_clear_error (&error);
+      return NULL;
+    }
+
+  if (exit_status == 0)
+    g_idle_add (show_ntp_update_revealer,
+                user_data);
+}
+
 static void sync_ntp_time_cb (GSimpleAction *action,
                               GVariant      *param,
                               gpointer       user_data)
 {
-  g_print ("NTP time updated\n");
+  ntp_thread = g_thread_new (NULL,
+                             sync_ntp_time,
+                             user_data);
 }
 
 static void
