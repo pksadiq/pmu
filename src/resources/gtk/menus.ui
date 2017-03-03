@@ -17,6 +17,10 @@
   <menu id="win-menu">
     <section>
       <item>
+        <attribute name="label" translatable="yes">_Settings</attribute>
+        <attribute name="action">win.settings</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">_NTP Sync</attribute>
         <attribute name="action">win.sync-ntp</attribute>
       </item>

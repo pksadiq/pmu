@@ -17,6 +17,8 @@
  */
 
 
+#include "pmu-setup-window.h"
+
 #include "pmu-window.h"
 
 
@@ -38,12 +40,17 @@ static GThread *ntp_thread;
 
 G_DEFINE_TYPE (PmuWindow, pmu_window, GTK_TYPE_APPLICATION_WINDOW)
 
-static void sync_ntp_time_cb (GSimpleAction       *action,
-                              GVariant            *param,
-                              gpointer             user_data);
+static void sync_ntp_time_cb  (GSimpleAction       *action,
+                               GVariant            *param,
+                               gpointer             user_data);
+static void show_setup_window (GSimpleAction       *action,
+                               GVariant            *param,
+                               gpointer             user_data);
+
 
 static const GActionEntry win_entries[] = {
-  { "sync-ntp",  sync_ntp_time_cb },
+  { "sync-ntp",  sync_ntp_time_cb  },
+  { "settings",  show_setup_window },
 };
 
 static gboolean
@@ -94,6 +101,24 @@ sync_ntp_time (gpointer user_data)
                 user_data);
 
   return NULL;
+}
+
+static void
+show_setup_window (GSimpleAction *action,
+                   GVariant      *param,
+                   gpointer       user_data)
+{
+  PmuSetupWindow *window;
+  PmuWindow *self;
+  PmuApp *app;
+
+  self = PMU_WINDOW (user_data);
+  app = PMU_APP (gtk_window_get_application (GTK_WINDOW (self)));
+
+  window = pmu_setup_window_new (app);
+  gtk_window_set_transient_for (GTK_WINDOW (window), GTK_WINDOW (self));
+  gtk_window_set_modal (GTK_WINDOW (window), TRUE);
+  gtk_window_present (GTK_WINDOW (window));
 }
 
 static void sync_ntp_time_cb (GSimpleAction *action,

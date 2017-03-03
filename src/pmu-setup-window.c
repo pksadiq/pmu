@@ -50,9 +50,18 @@ static void
 cancel_button_clicked_cb (GtkWidget      *button,
                           PmuSetupWindow *window)
 {
-  GApplication *app = G_APPLICATION (gtk_window_get_application (GTK_WINDOW (window)));
+  GtkWindow *self = GTK_WINDOW (window);
+  GApplication *app;
+  gboolean is_first_run;
 
-  g_application_quit (app);
+  is_first_run = pmu_details_get_is_first_run (window->details);
+
+  app = G_APPLICATION (gtk_window_get_application (self));
+
+  if (is_first_run)
+    g_application_quit (app);
+  else
+    gtk_widget_destroy (GTK_WIDGET (self));
 }
 
 static void
@@ -66,7 +75,7 @@ save_button_clicked_cb (GtkWidget      *button,
   is_first_run = pmu_details_get_is_first_run (window->details);
 
   pmu_details_save_settings (window->details);
-  gtk_window_close (GTK_WINDOW (window));
+  gtk_widget_destroy (GTK_WIDGET (window));
 
   if (is_first_run)
     {
