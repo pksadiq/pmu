@@ -92,6 +92,8 @@ sync_ntp_time (gpointer user_data)
   if (exit_status == 0)
     g_idle_add (show_ntp_update_revealer,
                 user_data);
+
+  return NULL;
 }
 
 static void sync_ntp_time_cb (GSimpleAction *action,
@@ -114,7 +116,6 @@ pmu_window_constructed (GObject *object)
 {
   PmuWindow  *window;
   GMenuModel *menu;
-  GAction    *action;
   g_autoptr(GtkBuilder) builder = NULL;
 
   window = PMU_WINDOW (object);

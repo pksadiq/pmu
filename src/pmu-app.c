@@ -51,7 +51,6 @@ static void pmu_app_show_about (GSimpleAction *action,
                                 gpointer       user_data)
 {
   PmuApp      *self;
-  GtkWindow   *dialog;
   const gchar *authors[] = {
     "Mohammed Sadiq <sadiq@sadiqpk.org>",
     NULL
