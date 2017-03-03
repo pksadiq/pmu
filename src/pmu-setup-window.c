@@ -74,6 +74,17 @@ save_button_clicked_cb (GtkWidget      *button,
   app = gtk_window_get_application (GTK_WINDOW (window));
   is_first_run = pmu_details_get_is_first_run (window->details);
 
+  g_object_set (window->details,
+                "pmu-id",
+                (guint) gtk_spin_button_get_value (GTK_SPIN_BUTTON (window->pmu_id_entry)),
+                "port-number",
+                (guint) gtk_spin_button_get_value (GTK_SPIN_BUTTON (window->port_number_entry)),
+                "station-name",
+                gtk_entry_get_text (GTK_ENTRY (window->station_name_entry)),
+                "admin-ip",
+                gtk_entry_get_text (GTK_ENTRY (window->admin_ip_entry)),
+                NULL);
+
   pmu_details_save_settings (window->details);
   gtk_widget_destroy (GTK_WIDGET (window));
 

@@ -23,10 +23,9 @@ struct _PmuDetails
 {
   GObject parent_instance;
 
-  gboolean settings_modified;
-  gboolean first_run;
   gchar   *station_name;
   gchar   *admin_ip;
+  gboolean first_run;
   guint    pmu_id;
   guint    port_number;
 };
@@ -100,25 +99,20 @@ pmu_details_set_property (GObject      *object,
     {
     case PROP_FIRST_RUN:
       self->first_run = g_value_get_boolean (value);
-      self->settings_modified = TRUE;
       break;
     case PROP_PMU_ID:
       self->pmu_id = g_value_get_uint (value);
-      self->settings_modified = TRUE;
       break;
     case PROP_STATION_NAME:
       g_free (self->station_name);
       self->station_name = g_value_dup_string (value);
-      self->settings_modified = TRUE;
       break;
     case PROP_ADMIN_IP:
       g_free (self->admin_ip);
       self->admin_ip = g_value_dup_string (value);
-      self->settings_modified = TRUE;
       break;
     case PROP_PORT_NUMBER:
       self->port_number = g_value_get_uint (value);
-      self->settings_modified = TRUE;
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -166,9 +160,6 @@ pmu_details_class_init (PmuDetailsClass *klass)
 void
 pmu_details_save_settings (PmuDetails *self)
 {
-  if (!self->first_run && !self->settings_modified)
-    return;
-
   g_settings_set_uint (settings, "pmu-id", self->pmu_id);
   g_settings_set_uint (settings, "port", self->port_number);
   g_settings_set_string (settings, "admin-ip", self->admin_ip);
@@ -189,8 +180,6 @@ pmu_details_populate (PmuDetails *self)
 static void
 pmu_details_init (PmuDetails *self)
 {
-  self->settings_modified = FALSE;
-
   pmu_details_populate (self);
 }
 
