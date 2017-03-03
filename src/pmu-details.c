@@ -48,6 +48,13 @@ enum {
 static void
 pmu_details_finalize (GObject *object)
 {
+  PmuDetails *self = PMU_DETAILS (object);
+
+  pmu_details_save_settings (self);
+
+  g_free (self->station_name);
+  g_free (self->admin_ip);
+
   G_OBJECT_CLASS (pmu_details_parent_class)->finalize (object);
 }
 
