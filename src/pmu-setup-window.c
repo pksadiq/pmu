@@ -159,4 +159,3 @@ pmu_setup_window_new (PmuApp *app)
                        "application", app,
                        NULL);
 }
-
