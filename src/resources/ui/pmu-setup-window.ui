@@ -138,6 +138,7 @@
               <property name="text">1</property>
               <property name="numeric">True</property>
               <property name="adjustment">pmu_id_adjustment</property>
+              <signal name="notify::text" handler="entry_text_changed_cb" object="PmuSetupWindow" swapped="no" />
             </object>
             <packing>
               <property name="left-attach">2</property>
@@ -179,6 +180,7 @@
               <property name="text">1</property>
               <property name="numeric">True</property>
               <property name="adjustment">port_adjustment</property>
+              <signal name="notify::text" handler="entry_text_changed_cb" object="PmuSetupWindow" swapped="no" />
             </object>
             <packing>
               <property name="left-attach">2</property>
