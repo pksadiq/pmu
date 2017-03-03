@@ -29,7 +29,7 @@
         <child>
           <object class="GtkButton" id="cancel_button">
             <property name="visible">True</property>
-            <property name="label" translatable="yes">Cancel</property>
+            <property name="label" translatable="yes">Close</property>
             <signal name="clicked" handler="cancel_button_clicked_cb" object="PmuSetupWindow" swapped="no" />
           </object>
         </child>
