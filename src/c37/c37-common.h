@@ -20,6 +20,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
 typedef unsigned char byte;
