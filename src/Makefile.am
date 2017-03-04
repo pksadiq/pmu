@@ -14,6 +14,8 @@ pmu_SOURCES = \
 	pmu-details.c 		\
 	c37-common.h 		\
 	c37-common.c 		\
+	c37-config.h 		\
+	c37-config.c 		\
 	resources.c
 
 BUILT_SOURCES = \
