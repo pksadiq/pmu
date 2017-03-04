@@ -19,6 +19,7 @@
 #include "pmu-window.h"
 #include "pmu-setup-window.h"
 #include "pmu-details.h"
+#include "c37/c37.h"
 
 #include "pmu-app.h"
 
@@ -28,6 +29,9 @@ struct _PmuApp
   GtkApplication parent_instance;
 
   PmuDetails *details;
+
+  CtsConfig  *pmu_config_one;
+  CtsConfig  *pmu_config_two;
 };
 
 
@@ -121,6 +125,13 @@ pmu_app_activate (GApplication *app)
 }
 
 static void
+pmu_app_update_pmu_config (PmuApp    *self,
+                           CtsConfig *config)
+{
+  cts_config_set_pmu_count (config, 1);
+}
+
+static void
 pmu_app_startup (GApplication *app)
 {
   PmuApp *self = PMU_APP (app);
@@ -130,6 +141,11 @@ pmu_app_startup (GApplication *app)
                                    G_N_ELEMENTS (app_entries),
                                    app);
   self->details = pmu_details_new ();
+
+  self->pmu_config_one = cts_config_get_default_config_one ();
+  self->pmu_config_two = cts_config_get_default_config_two ();
+
+  pmu_app_update_pmu_config (self, self->pmu_config_one);
 
   G_APPLICATION_CLASS (pmu_app_parent_class)->startup (app);
 }
