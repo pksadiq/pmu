@@ -38,5 +38,7 @@ bool       cts_config_set_station_name  (CtsConfig  *self,
                                          const char *station_name,
                                          size_t      n);
 void       cts_config_free              (CtsConfig  *self);
-CtsConfig *cts_config_new               (void);
+
+CtsConfig *cts_config_get_default_config_one (void);
+CtsConfig *cts_config_get_default_config_two (void);
 

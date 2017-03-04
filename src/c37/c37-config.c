@@ -56,6 +56,8 @@ typedef struct _CtsConfig
   uint16_t (*pmu_details)[2];
 } CtsConfig;
 
+CtsConfig *config_default_one = NULL;
+CtsConfig *config_default_two = NULL;
 
 uint32_t
 cts_config_get_time_base (CtsConfig *self)
@@ -86,7 +88,7 @@ cts_config_set_pmu_count (CtsConfig *self,
     return count;
 
   pmu_details = realloc (self->pmu_details,
-                         sizeof self->pmu_details * count);
+                         sizeof *self->pmu_details * count);
 
   if (pmu_details)
     {
@@ -124,12 +126,12 @@ cts_config_set_station_name (CtsConfig  *self,
   return false;
 }
 
-CtsConfig *
+static CtsConfig *
 cts_config_new (void)
 {
   CtsConfig *self = NULL;
 
-  self = malloc (sizeof self);
+  self = malloc (sizeof *self);
 
   if (self)
     {
@@ -149,6 +151,25 @@ cts_config_new (void)
   return self;
 }
 
+CtsConfig *
+cts_config_get_default_config_one (void)
+{
+  if (config_default_one == NULL)
+    config_default_one = cts_config_new ();
+
+  return config_default_one;
+}
+
+/* TODO: Don't replicate data in one */
+CtsConfig *
+cts_config_get_default_config_two (void)
+{
+  if (config_default_two == NULL)
+    config_default_two = cts_config_new ();
+
+  return config_default_two;
+}
+
 void
 cts_config_free (CtsConfig *self)
 {
@@ -159,4 +180,5 @@ cts_config_free (CtsConfig *self)
   free (self->status_word_masks);
   free (self->pmu_details);
   free (self);
+  self = NULL;
 }
