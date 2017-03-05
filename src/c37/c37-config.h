@@ -20,7 +20,14 @@
 
 #include "c37-common.h"
 
+typedef struct _CtsPmuConfig CtsPmuConfig;
 typedef struct _CtsConfig CtsConfig;
+
+#define SYNC_CONFIG_ONE 0x21
+#define SYNC_CONFIG_TWO 0x31
+
+#define NOMINAL_FREQ_50 0x01 /* Hertz */
+#define NOMINAL_FREQ_60 0x00 /* Hertz */
 
 uint32_t   cts_config_get_time_base     (CtsConfig  *self);
 
@@ -34,7 +41,7 @@ uint16_t   cts_config_set_pmu_count     (CtsConfig  *self,
 
 char      *cts_config_get_station_name  (CtsConfig  *self);
 
-bool       cts_config_set_station_name  (CtsConfig  *self,
+void       cts_config_set_station_name  (CtsConfig  *self,
                                          const char *station_name,
                                          size_t      n);
 void       cts_config_free              (CtsConfig  *self);

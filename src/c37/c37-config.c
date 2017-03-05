@@ -16,44 +16,90 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "assert.h"
+#include "stdio.h"
 #include "c37-config.h"
+
+/*
+ * This will be common to every configuration
+ * SYNC (2) + frame size (2) + id code (2) + epoch time (4) +
+ * fraction of second (4) + time base (4) + data rate (2) + check (2)
+ */
+#define CONFIG_COMMON_SIZE 22 /* bytes */
+
+/*
+ * Station name (16) + id code (2) + format (2) + phasor count (2) +
+ * analog value count (2) + digital status words count (2) +
+ * Nominal line frequency (2) + conf change count (2)
+ */
+#define CONFIG_COMMON_SIZE_PER_PMU 30 /* bytes */
+
+typedef struct _CtsPmuConfig
+{
+  char station_name[16];
+  uint16_t id_code;
+
+  /**
+   * 15 - 4 bits unused
+   * bit 3, 2, 1: 1 for float point (4 byte) and 0 for integer (2 byte)
+   * bit 3: frequency (deviation from real frequency) or dfreq (ROCOF)
+   * bit 2: analog value
+   * bit 1: phasors
+   * bit 0: for phasors, set 1 for real + imaginary (rectangular). 1 for
+   * magnitude and angle (polar)
+   */
+  uint16_t data_format;
+
+  /**
+   * Total number of values like Vr, Vr_angle, Vy, Vy_angle, Vb, Vb_angle,
+   * Ir, Iy, Ib, etc.
+   */
+  uint16_t num_phasors;
+
+  uint16_t num_analog_values;
+
+  /**
+   * Human readable name of phasors, and analog (eg: "Vy Angle", "Vr Angle")
+   * Fill with spaces (0x20) at the freespace until the size is 16
+   * Like "Vy angle        " (Shouldn't end with '\0').
+   *
+   * 16 bytes * (num_phasors + num_analog_values): +
+   *
+   * Name for each breaker
+   * 16 * 16 * num_status_words */
+  char *channel_names;
+
+  /* 4 byte * num_phasors */
+  uint32_t *conv_factor_phasor;
+
+  /* 4 * num_anlalog_values */
+  uint32_t *conv_factor_analog;
+
+  /* 4 * num_status_words */
+  uint32_t *status_word_masks;
+
+  /**
+   * total number of digital status (binary 1 for on or 0 for off) for breakers
+   */
+  uint16_t num_status_words;
+
+  uint16_t nominal_freq;
+  uint16_t conf_change_count;
+
+} CtsPmuConfig;
 
 typedef struct _CtsConfig
 {
-  uint32_t time_base;
+  uint16_t id_code;
   uint16_t num_pmu;
 
-  /* '\0' not required */
-  char *station_name;
-  uint16_t id_code;
-  uint16_t data_format;
+  uint32_t time_base;
 
-  uint16_t num_phasors;
-  uint16_t num_analog_values;
-  uint16_t num_status_words;
+  /* One per PMU */
+  CtsPmuConfig *pmu_config;
 
   /* Rate of data transmissions */
   uint16_t data_rate;
-
-  /* 16 bytes * (num_phasors + num_analog_values) + 16 * 16 * num_status_words */
-  char *channel_names;
-
-  /* 4 * num_phasors */
-  byte *conv_factor_phasor;
-
-  /* 4 * num_anlalog_values */
-  byte *conv_factor_analog;
-
-  /* 4 * num_status_words */
-  byte *status_word_masks;
-
-  /*
-   * repeat as many PMUs present
-   * pmu_details[1] = Nominal line frequency code and flags
-   * pmu_details[2] = Configuration change count
-   * This is a pointer to an array of uint16_t
-   */
-  uint16_t (*pmu_details)[2];
 } CtsConfig;
 
 CtsConfig *config_default_one = NULL;
@@ -73,57 +119,109 @@ cts_config_set_time_base (CtsConfig *self,
 }
 
 uint16_t
+cts_config_get_number_of_phasors_of_pmu (CtsConfig *self,
+                                         size_t     pmu_num)
+{
+  // todo
+  if (pmu_num > self->num_pmu)
+    return 0;
+  return 0;
+}
+
+void
+cts_config_set_number_of_phasors (CtsConfig *self,
+                                  uint16_t   count)
+{
+  // todo
+  /* self->num_phasors = count; */
+}
+
+uint16_t
+cts_config_get_number_of_analog_vals_of_pmu (CtsConfig *self,
+                                             size_t     pmu_num)
+{
+  return self->pmu_config->num_analog_values;
+}
+
+void
+cts_config_set_number_of_analog_vals (CtsConfig *self,
+                                      uint16_t   count)
+{
+  self->pmu_config->num_analog_values = count;
+}
+
+uint16_t
+cts_config_get_number_of_status_words (CtsConfig *self)
+{
+  return self->pmu_config->num_status_words;
+}
+
+void
+cts_config_set_no_of_status_word_of_pmu (CtsConfig *self,
+                                         size_t     num_pmu,
+                                         uint16_t   count)
+{
+  self->pmu_config->num_status_words = count;
+}
+
+uint16_t
 cts_config_get_pmu_count (CtsConfig *self)
 {
   return self->num_pmu;
 }
 
+/**
+ * Note: This is a very costly function.
+ * Please use only once if possible
+ */
 uint16_t
 cts_config_set_pmu_count (CtsConfig *self,
                           uint16_t   count)
 {
-  uint16_t (*pmu_details)[2];
+  CtsPmuConfig *pmu_config = NULL;
 
   if (self->num_pmu && self->num_pmu == count)
     return count;
 
-  pmu_details = realloc (self->pmu_details,
-                         sizeof *self->pmu_details * count);
+  pmu_config = realloc (self->pmu_config,
+                        sizeof (*pmu_config) * count);
 
-  if (pmu_details)
+  if (pmu_config)
     {
       self->num_pmu = count;
-      self->pmu_details = pmu_details;
+      self->pmu_config = pmu_config;
     }
 
-  return self->pmu_details ? self->num_pmu : 0;
+  return self->pmu_config ? self->num_pmu : 0;
 }
 
 char *
-cts_config_get_station_name (CtsConfig *self)
+cts_config_get_station_name_of_pmu (CtsConfig *self,
+                                    size_t     pmu_index)
 {
-  return self->station_name;
+  return (self->pmu_config + pmu_index - 1)->station_name;
 }
 
 bool
-cts_config_set_station_name (CtsConfig  *self,
-                             const char *station_name,
-                             size_t      n)
+cts_config_set_station_name_of_pmu (CtsConfig  *self,
+                                    size_t      pmu_index,
+                                    const char *station_name,
+                                    size_t      name_size)
 {
-  if (n > 16)
+  if (pmu_index > self->num_pmu);
     return false;
 
-  if (self->station_name == NULL)
-    self->station_name = malloc (16);
+  if (name_size > 16)
+    name_size = 16;
 
-  if (self->station_name)
-    {
-      memcpy (self->station_name, station_name, n);
-      if (n < 16)
-        self->station_name[n] = '\0';
-      return true;
-    }
-  return false;
+  memcpy ((self->pmu_config + pmu_index - 1)->station_name,
+          station_name, name_size);
+
+  /* Append spaces to the rest of data, if any */
+  while (++name_size <= 16)
+    (self->pmu_config + pmu_index - 1)->station_name[name_size] = ' ';
+
+  return true;
 }
 
 static CtsConfig *
@@ -137,15 +235,7 @@ cts_config_new (void)
     {
       /* Initialize dangerous variables */
       self->num_pmu = 0;
-      self->num_phasors = 0;
-      self->num_analog_values = 0;
-      self->num_status_words = 0;
-      self->station_name = NULL;
-      self->channel_names = NULL;
-      self->conv_factor_phasor = NULL;
-      self->conv_factor_analog = NULL;
-      self->status_word_masks = NULL;
-      self->pmu_details = NULL;
+      self->pmu_config = NULL;
     }
 
   return self;
@@ -173,12 +263,59 @@ cts_config_get_default_config_two (void)
 void
 cts_config_free (CtsConfig *self)
 {
-  free (self->station_name);
-  free (self->channel_names);
-  free (self->conv_factor_phasor);
-  free (self->conv_factor_analog);
-  free (self->status_word_masks);
-  free (self->pmu_details);
   free (self);
   self = NULL;
+}
+
+static size_t
+get_per_pmu_total_size (CtsPmuConfig *pmu_config)
+{
+  size_t pmu_size;
+
+  pmu_size = 16 * (pmu_config->num_phasors
+                      + pmu_config->num_analog_values
+                      + 16 * pmu_config->num_status_words);
+
+  pmu_size += 4 * (pmu_config->num_phasors
+                    + pmu_config->num_analog_values
+                    + pmu_config->num_status_words);
+
+  return pmu_size + CONFIG_COMMON_SIZE_PER_PMU;
+}
+
+static size_t
+calc_total_size (CtsConfig *self)
+{
+  size_t total_pmu_size;
+
+  total_pmu_size = get_per_pmu_total_size(self->pmu_config) * self->num_pmu;
+
+  return total_pmu_size + CONFIG_COMMON_SIZE;
+}
+
+static byte *
+populate_raw_data (CtsConfig *self)
+{
+
+}
+
+/**
+ * Raw data in Big Endian order (ie, network order)
+ * This function supports only one Little Endian architectures
+ */
+byte *
+cts_config_get_raw_data (CtsConfig *self)
+{
+  size_t size;
+  byte *data = NULL;
+
+  size = calc_total_size (self);
+  data = malloc (size);
+
+  if (data == NULL)
+    return NULL;
+
+  populate_raw_data (self);
+
+  return data;
 }
