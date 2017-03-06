@@ -569,6 +569,31 @@ cts_config_set_all_conv_factor_phasor_of_all_pmu (CtsConfig *self,
   return true;
 }
 
+uint32_t
+cts_config_get_conv_factor_of_phasor_from_data (uint32_t multiplier,
+                                                byte     type)
+{
+  uint32_t data = multiplier;
+
+  if (type == TYPE_CURRENT)
+    SET_BIT(data, 25);
+  else
+    CLEAR_BIT(data, 25);
+
+  return data;
+}
+
+uint32_t
+cts_config_get_conv_factor_of_analog_from_data (uint32_t multiplier,
+                                                byte     type)
+{
+  uint32_t data = type;
+  data <<= 24;
+  data |= multiplier;
+
+  return data;
+}
+
 bool
 cts_config_set_conv_factor_analog_of_pmu (CtsConfig *self,
                                           uint16_t   pmu_index,
