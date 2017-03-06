@@ -35,6 +35,13 @@ typedef struct _CtsConfig CtsConfig;
 #define TYPE_POLAR 1
 #define TYPE_RECTANGULAR 0
 
+#define TYPE_CURRENT 1
+#define TYPE_VOLTAGE 0
+
+#define TYPE_SINGLE_POINT_ON_WAVE 0
+#define TYPE_RMS 1
+#define TYPE_PEAK 2
+
 uint32_t   cts_config_get_time_base     (CtsConfig  *self);
 
 void       cts_config_set_time_base     (CtsConfig  *self,
