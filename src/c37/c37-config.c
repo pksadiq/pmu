@@ -263,14 +263,14 @@ cts_config_get_freq_data_type_of_pmu (CtsConfig *self,
 void
 cts_config_set_freq_data_type_of_pmu (CtsConfig *self,
                                       uint16_t   pmu_index,
-                                      bool       data_type)
+                                      bool       is_float)
 {
   if (pmu_index > self->num_pmu)
     return;
 
   CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
 
-  if (data_type)
+  if (is_float)
     SET_BIT (config->data_format, 3);
   else
     CLEAR_BIT (config->data_format, 3);
@@ -319,14 +319,14 @@ cts_config_get_phasor_data_type_of_pmu (CtsConfig *self,
 void
 cts_config_set_phasor_data_type_of_pmu (CtsConfig *self,
                                         uint16_t   pmu_index,
-                                        bool       data_type)
+                                        bool       is_float)
 {
   if (pmu_index > self->num_pmu)
     return;
 
   CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
 
-  if (data_type)
+  if (is_float)
     SET_BIT (config->data_format, 1);
   else
     CLEAR_BIT (config->data_format, 1);
@@ -347,14 +347,14 @@ cts_config_get_phasor_complex_type_of_pmu (CtsConfig *self,
 void
 cts_config_set_phasor_complex_type_of_pmu (CtsConfig *self,
                                            uint16_t   pmu_index,
-                                           bool       data_type)
+                                           bool       is_polar)
 {
   if (pmu_index > self->num_pmu)
     return;
 
   CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
 
-  if (data_type)
+  if (is_polar)
     SET_BIT (config->data_format, 0);
   else
     CLEAR_BIT (config->data_format, 0);
@@ -510,7 +510,7 @@ cts_config_set_channel_names_of_pmu (CtsConfig  *self,
 
 
 bool
-cts_config_set_conv_factor_phasor_of_pmu (CtsConfig *self,
+cts_config_set_phasor_conv_factor_of_pmu (CtsConfig *self,
                                           uint16_t   pmu_index,
                                           uint16_t   phasor_index,
                                           uint32_t   data)
@@ -530,7 +530,7 @@ cts_config_set_conv_factor_phasor_of_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_all_conv_factor_phasor_of_pmu (CtsConfig *self,
+cts_config_set_all_phasor_conv_factor_of_pmu (CtsConfig *self,
                                               uint16_t   pmu_index,
                                               uint32_t   data)
 {
@@ -545,7 +545,7 @@ cts_config_set_all_conv_factor_phasor_of_pmu (CtsConfig *self,
 
   for (uint16_t i = 1; i <= num_phasors; i++)
     {
-      bool status = cts_config_set_conv_factor_phasor_of_pmu (self, pmu_index,
+      bool status = cts_config_set_phasor_conv_factor_of_pmu (self, pmu_index,
                                                               i, data);
       if (!status)
         return false;
@@ -554,7 +554,7 @@ cts_config_set_all_conv_factor_phasor_of_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_all_conv_factor_phasor_of_all_pmu (CtsConfig *self,
+cts_config_set_all_phasor_conv_factor_of_all_pmu (CtsConfig *self,
                                                   uint32_t   data)
 {
   uint16_t num_pmu;
@@ -563,7 +563,7 @@ cts_config_set_all_conv_factor_phasor_of_all_pmu (CtsConfig *self,
 
   for (uint16_t i = 1; i <= num_pmu; i++)
     {
-      bool status = cts_config_set_all_conv_factor_phasor_of_pmu (self, i,
+      bool status = cts_config_set_all_phasor_conv_factor_of_pmu (self, i,
                                                                   data);
       if (!status)
         return false;
@@ -572,8 +572,8 @@ cts_config_set_all_conv_factor_phasor_of_all_pmu (CtsConfig *self,
 }
 
 uint32_t
-cts_config_get_conv_factor_of_phasor_from_data (uint32_t multiplier,
-                                                byte     type)
+cts_config_get_phasor_conv_factor_from_data (uint32_t multiplier,
+                                              byte     type)
 {
   uint32_t data = multiplier;
 
@@ -586,8 +586,8 @@ cts_config_get_conv_factor_of_phasor_from_data (uint32_t multiplier,
 }
 
 uint32_t
-cts_config_get_conv_factor_of_analog_from_data (uint32_t multiplier,
-                                                byte     type)
+cts_config_get_analog_conv_factor_from_data (uint32_t multiplier,
+                                             byte     type)
 {
   uint32_t data = type;
   data <<= 24;
@@ -597,7 +597,7 @@ cts_config_get_conv_factor_of_analog_from_data (uint32_t multiplier,
 }
 
 bool
-cts_config_set_conv_factor_analog_of_pmu (CtsConfig *self,
+cts_config_set_analog_conv_factor_of_pmu (CtsConfig *self,
                                           uint16_t   pmu_index,
                                           uint16_t   analog_index,
                                           uint32_t   data)
@@ -617,7 +617,7 @@ cts_config_set_conv_factor_analog_of_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_all_conv_factor_analog_of_pmu (CtsConfig *self,
+cts_config_set_all_analog_conv_factor_of_pmu (CtsConfig *self,
                                               uint16_t   pmu_index,
                                               uint32_t   data)
 {
@@ -632,7 +632,7 @@ cts_config_set_all_conv_factor_analog_of_pmu (CtsConfig *self,
 
   for (uint16_t i = 0; i < num_analog; i++)
     {
-      bool status = cts_config_set_conv_factor_analog_of_pmu (self, pmu_index,
+      bool status = cts_config_set_analog_conv_factor_of_pmu (self, pmu_index,
                                                               i, data);
       if (!status)
         return false;
@@ -641,7 +641,7 @@ cts_config_set_all_conv_factor_analog_of_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_all_conv_factor_analog_of_all_pmu (CtsConfig *self,
+cts_config_set_all_analog_conv_factor_of_all_pmu (CtsConfig *self,
                                                   uint32_t   data)
 {
   uint16_t num_pmu;
@@ -650,7 +650,7 @@ cts_config_set_all_conv_factor_analog_of_all_pmu (CtsConfig *self,
 
   for (uint16_t i = 0; i < num_pmu; i++)
     {
-      bool status = cts_config_set_all_conv_factor_analog_of_pmu (self, i,
+      bool status = cts_config_set_all_analog_conv_factor_of_pmu (self, i,
                                                                   data);
       if (!status)
         return false;
@@ -743,6 +743,18 @@ cts_config_increment_change_count_of_pmu (CtsConfig *self,
   return true;
 }
 
+bool
+cts_config_set_change_count_of_pmu (CtsConfig *self,
+                                    uint16_t   pmu_index,
+                                    uint16_t   count)
+{
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  (self->pmu_config + pmu_index - 1)->conf_change_count = count;
+  return true;
+}
+
 static CtsConfig *
 cts_config_new (void)
 {
@@ -817,7 +829,7 @@ populate_raw_data_of_config_part1 (CtsConfig  *config,
   uint16_t *byte2 = malloc (sizeof (*byte2));
   uint32_t *byte4 = malloc (sizeof (*byte4));
 
-  *byte2 = htons (SYNC_CONFIG_ONE);
+  *byte2 = htons (SYNC_CONFIG_TWO);
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
 
