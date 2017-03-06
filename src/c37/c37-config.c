@@ -368,7 +368,7 @@ cts_config_set_values_of_pmu (CtsConfig  *self,
 {
   uint32_t *data = NULL;
 
-  data = realloc (ptr, sizeof **ptr * count);
+  data = realloc (*ptr, sizeof **ptr * count);
 
   if (!count)
     {
@@ -381,6 +381,8 @@ cts_config_set_values_of_pmu (CtsConfig  *self,
       *ptr = data;
       return true;
     }
+
+  *ptr = NULL;
   return false;
 }
 
@@ -541,7 +543,7 @@ cts_config_set_all_conv_factor_phasor_of_pmu (CtsConfig *self,
   config = self->pmu_config + pmu_index - 1;
   num_phasors = config->num_phasors;
 
-  for (uint16_t i = 0; i < num_phasors; i++)
+  for (uint16_t i = 1; i <= num_phasors; i++)
     {
       bool status = cts_config_set_conv_factor_phasor_of_pmu (self, pmu_index,
                                                               i, data);
@@ -559,7 +561,7 @@ cts_config_set_all_conv_factor_phasor_of_all_pmu (CtsConfig *self,
 
   num_pmu = self->num_pmu;
 
-  for (uint16_t i = 0; i < num_pmu; i++)
+  for (uint16_t i = 1; i <= num_pmu; i++)
     {
       bool status = cts_config_set_all_conv_factor_phasor_of_pmu (self, i,
                                                                   data);
