@@ -264,6 +264,30 @@ cts_config_set_data_format_of_pmu (CtsConfig *self,
   return true;
 }
 
+bool
+cts_config_set_values_of_pmu (CtsConfig  *self,
+                              uint32_t  **ptr,
+                              uint16_t    pmu_index,
+                              uint16_t    count)
+{
+  uint32_t *data = NULL;
+
+  data = realloc (ptr, sizeof **ptr * count);
+
+  if (!count)
+    {
+      *ptr = NULL;
+      return true;
+    }
+
+  if (data)
+    {
+      *ptr = data;
+      return true;
+    }
+  return false;
+}
+
 uint16_t
 cts_config_get_number_of_phasors_of_pmu (CtsConfig *self,
                                          uint16_t   pmu_index)
@@ -274,22 +298,25 @@ cts_config_get_number_of_phasors_of_pmu (CtsConfig *self,
   return (self->pmu_config + pmu_index - 1)->num_phasors;
 }
 
-bool
+uint16_t
 cts_config_set_number_of_phasors_of_pmu (CtsConfig *self,
                                          uint16_t   pmu_index,
                                          uint16_t   count)
 {
   CtsPmuConfig *config;
+  bool done;
 
   if (pmu_index > self->num_pmu)
-    return false;
+    return 0;
 
   config = self->pmu_config + pmu_index - 1;
+  done = cts_config_set_values_of_pmu (self, &config->conv_factor_phasor,
+                                       pmu_index, count);
 
-  realloc (config->conv_factor_phasor,
-           sizeof *config->conv_factor_analog * count);
-  config->num_phasors = count;
-  return true;
+  if (done)
+    config->num_phasors = count;
+
+  return config->num_phasors;
 }
 
 uint16_t
@@ -302,16 +329,25 @@ cts_config_get_number_of_analog_vals_of_pmu (CtsConfig *self,
   return (self->pmu_config + pmu_index - 1)->num_analog_values;
 }
 
-bool
+uint16_t
 cts_config_set_number_of_analog_vals_of_pmu (CtsConfig *self,
                                              uint16_t   pmu_index,
                                              uint16_t   count)
 {
-  if (pmu_index > self->num_pmu)
-    return false;
+  CtsPmuConfig *config;
+  bool done;
 
-  (self->pmu_config + pmu_index - 1)->num_analog_values = count;
-  return true;
+  if (pmu_index > self->num_pmu)
+    return 0;
+
+  config = self->pmu_config + pmu_index - 1;
+  done = cts_config_set_values_of_pmu (self, &config->conv_factor_analog,
+                                       pmu_index, count);
+
+  if (done)
+    config->num_analog_values = count;
+
+  return config->num_analog_values;
 }
 
 uint16_t
@@ -324,16 +360,25 @@ cts_config_get_number_of_status_words_of_pmu (CtsConfig *self,
   return (self->pmu_config + pmu_index - 1)->num_status_words;
 }
 
-bool
-cts_config_set_no_of_status_word_of_pmu (CtsConfig *self,
-                                         uint16_t   pmu_index,
-                                         uint16_t   count)
+uint16_t
+cts_config_set_number_of_status_word_of_pmu (CtsConfig *self,
+                                             uint16_t   pmu_index,
+                                             uint16_t   count)
 {
-  if (pmu_index > self->num_pmu)
-    return false;
+  CtsPmuConfig *config;
+  bool done;
 
-  (self->pmu_config + pmu_index - 1)->num_status_words = count;
-  return true;
+  if (pmu_index > self->num_pmu)
+    return 0;
+
+  config = self->pmu_config + pmu_index - 1;
+  done = cts_config_set_values_of_pmu (self, &config->status_word_masks,
+                                       pmu_index, count);
+
+  if (done)
+    config->num_status_words = count;
+
+  return config->num_status_words;
 }
 
 char **
