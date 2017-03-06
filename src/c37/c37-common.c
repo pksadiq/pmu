@@ -42,7 +42,22 @@ pmu_common_get_crc (const byte *data, size_t data_length)
 }
 
 uint32_t
-pmu_common_get_current_seconds (void)
+pmu_common_get_time_seconds (void)
 {
   return time (NULL);
+}
+
+uint32_t
+pmu_common_get_fraction_of_seconds (void)
+{
+  struct timespec ts;
+  uint32_t time;
+
+  /*  This is a C11 function */
+  timespec_get(&ts, TIME_UTC);
+
+  /* Only μs accuracy required at most */
+  time = ts.tv_nsec / 1000;
+
+  return time;
 }

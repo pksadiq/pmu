@@ -37,4 +37,6 @@ typedef unsigned char byte;
 unsigned short
 pmu_common_get_crc (const byte *data, size_t data_length);
 uint32_t
-pmu_common_get_current_seconds (void);
+pmu_common_get_time_seconds (void);
+uint32_t
+pmu_common_get_fraction_of_seconds (void);

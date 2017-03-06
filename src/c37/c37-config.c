@@ -708,6 +708,40 @@ populate_raw_data_of_config_part1 (CtsConfig  *config,
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
 
+  *byte4 = htons (pmu_common_get_time_seconds());
+  memcpy (*pptr, byte4, 4);
+  *pptr += 4;
+
+  /* TODO: configure Leap seconds and quality */
+  *byte4 = htons (pmu_common_get_fraction_of_seconds());
+  memcpy (*pptr, byte4, 4);
+  *pptr += 4;
+
+  *byte4 = htons (config->time_base);
+  memcpy (*pptr, byte4, 4);
+  *pptr += 4;
+
+  free (byte2);
+  free (byte4);
+}
+
+static void
+populate_raw_data_of_config_part2 (CtsConfig  *config,
+                                   size_t      frame_size,
+                                   byte       *data,
+                                   byte      **pptr)
+{
+  uint16_t *byte2 = malloc (sizeof (*byte2));
+
+  *byte2 = htons (config->data_rate);
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
+
+  *byte2 = htons (pmu_common_get_crc(data, frame_size - 1));
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
+
+  free (byte2);
 }
 
 static void
@@ -738,6 +772,8 @@ populate_raw_data_of_pmu_part1 (CtsPmuConfig  *config,
   *byte2 = htons (config->num_status_words);
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
+
+  free (byte2);
 }
 
 static void
@@ -790,6 +826,9 @@ populate_raw_data_of_pmu_part2 (CtsPmuConfig  *config,
   *byte2 = htons (config->conf_change_count);
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
+
+  free (byte2);
+  free (byte4);
 }
 
 static byte *
@@ -811,6 +850,7 @@ populate_raw_data (CtsConfig *self)
   num_pmu = self->num_pmu;
 
   populate_raw_data_of_config_part1 (self, len, &copy);
+
   for (uint16_t i = 0; i < num_pmu; i++)
     {
       config = self->pmu_config + i;
@@ -819,12 +859,13 @@ populate_raw_data (CtsConfig *self)
       populate_raw_data_of_pmu_part2 (config, &copy);
     }
 
+  populate_raw_data_of_config_part2 (self, len, data, &copy);
+
   return data;
 }
 
 /**
  * Raw data in Big Endian order (ie, network order)
- * This function supports only one Little Endian architectures
  */
 byte *
 cts_config_get_raw_data (CtsConfig *self)
