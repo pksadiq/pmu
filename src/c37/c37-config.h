@@ -49,3 +49,17 @@ void       cts_config_free              (CtsConfig  *self);
 CtsConfig *cts_config_get_default_config_one (void);
 CtsConfig *cts_config_get_default_config_two (void);
 
+
+
+/* Test */
+
+byte *
+cts_config_get_raw_data (CtsConfig *self);
+
+bool
+cts_config_set_station_name_of_pmu (CtsConfig  *self,
+                                    uint16_t    pmu_index,
+                                    const char *station_name,
+                                    size_t      name_size);
+
+

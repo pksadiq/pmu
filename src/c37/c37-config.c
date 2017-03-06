@@ -118,19 +118,19 @@ cts_config_set_id_code (CtsConfig *self,
 }
 
 void
-pmu_config_clear_all_data (CtsPmuConfig *config,
-                           uint16_t      count)
+pmu_config_clear_all_data (CtsPmuConfig *config)
 {
-
-  for (uint16_t i = 0; i < count; i++)
-    {
-      (config + i)->id_code = 0;
-      (config + i)->channel_names = NULL;
-      (config + i)->conv_factor_phasor = NULL;
-      (config + i)->conv_factor_analog = NULL;
-      (config + i)->status_word_masks = NULL;
-
-    }
+ config->id_code = 0;
+ config->data_format = 0;
+ config->num_phasors = 0;
+ config->num_analog_values = 0;
+ config->num_status_words = 0;
+ config->channel_names = NULL;
+ config->conv_factor_phasor = NULL;
+ config->conv_factor_analog = NULL;
+ config->status_word_masks = NULL;
+ config->nominal_freq = 50; /* Assume 50 Hz by default */
+ config->conf_change_count = 0;
 }
 
 uint16_t
@@ -157,9 +157,12 @@ cts_config_set_pmu_count (CtsConfig *self,
 
   if (pmu_config)
     {
-      self->num_pmu = count;
       self->pmu_config = pmu_config;
-      pmu_config_clear_all_data (pmu_config, count);
+      
+      for (uint16_t i = self->num_pmu; i < count; i++)
+        pmu_config_clear_all_data (self->pmu_config + i);
+
+      self->num_pmu = count;
     }
 
   return self->pmu_config ? self->num_pmu : 0;
@@ -213,8 +216,11 @@ cts_config_set_station_name_of_pmu (CtsConfig  *self,
   memcpy ((self->pmu_config + pmu_index - 1)->station_name,
           station_name, name_size);
 
+  /* Fix for of by one error when used as array index */
+  name_size--;
+
   /* Append spaces to the rest of data, if any */
-  while (++name_size <= 16)
+  while (++name_size < 16)
     (self->pmu_config + pmu_index - 1)->station_name[name_size] = ' ';
 
   return true;
@@ -264,7 +270,7 @@ cts_config_set_data_format_of_pmu (CtsConfig *self,
   return true;
 }
 
-bool
+static bool
 cts_config_set_values_of_pmu (CtsConfig  *self,
                               uint32_t  **ptr,
                               uint16_t    pmu_index,
@@ -410,9 +416,11 @@ cts_config_set_channel_names_of_pmu (CtsConfig  *self,
   return true;
 }
 
+
 bool
 cts_config_set_conv_factor_phasor_of_pmu (CtsConfig *self,
                                           uint16_t   pmu_index,
+                                          uint16_t   phasor_index,
                                           uint32_t   data)
 {
   CtsPmuConfig *config;
@@ -422,7 +430,199 @@ cts_config_set_conv_factor_phasor_of_pmu (CtsConfig *self,
 
   config = self->pmu_config + pmu_index - 1;
 
-  free (config->conv_factor_phasor);
+  if (phasor_index > config->num_phasors)
+    return false;
+
+  *(config->conv_factor_phasor + phasor_index - 1) = data;
+  return true;
+}
+
+bool
+cts_config_set_all_conv_factor_phasor_of_pmu (CtsConfig *self,
+                                              uint16_t   pmu_index,
+                                              uint32_t   data)
+{
+  CtsPmuConfig *config;
+  uint16_t num_phasors;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  config = self->pmu_config + pmu_index - 1;
+  num_phasors = config->num_phasors;
+
+  for (uint16_t i = 0; i < num_phasors; i++)
+    {
+      bool status = cts_config_set_conv_factor_phasor_of_pmu (self, pmu_index,
+                                                              i, data);
+      if (!status)
+        return false;
+    }
+  return true;
+}
+
+bool
+cts_config_set_all_conv_factor_phasor_of_all_pmu (CtsConfig *self,
+                                                  uint32_t   data)
+{
+  uint16_t num_pmu;
+
+  num_pmu = self->num_pmu;
+
+  for (uint16_t i = 0; i < num_pmu; i++)
+    {
+      bool status = cts_config_set_all_conv_factor_phasor_of_pmu (self, i,
+                                                                  data);
+      if (!status)
+        return false;
+    }
+  return true;
+}
+
+bool
+cts_config_set_conv_factor_analog_of_pmu (CtsConfig *self,
+                                          uint16_t   pmu_index,
+                                          uint16_t   analog_index,
+                                          uint32_t   data)
+{
+  CtsPmuConfig *config;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  config = self->pmu_config + pmu_index - 1;
+
+  if (analog_index > config->num_analog_values)
+    return false;
+
+  *(config->conv_factor_analog + analog_index - 1) = data;
+  return true;
+}
+
+bool
+cts_config_set_all_conv_factor_analog_of_pmu (CtsConfig *self,
+                                              uint16_t   pmu_index,
+                                              uint32_t   data)
+{
+  CtsPmuConfig *config;
+  uint16_t num_analog;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  config = self->pmu_config + pmu_index - 1;
+  num_analog = config->num_analog_values;
+
+  for (uint16_t i = 0; i < num_analog; i++)
+    {
+      bool status = cts_config_set_conv_factor_analog_of_pmu (self, pmu_index,
+                                                              i, data);
+      if (!status)
+        return false;
+    }
+  return true;
+}
+
+bool
+cts_config_set_all_conv_factor_analog_of_all_pmu (CtsConfig *self,
+                                                  uint32_t   data)
+{
+  uint16_t num_pmu;
+
+  num_pmu = self->num_pmu;
+
+  for (uint16_t i = 0; i < num_pmu; i++)
+    {
+      bool status = cts_config_set_all_conv_factor_analog_of_pmu (self, i,
+                                                                  data);
+      if (!status)
+        return false;
+    }
+  return true;
+}
+
+bool
+cts_config_set_status_word_masks_of_pmu (CtsConfig *self,
+                                         uint16_t   pmu_index,
+                                         uint16_t   status_index,
+                                         uint32_t   data)
+{
+  CtsPmuConfig *config;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  config = self->pmu_config + pmu_index - 1;
+
+  if (status_index > config->num_status_words)
+    return false;
+
+  *(config->status_word_masks + status_index - 1) = data;
+  return true;
+}
+
+bool
+cts_config_set_all_status_word_masks_of_pmu (CtsConfig *self,
+                                              uint16_t   pmu_index,
+                                              uint32_t   data)
+{
+  CtsPmuConfig *config;
+  uint16_t num_status;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  config = self->pmu_config + pmu_index - 1;
+  num_status = config->num_status_words;
+
+  for (uint16_t i = 0; i < num_status; i++)
+    {
+      bool status = cts_config_set_status_word_masks_of_pmu (self, pmu_index,
+                                                             i, data);
+      if (!status)
+        return false;
+    }
+  return true;
+}
+
+bool
+cts_config_set_all_status_word_masks_of_all_pmu (CtsConfig *self,
+                                                  uint32_t   data)
+{
+  uint16_t num_pmu;
+
+  num_pmu = self->num_pmu;
+
+  for (uint16_t i = 0; i < num_pmu; i++)
+    {
+      bool status = cts_config_set_all_status_word_masks_of_pmu (self, i,
+                                                                 data);
+      if (!status)
+        return false;
+    }
+  return true;
+}
+
+bool
+cts_config_set_nominal_frequency_of_pmu (CtsConfig *self,
+                                         uint16_t   pmu_index,
+                                         uint16_t   nominal_freq)
+{
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  (self->pmu_config + pmu_index - 1)->nominal_freq = nominal_freq;
+  return true;
+}
+
+bool
+cts_config_increment_change_count_of_pmu (CtsConfig *self,
+                                          uint16_t   pmu_index)
+{
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  (self->pmu_config + pmu_index - 1)->conf_change_count++;
   return true;
 }
 
@@ -462,25 +662,18 @@ cts_config_get_default_config_two (void)
   return config_default_two;
 }
 
-void
-cts_config_free (CtsConfig *self)
-{
-  free (self);
-  self = NULL;
-}
-
 static size_t
 get_per_pmu_total_size (CtsPmuConfig *pmu_config)
 {
   size_t pmu_size;
 
   pmu_size = 16 * (pmu_config->num_phasors
-                      + pmu_config->num_analog_values
-                      + 16 * pmu_config->num_status_words);
+                   + pmu_config->num_analog_values
+                   + 16 * pmu_config->num_status_words);
 
   pmu_size += 4 * (pmu_config->num_phasors
-                    + pmu_config->num_analog_values
-                    + pmu_config->num_status_words);
+                   + pmu_config->num_analog_values
+                   + pmu_config->num_status_words);
 
   return pmu_size + CONFIG_COMMON_SIZE_PER_PMU;
 }
@@ -488,17 +681,86 @@ get_per_pmu_total_size (CtsPmuConfig *pmu_config)
 static size_t
 calc_total_size (CtsConfig *self)
 {
-  size_t total_pmu_size;
+  uint16_t num_pmu;
+  size_t total_pmu_size = 0;
 
-  total_pmu_size = get_per_pmu_total_size(self->pmu_config) * self->num_pmu;
+  num_pmu = self->num_pmu;
+
+  for (uint16_t i = 0; i < num_pmu; i++)
+    total_pmu_size += get_per_pmu_total_size (self->pmu_config + i);
 
   return total_pmu_size + CONFIG_COMMON_SIZE;
+}
+
+void
+populate_raw_data_of_pmu (CtsPmuConfig  *config,
+                          byte         **pptr)
+{
+  uint16_t *byte2 = malloc (sizeof (*byte2));
+  uint32_t *byte4 = malloc (sizeof (*byte4));
+
+  memcpy (*pptr, config->station_name, 16);
+  *pptr += 16;
+
+  *byte2 = htons (config->id_code);
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
+
+  *byte2 = htons (config->data_format);
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
+
+  *byte2 = htons (config->num_phasors);
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
+
+  *byte2 = htons (config->num_analog_values);
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
+
+}
+
+static void
+copy_pmu_channel_names (char **channel_names,
+                        byte **pptr)
+{
+  if (channel_names == NULL)
+    return;
+
+  while (*channel_names)
+    {
+      printf ("#%s#\n", *channel_names);
+      (*channel_names)++;
+    }
 }
 
 static byte *
 populate_raw_data (CtsConfig *self)
 {
+  CtsPmuConfig *config;
+  size_t len;
+  byte *data;
+  byte *copy;
+  uint16_t num_pmu;
 
+  len = calc_total_size (self);
+  data = malloc (len);
+
+  printf ("%d\n", len);
+  if (data == NULL)
+    return NULL;
+
+  assert (0);
+  copy = data;
+  num_pmu = self->num_pmu;
+
+  for (uint16_t i = 0; i < num_pmu; i++)
+    {
+      config = self->pmu_config + i;
+      populate_raw_data_of_pmu (config, &copy);
+      copy_pmu_channel_names (config->channel_names, &copy);
+    }
+  return data;
 }
 
 /**
@@ -508,16 +770,11 @@ populate_raw_data (CtsConfig *self)
 byte *
 cts_config_get_raw_data (CtsConfig *self)
 {
-  size_t size;
-  byte *data = NULL;
-
-  size = calc_total_size (self);
-  data = malloc (size);
-
-  if (data == NULL)
+  byte *data;
+  if (self == NULL)
     return NULL;
 
-  populate_raw_data (self);
+  data = populate_raw_data (self);
 
   return data;
 }
