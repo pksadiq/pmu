@@ -23,9 +23,10 @@
 /*
  * This will be common to every configuration
  * SYNC (2) + frame size (2) + id code (2) + epoch time (4) +
- * fraction of second (4) + time base (4) + data rate (2) + check (2)
+ * fraction of second (4) + time base (4) + pmu num (2) + data rate (2) +
+ * check (2)
  */
-#define CONFIG_COMMON_SIZE 22 /* bytes */
+#define CONFIG_COMMON_SIZE 24 /* bytes */
 
 /*
  * Station name (16) + id code (2) + format (2) + phasor count (2) +
@@ -129,7 +130,7 @@ pmu_config_clear_all_data (CtsPmuConfig *config)
  config->conv_factor_phasor = NULL;
  config->conv_factor_analog = NULL;
  config->status_word_masks = NULL;
- config->nominal_freq = 50; /* Assume 50 Hz by default */
+ config->nominal_freq = 1; /* Assume 50 Hz by default */
  config->conf_change_count = 0;
 }
 
@@ -573,14 +574,14 @@ cts_config_set_all_phasor_conv_factor_of_all_pmu (CtsConfig *self,
 
 uint32_t
 cts_config_get_phasor_conv_factor_from_data (uint32_t multiplier,
-                                              byte     type)
+                                             byte     type)
 {
   uint32_t data = multiplier;
 
   if (type == TYPE_CURRENT)
-    SET_BIT(data, 25);
+    SET_BIT(data, 24);
   else
-    CLEAR_BIT(data, 25);
+    CLEAR_BIT(data, 24);
 
   return data;
 }
@@ -592,6 +593,17 @@ cts_config_get_analog_conv_factor_from_data (uint32_t multiplier,
   uint32_t data = type;
   data <<= 24;
   data |= multiplier;
+
+  return data;
+}
+
+uint32_t
+cts_config_get_digital_status_word_from_data (uint16_t upper,
+                                              uint16_t lower)
+{
+  uint32_t data = upper;
+  data <<= 16;
+  data |= lower;
 
   return data;
 }
@@ -728,6 +740,11 @@ cts_config_set_nominal_frequency_of_pmu (CtsConfig *self,
   if (pmu_index > self->num_pmu)
     return false;
 
+  if (nominal_freq == 60)
+    nominal_freq = 0;
+  else
+    nominal_freq = 1;
+
   (self->pmu_config + pmu_index - 1)->nominal_freq = nominal_freq;
   return true;
 }
@@ -837,18 +854,28 @@ populate_raw_data_of_config_part1 (CtsConfig  *config,
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
 
-  *byte4 = htons (pmu_common_get_time_seconds());
+  *byte2 = htons (config->id_code);
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
+
+  *byte4 = htonl (0x448527F0U);
+  /* *byte4 = htonl (pmu_common_get_time_seconds()); */
   memcpy (*pptr, byte4, 4);
   *pptr += 4;
 
   /* TODO: configure Leap seconds and quality */
-  *byte4 = htons (pmu_common_get_fraction_of_seconds());
+  *byte4 = htonl (0X56071098);
+  /* *byte4 = htonl (pmu_common_get_fraction_of_seconds()); */
   memcpy (*pptr, byte4, 4);
   *pptr += 4;
 
-  *byte4 = htons (config->time_base);
+  *byte4 = htonl (config->time_base);
   memcpy (*pptr, byte4, 4);
   *pptr += 4;
+
+  *byte2 = htons (config->num_pmu);
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
 
   free (byte2);
   free (byte4);
@@ -929,21 +956,21 @@ populate_raw_data_of_pmu_part2 (CtsPmuConfig  *config,
 
   for (uint16_t i = 0; i < config->num_phasors; i++)
     {
-      *byte4 = htonl (*config->conv_factor_phasor);
+      *byte4 = htonl (*(config->conv_factor_phasor + i));
       memcpy (*pptr, byte4, 4);
       *pptr += 4;
     }
 
   for (uint16_t i = 0; i < config->num_analog_values; i++)
     {
-      *byte4 = htonl (*config->conv_factor_analog);
+      *byte4 = htonl (*(config->conv_factor_analog + i));
       memcpy (*pptr, byte4, 4);
       *pptr += 4;
     }
 
   for (uint16_t i = 0; i < config->num_status_words; i++)
     {
-      *byte4 = htonl (*config->status_word_masks);
+      *byte4 = htonl (*(config->status_word_masks + i));
       memcpy (*pptr, byte4, 4);
       *pptr += 4;
     }

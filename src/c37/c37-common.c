@@ -26,17 +26,17 @@ pmu_common_get_crc (const byte *data, size_t data_length)
   uint16_t temp;
   uint16_t quick;
 
-  for (size_t i = 0; i < data_length; i++)
-    {
-      temp = (crc >> 8) ^ data[i];
-      crc <<= 8;
-      quick = temp ^ (temp >> 4);
-      crc ^= quick;
-      quick <<= 5;
-      crc ^= quick;
-      quick <<= 7;
-      crc ^= quick;
-    }
+  for (size_t i = 0; i < data_length - 1; i++)
+  {
+    temp = (crc >> 8) ^ data[i];
+    crc <<= 8;
+    quick = temp ^ (temp >> 4);
+    crc ^= quick;
+    quick <<= 5;
+    crc ^= quick;
+    quick <<= 7;
+    crc ^= quick;
+  }
 
   return crc;
 }
