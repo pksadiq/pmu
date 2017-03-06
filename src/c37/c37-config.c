@@ -204,7 +204,7 @@ cts_config_set_station_name_of_pmu (CtsConfig  *self,
                                     const char *station_name,
                                     size_t      name_size)
 {
-  if (pmu_index > self->num_pmu);
+  if (pmu_index > self->num_pmu)
     return false;
 
   if (name_size > 16)
