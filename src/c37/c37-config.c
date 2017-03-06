@@ -117,7 +117,7 @@ cts_config_set_id_code (CtsConfig *self,
   self->id_code = id_code;
 }
 
-void
+static void
 pmu_config_clear_all_data (CtsPmuConfig *config)
 {
  config->id_code = 0;
@@ -158,7 +158,7 @@ cts_config_set_pmu_count (CtsConfig *self,
   if (pmu_config)
     {
       self->pmu_config = pmu_config;
-      
+
       for (uint16_t i = self->num_pmu; i < count; i++)
         pmu_config_clear_all_data (self->pmu_config + i);
 
@@ -248,26 +248,116 @@ cts_config_set_id_code_of_pmu (CtsConfig *self,
   return true;
 }
 
-uint16_t
-cts_config_get_data_format_of_pmu (CtsConfig *self,
-                                   uint16_t   pmu_index)
-{
-  if (pmu_index > self->num_pmu)
-    return 0;
-
-  return (self->pmu_config + pmu_index - 1)->data_format;
-}
-
 bool
-cts_config_set_data_format_of_pmu (CtsConfig *self,
-                                   uint16_t   pmu_index,
-                                   uint16_t   data_format)
+cts_config_get_freq_data_type_of_pmu (CtsConfig *self,
+                                      uint16_t   pmu_index)
 {
   if (pmu_index > self->num_pmu)
     return false;
 
-  (self->pmu_config + pmu_index - 1)->data_format = data_format;
-  return true;
+  CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
+
+  return BIT_IS_SET (config->data_format, 3);
+}
+
+void
+cts_config_set_freq_data_type_of_pmu (CtsConfig *self,
+                                      uint16_t   pmu_index,
+                                      bool       data_type)
+{
+  if (pmu_index > self->num_pmu)
+    return;
+
+  CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
+
+  if (data_type)
+    SET_BIT (config->data_format, 3);
+  else
+    CLEAR_BIT (config->data_format, 3);
+}
+
+bool
+cts_config_get_analog_data_type_of_pmu (CtsConfig *self,
+                                        uint16_t   pmu_index)
+{
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
+
+  return BIT_IS_SET (config->data_format, 2);
+}
+
+void
+cts_config_set_analog_data_type_of_pmu (CtsConfig *self,
+                                        uint16_t   pmu_index,
+                                        bool       data_type)
+{
+  if (pmu_index > self->num_pmu)
+    return;
+
+  CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
+
+  if (data_type)
+    SET_BIT (config->data_format, 2);
+  else
+    CLEAR_BIT (config->data_format, 2);
+}
+
+bool
+cts_config_get_phasor_data_type_of_pmu (CtsConfig *self,
+                                        uint16_t   pmu_index)
+{
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
+
+  return BIT_IS_SET (config->data_format, 1);
+}
+
+void
+cts_config_set_phasor_data_type_of_pmu (CtsConfig *self,
+                                        uint16_t   pmu_index,
+                                        bool       data_type)
+{
+  if (pmu_index > self->num_pmu)
+    return;
+
+  CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
+
+  if (data_type)
+    SET_BIT (config->data_format, 1);
+  else
+    CLEAR_BIT (config->data_format, 1);
+}
+
+bool
+cts_config_get_phasor_complex_type_of_pmu (CtsConfig *self,
+                                           uint16_t   pmu_index)
+{
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
+
+  return BIT_IS_SET (config->data_format, 0);
+}
+
+void
+cts_config_set_phasor_complex_type_of_pmu (CtsConfig *self,
+                                           uint16_t   pmu_index,
+                                           bool       data_type)
+{
+  if (pmu_index > self->num_pmu)
+    return;
+
+  CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
+
+  if (data_type)
+    SET_BIT (config->data_format, 0);
+  else
+    CLEAR_BIT (config->data_format, 0);
 }
 
 static bool

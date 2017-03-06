@@ -23,11 +23,17 @@
 typedef struct _CtsPmuConfig CtsPmuConfig;
 typedef struct _CtsConfig CtsConfig;
 
-#define SYNC_CONFIG_ONE 0x21
-#define SYNC_CONFIG_TWO 0x31
+#define SYNC_CONFIG_ONE 0xAA21
+#define SYNC_CONFIG_TWO 0xAA31
 
 #define NOMINAL_FREQ_50 0x01 /* Hertz */
 #define NOMINAL_FREQ_60 0x00 /* Hertz */
+
+#define TYPE_FLOAT 1
+#define TYPE_INT 0
+
+#define TYPE_POLAR 1
+#define TYPE_RECTANGULAR 0
 
 uint32_t   cts_config_get_time_base     (CtsConfig  *self);
 
