@@ -40,3 +40,9 @@ pmu_common_get_crc (const byte *data, size_t data_length)
 
   return crc;
 }
+
+uint32_t
+pmu_common_get_current_seconds (void)
+{
+  return time (NULL);
+}

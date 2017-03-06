@@ -692,12 +692,29 @@ calc_total_size (CtsConfig *self)
   return total_pmu_size + CONFIG_COMMON_SIZE;
 }
 
-void
-populate_raw_data_of_pmu (CtsPmuConfig  *config,
-                          byte         **pptr)
+static void
+populate_raw_data_of_config_part1 (CtsConfig  *config,
+                                   size_t      frame_size,
+                                   byte      **pptr)
 {
   uint16_t *byte2 = malloc (sizeof (*byte2));
   uint32_t *byte4 = malloc (sizeof (*byte4));
+
+  *byte2 = htons (SYNC_CONFIG_ONE);
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
+
+  *byte2 = htons (frame_size);
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
+
+}
+
+static void
+populate_raw_data_of_pmu_part1 (CtsPmuConfig  *config,
+                                byte         **pptr)
+{
+  uint16_t *byte2 = malloc (sizeof (*byte2));
 
   memcpy (*pptr, config->station_name, 16);
   *pptr += 16;
@@ -718,6 +735,9 @@ populate_raw_data_of_pmu (CtsPmuConfig  *config,
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
 
+  *byte2 = htons (config->num_status_words);
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
 }
 
 static void
@@ -729,9 +749,47 @@ copy_pmu_channel_names (char **channel_names,
 
   while (*channel_names)
     {
-      printf ("#%s#\n", *channel_names);
-      (*channel_names)++;
+      memcpy (*pptr, *channel_names, 16);
+      *pptr += 16;
+      channel_names++;
     }
+}
+
+static void
+populate_raw_data_of_pmu_part2 (CtsPmuConfig  *config,
+                                byte         **pptr)
+{
+  uint16_t *byte2 = malloc (sizeof (*byte2));
+  uint32_t *byte4 = malloc (sizeof (*byte4));
+
+  for (uint16_t i = 0; i < config->num_phasors; i++)
+    {
+      *byte4 = htonl (*config->conv_factor_phasor);
+      memcpy (*pptr, byte4, 4);
+      *pptr += 4;
+    }
+
+  for (uint16_t i = 0; i < config->num_analog_values; i++)
+    {
+      *byte4 = htonl (*config->conv_factor_analog);
+      memcpy (*pptr, byte4, 4);
+      *pptr += 4;
+    }
+
+  for (uint16_t i = 0; i < config->num_status_words; i++)
+    {
+      *byte4 = htonl (*config->status_word_masks);
+      memcpy (*pptr, byte4, 4);
+      *pptr += 4;
+    }
+
+  *byte2 = htons (config->nominal_freq);
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
+
+  *byte2 = htons (config->conf_change_count);
+  memcpy (*pptr, byte2, 2);
+  *pptr += 2;
 }
 
 static byte *
@@ -746,20 +804,21 @@ populate_raw_data (CtsConfig *self)
   len = calc_total_size (self);
   data = malloc (len);
 
-  printf ("%d\n", len);
   if (data == NULL)
     return NULL;
 
-  assert (0);
   copy = data;
   num_pmu = self->num_pmu;
 
+  populate_raw_data_of_config_part1 (self, len, &copy);
   for (uint16_t i = 0; i < num_pmu; i++)
     {
       config = self->pmu_config + i;
-      populate_raw_data_of_pmu (config, &copy);
+      populate_raw_data_of_pmu_part1 (config, &copy);
       copy_pmu_channel_names (config->channel_names, &copy);
+      populate_raw_data_of_pmu_part2 (config, &copy);
     }
+
   return data;
 }
 

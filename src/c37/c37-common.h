@@ -23,6 +23,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <time.h>
+#include <arpa/inet.h>
 
 typedef unsigned char byte;
 
@@ -34,4 +36,5 @@ typedef unsigned char byte;
 
 unsigned short
 pmu_common_get_crc (const byte *data, size_t data_length);
-
+uint32_t
+pmu_common_get_current_seconds (void);
