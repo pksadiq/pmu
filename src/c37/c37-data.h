@@ -1,4 +1,4 @@
-/* c37.h
+/* c37-data.h
  *
  * Copyright (C) 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
  *
@@ -20,4 +20,3 @@
 
 #include "c37-common.h"
 #include "c37-config.h"
-#include "c37-data.h"
