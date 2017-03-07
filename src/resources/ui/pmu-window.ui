@@ -127,6 +127,12 @@
           </object> <!-- ./GtkRevealer revealer -->
         </child>
 
+        <child>
+          <object class="PmuList" id="pmu_list">
+            <property name="visible">True</property>
+          </object>
+        </child>
+
       </object> <!-- ./GtkOverlay overlay -->
     </child>
 

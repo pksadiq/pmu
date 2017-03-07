@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface domain="pmu">
+  <!-- interface-requires gtk 3.0 -->
+
+  <object class="GtkListStore" id="pmu_details_list_store">
+    <columns>
+      <column type="gchararray"/>
+      <column type="gchararray"/>
+    </columns>
+
+    <data>
+      <row>
+        <col id="0">IP Address</col>
+      </row>
+      <row>
+        <col id="0">Port</col>
+      </row>
+      <!-- <row>
+           <col id="0">Protocol</col>
+           <col id="1">TCP</col>
+           </row>
+         -->
+      <row>
+        <col id="0">Admin IP</col>
+      </row>
+
+    </data>
+  </object>
+  <object class="GtkListStore" id="pmu_data_list_store">
+    <columns>
+    <column type="gchararray"/>
+    <column type="gchararray"/>
+    <column type="gchararray"/>
+    <column type="gchararray"/>
+    </columns>
+
+    <data>
+      <row>
+        <col id="0">Voltage</col>
+      </row>
+
+      <row>
+        <col id="0">Voltage Angle</col>
+      </row>
+
+      <row>
+        <col id="0">Current</col>
+      </row>
+
+    </data>
+  </object>
+
+  <template class="PmuList" parent="GtkGrid">
+    <property name="visible">True</property>
+    <property name="expand">true</property>
+
+    <child>
+      <object class="GtkScrolledWindow">
+        <property name="visible">True</property>
+        <property name="hscrollbar-policy">never</property>
+        <property name="min-content-height">400</property>
+        <child>
+          <object class="GtkGrid">
+            <property name="expand">true</property>
+            <property name="visible">True</property>
+            <property name="halign">center</property>
+            <property name="margin-top">55</property>
+            <property name="margin-bottom">18</property>
+            <property name="margin-start">120</property>
+            <property name="margin-end">120</property>
+            <property name="orientation">vertical</property>
+
+            <child>
+              <object class="GtkFrame">
+                <property name="visible">True</property>
+                <property name="shadow-type">none</property>
+                <child type="label">
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="label">PMU Details</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkFrame">
+                    <property name="margin-top">6</property>
+                    <property name="visible">True</property>
+
+                    <child>
+                      <object class="GtkTreeView">
+                        <property name="visible">True</property>
+                        <property name="enable-grid-lines">horizontal</property>
+                        <property name="model">pmu_details_list_store</property>
+                        <property name="width-request">445</property>
+                        <property name="headers-visible">False</property>
+                        <property name="halign">center</property>
+
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="expand">true</property>
+                            <child>
+                              <object class="GtkCellRendererText">
+                                <property name="yalign">0.0</property>
+                                <property name="xalign">0</property>
+                                <property name="xpad">13</property>
+                                <property name="ypad">13</property>
+                                <property name="width-chars">0</property>
+                                <property name="ellipsize">end</property>
+                                <property name="wrap-mode">word-char</property>
+                              </object>
+                              <attributes>
+                                <attribute name="text">0</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="expand">true</property>
+                            <child>
+                              <object class="GtkCellRendererText" id="details_model">
+                                <property name="yalign">0.0</property>
+                                <property name="xalign">0</property>
+                                <property name="ypad">13</property>
+                              </object>
+                              <attributes>
+                                <attribute name="text">1</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+
+                      </object> <!-- ./GtkTreeView -->
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+            <child>
+              <object class="GtkFrame">
+                <property name="visible">True</property>
+                <property name="shadow-type">none</property>
+                <property name="margin-top">24</property>
+                <child type="label">
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="label">Data</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkFrame">
+                    <property name="margin-top">6</property>
+                    <property name="visible">True</property>
+
+                    <child>
+                      <object class="GtkTreeView">
+                        <property name="enable-grid-lines">horizontal</property>
+                        <property name="visible">True</property>
+                        <property name="model">pmu_data_list_store</property>
+                        <property name="width-request">445</property>
+                        <property name="headers-visible">False</property>
+                        <property name="halign">center</property>
+
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="expand">true</property>
+                            <child>
+                              <object class="GtkCellRendererText">
+                                <property name="yalign">0.0</property>
+                                <property name="xalign">0</property>
+                                <property name="xpad">13</property>
+                                <property name="ypad">13</property>
+                                <property name="width-chars">0</property>
+                                <property name="ellipsize">end</property>
+                                <property name="wrap-mode">word-char</property>
+                              </object>
+                              <attributes>
+                                <attribute name="text">0</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="expand">true</property>
+                            <child>
+                              <object class="GtkCellRendererText" id="data_model">
+                                <property name="yalign">0.0</property>
+                                <property name="xalign">0</property>
+                                <property name="ypad">13</property>
+                              </object>
+                              <attributes>
+                                <attribute name="text">1</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+
+                      </object> <!-- ./GtkTreeView -->
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+
+          </object> <!-- ./GtkGrid -->
+        </child> <!-- pmu details -->
+      </object>
+    </child>
+  </template>
+</interface>

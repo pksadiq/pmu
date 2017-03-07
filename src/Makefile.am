@@ -12,6 +12,8 @@ pmu_SOURCES = \
 	pmu-setup-window.c 		\
 	pmu-details.h 		\
 	pmu-details.c 		\
+	pmu-list.h 		\
+	pmu-list.c 		\
 	c37/c37-common.h 		\
 	c37/c37-common.c 		\
 	c37/c37-config.h 		\

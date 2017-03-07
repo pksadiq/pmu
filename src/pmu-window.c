@@ -18,6 +18,7 @@
 
 
 #include "pmu-setup-window.h"
+#include "pmu-list.h"
 
 #include "pmu-window.h"
 
@@ -194,6 +195,8 @@ pmu_window_class_init (PmuWindowClass *klass)
 
   object_class->finalize = pmu_window_finalize;
   object_class->constructed = pmu_window_constructed;
+
+  g_type_ensure (PMU_TYPE_LIST);
 
   gtk_widget_class_set_template_from_resource (widget_class, "/org/sadiqpk/pmu/ui/pmu-window.ui");
 
