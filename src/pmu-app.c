@@ -19,6 +19,7 @@
 #include "pmu-window.h"
 #include "pmu-setup-window.h"
 #include "pmu-details.h"
+#include "pmu-config.h"
 #include "c37/c37.h"
 
 #include "pmu-app.h"
@@ -137,6 +138,10 @@ static void
 pmu_app_startup (GApplication *app)
 {
   PmuApp *self = PMU_APP (app);
+  g_autofree char *css = NULL;
+  g_autoptr(GtkCssProvider) css_provider = NULL;
+  g_autoptr(GFile) file = NULL;
+  const char *path;
 
   g_action_map_add_action_entries (G_ACTION_MAP (app),
                                    app_entries,
@@ -150,6 +155,16 @@ pmu_app_startup (GApplication *app)
   pmu_app_update_pmu_config (self, self->pmu_config_one);
 
   G_APPLICATION_CLASS (pmu_app_parent_class)->startup (app);
+
+  css_provider = gtk_css_provider_new ();
+
+  path = "resource:///org/sadiqpk/pmu/css/pmu.css";
+  file = g_file_new_for_uri (path);
+
+  gtk_css_provider_load_from_file (css_provider, file, NULL);
+  gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
+                                             GTK_STYLE_PROVIDER (css_provider),
+                                             GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
 static void

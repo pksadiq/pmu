@@ -1,0 +1,3 @@
+treeview.view:not(:selected):hover {
+    background-color: @insensitive_bg_color;
+}

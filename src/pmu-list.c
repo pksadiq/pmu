@@ -22,6 +22,9 @@
 struct _PmuList
 {
   GtkGrid parent_instance;
+
+  GtkWidget *tree_view_data;
+  GtkWidget *tree_view_details;
 };
 
 
@@ -42,12 +45,19 @@ pmu_list_class_init (PmuListClass *klass)
   object_class->finalize = pmu_list_finalize;
 
   gtk_widget_class_set_template_from_resource (widget_class, "/org/sadiqpk/pmu/ui/pmu-list.ui");
+
+  /* gtk_widget_class_bind_template_child (widget_class, PmuList, tree_view_data); */
+  gtk_widget_class_bind_template_child (widget_class, PmuList, tree_view_details);
 }
 
 static void
 pmu_list_init (PmuList *self)
 {
+  GtkTreeSelection *selection;
+
   gtk_widget_init_template (GTK_WIDGET (self));
+  selection = gtk_tree_view_get_selection(self->tree_view_details);
+  gtk_tree_selection_set_mode (selection, GTK_SELECTION_NONE);
 }
 
 PmuList *
