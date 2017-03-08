@@ -75,6 +75,8 @@ show_ntp_update_revealer (gpointer user_data)
   PmuWindow *window = PMU_WINDOW (user_data);
 
   gtk_label_set_label (GTK_LABEL (window->info_label), "NTP Sync completed");
+
+  revealer_timeout (user_data);
   gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
   window->revealer_timeout_id = g_timeout_add_seconds (5, revealer_timeout, window);
 
@@ -161,6 +163,8 @@ start_button_clicked_cb (GtkWidget *button,
                          PmuWindow *window)
 {
   gtk_label_set_label (GTK_LABEL (window->info_label), "PMU Server started successfully");
+
+  revealer_timeout (window);
   gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
   window->revealer_timeout_id = g_timeout_add_seconds (5, revealer_timeout, window);
 
@@ -180,6 +184,8 @@ stop_button_clicked_cb (GtkWidget *button,
                         PmuWindow *window)
 {
   gtk_label_set_label (GTK_LABEL (window->info_label), "PMU Server stopped");
+
+  revealer_timeout (window);
   gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
   window->revealer_timeout_id = g_timeout_add_seconds (5, revealer_timeout, window);
 
