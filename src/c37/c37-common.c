@@ -61,3 +61,23 @@ pmu_common_get_fraction_of_seconds (void)
 
   return time;
 }
+
+int
+pmu_common_get_type (byte *data)
+{
+  if (data == NULL || *data != CTS_TYPE_SYNC)
+    return CTS_TYPE_INVALID;
+
+  switch (data[1])
+    {
+    case CTS_TYPE_DATA:
+    case CTS_TYPE_HEADER:
+    case CTS_TYPE_CONFIG1:
+    case CTS_TYPE_CONFIG2:
+    case CTS_TYPE_CONFIG3:
+    case CTS_TYPE_COMMAND:
+      return data[1];
+    default:
+      return CTS_TYPE_INVALID;
+    }
+}

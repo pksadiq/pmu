@@ -28,6 +28,17 @@
 
 typedef unsigned char byte;
 
+enum CtsType{
+  CTS_TYPE_INVALID,
+  CTS_TYPE_DATA    = 0x01,
+  CTS_TYPE_HEADER  = 0x11,
+  CTS_TYPE_CONFIG1 = 0x21,
+  CTS_TYPE_CONFIG2 = 0x31,
+  CTS_TYPE_COMMAND = 0x41,
+  CTS_TYPE_CONFIG3 = 0x52,
+  CTS_TYPE_SYNC    = 0xAA,
+};
+
 #define SET_BIT(value, bit_index) (value |= (1 << bit_index))
 #define CLEAR_BIT(value, bit_index) (value &= ~(1 << bit_index))
 #define TOGGLE_BIT(value, bit_index) (value ^= (1 << bit_index))
@@ -40,3 +51,5 @@ uint32_t
 pmu_common_get_time_seconds (void);
 uint32_t
 pmu_common_get_fraction_of_seconds (void);
+int
+pmu_common_get_type (byte *data);
