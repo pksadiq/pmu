@@ -29,7 +29,6 @@ struct _PmuServer
   int port;
 };
 
-
 GThread *server_thread = NULL;
 PmuServer *default_server = NULL;
 
@@ -60,21 +59,6 @@ got_http_request (GInputStream *stream,
                    GAsyncResult *result,
                    gpointer     *request)
 {
-  /* line = g_data_input_stream_read_line_finish (G_DATA_INPUT_STREAM (stream), result, &length, NULL); */
-  /* if (line == NULL) */
-  /*   { */
-  /*     /\* http_request_free (request); *\/ */
-  /*     g_printerr ("Error reading request lines\n"); */
-  /*     return; */
-  /*   } */
-  /* for (i = 0; i < length; i++) */
-  /*   { */
-  /*     g_print ("%x ", line[i]); */
-  /*   } */
-
-  /* g_usleep (1000 * 1000 * 10); */
-  /* g_print ("Request: %s\n", line); */
-  /* g_free (line); */
 }
 
 static gboolean
@@ -82,27 +66,27 @@ data_incoming_cb (GSocketService    *service,
                   GSocketConnection *connection,
                   GObject           *source_object)
 {
-  g_autoptr(GBytes) data = NULL;
+  g_autoptr(GBytes) bytes = NULL;
   GInputStream *in;
-  gsize size = 5;
-  /* GDataInputStream *data_stream; */
+  guint8 *data;
+  gsize size = 2;
 
   in = g_io_stream_get_input_stream (G_IO_STREAM (connection));
 
-  /* data_stream = g_data_input_stream_new (in); */
-  /* g_filter_input_stream_set_close_base_stream (G_FILTER_INPUT_STREAM (data), TRUE); */
+  bytes = g_input_stream_read_bytes(in, size, NULL, NULL);
+  /* data = g_bytes_get_data (bytes, &size); */
+  /* g_free (bytes); */
 
-  data = g_input_stream_read_bytes(in, size, NULL, NULL);
-  guint8 *atom = g_bytes_get_data (data, &size);
-  
-  g_print ("%zu %2X\n", g_bytes_get_size (data), (int) atom[0], atom[1], atom[2]);
-  /* g_data_input_stream_read_line_async (data, 0, NULL, */
-	/* 			       (GAsyncReadyCallback)got_http_request_line, NULL); */
+  /* bytes = g_input_stream_read_bytes(in, size, NULL, NULL); */
+  /* data = g_bytes_get_data (bytes, &size); */
+  /* g_print ("%2X\n", *data); */
+  /* if (cts_common_get_type (data) == CTS_TYPE_COMMAND) */
+
   return TRUE;
 }
 
 static void
-pmu_server_new (int *port)
+pmu_server_new (void)
 {
   g_autoptr(GError) error = NULL;
   g_autoptr(GMainContext) server_context = NULL;
@@ -114,7 +98,7 @@ pmu_server_new (int *port)
   g_main_context_push_thread_default (server_context);
 
   default_server = g_object_new (PMU_TYPE_SERVER, NULL);
-  default_server->port = *port;
+  default_server->port = 4000;
 
   if (!g_socket_listener_add_inet_port (G_SOCKET_LISTENER (default_server->service),
                                         default_server->port,
@@ -134,13 +118,17 @@ pmu_server_new (int *port)
 }
 
 void
-pmu_server_start_default (int *port)
+pmu_server_start_default (void)
 {
+  g_autoptr(GError) error = NULL;
+
   if (server_thread == NULL)
     {
-      g_print ("Port is %d\n", *port);
-      server_thread = g_thread_new ("server",
-                                    (GThreadFunc)pmu_server_new,
-                                    port);
+      server_thread = g_thread_try_new ("server",
+                                        (GThreadFunc)pmu_server_new,
+                                        NULL,
+                                        &error);
+      if (error != NULL)
+        g_warning ("Cannot create server thread. Error: %s", error->message);
     }
 }

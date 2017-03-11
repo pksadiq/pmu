@@ -19,6 +19,7 @@
 #include "pmu-window.h"
 #include "pmu-setup-window.h"
 #include "pmu-details.h"
+#include "pmu-server.h"
 #include "pmu-config.h"
 #include "c37/c37.h"
 
@@ -30,6 +31,7 @@ struct _PmuApp
   GtkApplication parent_instance;
 
   PmuDetails *details;
+  int port;
 
   CtsConfig  *pmu_config_one;
   CtsConfig  *pmu_config_two;
@@ -182,6 +184,8 @@ pmu_app_class_init (PmuAppClass *klass)
 static void
 pmu_app_init (PmuApp *self)
 {
+  self->port = 4000;
+  pmu_server_start_default (&self->port);
 }
 
 PmuApp *
