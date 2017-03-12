@@ -16,6 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "c37/c37-common.h"
 #include "pmu-server.h"
 
 
@@ -55,10 +56,27 @@ pmu_server_init (PmuServer *self)
 }
 
 static void
-got_http_request (GInputStream *stream,
-                   GAsyncResult *result,
-                   gpointer     *request)
+complete_data_read (GInputStream *stream,
+                    GAsyncResult *result,
+                    guint16      *data_length)
 {
+  g_autoptr(GBytes) bytes = NULL;
+  g_autoptr(GError) error = NULL;
+  const guint8 *data;
+  gsize size;
+
+  size = *data_length;
+  g_print ("%u\n", *data_length);
+  bytes = g_input_stream_read_bytes_finish (stream, result, &error);
+
+  if (error != NULL)
+    {
+      g_warning ("%s", error->message);
+      return;
+    }
+  data = g_bytes_get_data (bytes, &size);
+  g_print ("%u", g_bytes_get_size (bytes));
+  g_print ("#%X#\n", data[0]);
 }
 
 static gboolean
@@ -67,19 +85,58 @@ data_incoming_cb (GSocketService    *service,
                   GObject           *source_object)
 {
   g_autoptr(GBytes) bytes = NULL;
+  g_autoptr(GError) error = NULL;
+  guint16 *data_length;
   GInputStream *in;
-  guint8 *data;
+  const guint8 *data;
   gsize size = 2;
 
   in = g_io_stream_get_input_stream (G_IO_STREAM (connection));
 
-  bytes = g_input_stream_read_bytes(in, size, NULL, NULL);
-  /* data = g_bytes_get_data (bytes, &size); */
-  /* g_free (bytes); */
+  bytes = g_input_stream_read_bytes(in, 2, NULL, &error);
 
-  /* bytes = g_input_stream_read_bytes(in, size, NULL, NULL); */
-  /* data = g_bytes_get_data (bytes, &size); */
-  /* g_print ("%2X\n", *data); */
+  if (error != NULL)
+    {
+      g_warning ("%s", error->message);
+      return TRUE;
+    }
+
+  /* If 2 bytes of data not present, this request isn't interesting
+   * for us.
+   */
+  if (g_bytes_get_size (bytes) < 2)
+    return TRUE;
+
+  data = g_bytes_get_data (bytes, &size);
+  if (pmu_common_get_type (data) != CTS_TYPE_COMMAND)
+    return TRUE;
+
+  g_bytes_unref (bytes);
+  bytes = g_input_stream_read_bytes (in, 2, NULL, &error);
+
+  if (error != NULL)
+    {
+      g_warning ("%s", error->message);
+      return TRUE;
+    }
+
+  /* reading data length, should be atleast 2 bytes */
+  if (g_bytes_get_size (bytes) < 2)
+    return TRUE;
+
+  data_length = g_malloc (sizeof (guint16));
+  /* Get the 2 bytes from data. memcpy was used instead of casting
+   * to avoid possible alignment issues
+   */
+  memcpy (data_length, data, size);
+  *data_length = g_ntohs (*data_length);
+  g_print ("%X data length\n", *data_length);
+
+  g_input_stream_read_bytes_async (in, *data_length, G_PRIORITY_DEFAULT, NULL,
+                                   (GAsyncReadyCallback)complete_data_read,
+                                   data_length);
+  /* g_bytes_unref (bytes); */
+
   /* if (cts_common_get_type (data) == CTS_TYPE_COMMAND) */
 
   return TRUE;

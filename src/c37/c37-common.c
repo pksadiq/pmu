@@ -63,7 +63,7 @@ pmu_common_get_fraction_of_seconds (void)
 }
 
 int
-pmu_common_get_type (byte *data)
+pmu_common_get_type (const byte *data)
 {
   if (data == NULL || *data != CTS_TYPE_SYNC)
     return CTS_TYPE_INVALID;

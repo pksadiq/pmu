@@ -52,4 +52,4 @@ pmu_common_get_time_seconds (void);
 uint32_t
 pmu_common_get_fraction_of_seconds (void);
 int
-pmu_common_get_type (byte *data);
+pmu_common_get_type (const byte *data);
