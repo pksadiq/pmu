@@ -20,14 +20,26 @@
 
 /* Based on the sample code in IEEE Std C37.118.2-2011 */
 uint16_t
-pmu_common_get_crc (const byte *data, size_t data_length)
+pmu_common_get_crc (const byte *data, size_t data_length, const byte *header)
 {
   uint16_t crc = 0xFFFF;
   uint16_t temp;
   uint16_t quick;
+  size_t j = 0;
 
   for (size_t i = 0; i < data_length - 1; i++)
   {
+    for (; header != NULL && j < 4; j++)
+      {
+        temp = (crc >> 8) ^ header[i];
+        crc <<= 8;
+        quick = temp ^ (temp >> 4);
+        crc ^= quick;
+        quick <<= 5;
+        crc ^= quick;
+        quick <<= 7;
+        crc ^= quick;
+      }
     temp = (crc >> 8) ^ data[i];
     crc <<= 8;
     quick = temp ^ (temp >> 4);
@@ -39,6 +51,23 @@ pmu_common_get_crc (const byte *data, size_t data_length)
   }
 
   return crc;
+}
+
+uint16_t
+pmu_common_get_size (const byte *data)
+{
+  uint16_t length;
+  /* The first 2 bytes are SYNC */
+  const byte *offset_data = data + 2;
+
+  /* Get the 2 bytes from data. memcpy was used instead of casting
+   * to avoid possible alignment issues
+   */
+  memcpy (&length, offset_data, 2);
+
+  length = ntohs (length);
+
+  return length;
 }
 
 uint32_t
