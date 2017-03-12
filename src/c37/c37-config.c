@@ -893,7 +893,7 @@ populate_raw_data_of_config_part2 (CtsConfig  *config,
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
 
-  *byte2 = htons (pmu_common_get_crc(data, frame_size - 1));
+  *byte2 = htons (pmu_common_get_crc(data, frame_size - 1, NULL));
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
 
