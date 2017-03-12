@@ -37,14 +37,51 @@
     <data>
       <row>
         <col id="0">Voltage</col>
+        <col id="1">R</col>
+        <col id="2">Y</col>
+        <col id="3">B</col>
       </row>
 
       <row>
         <col id="0">Voltage Angle</col>
+        <col id="1">R</col>
+        <col id="2">Y</col>
+        <col id="3">B</col>
       </row>
 
       <row>
         <col id="0">Current</col>
+        <col id="1">R</col>
+        <col id="2">Y</col>
+        <col id="3">B</col>
+      </row>
+
+      <row>
+        <col id="0">Current Angle</col>
+        <col id="1">R</col>
+        <col id="2">Y</col>
+        <col id="3">B</col>
+      </row>
+
+      <row>
+        <col id="0">P</col>
+        <col id="1">R</col>
+        <col id="2">Y</col>
+        <col id="3">B</col>
+      </row>
+
+      <row>
+        <col id="0">Q</col>
+        <col id="1">R</col>
+        <col id="2">Y</col>
+        <col id="3">B</col>
+      </row>
+
+      <row>
+        <col id="0">S</col>
+        <col id="1">R</col>
+        <col id="2">Y</col>
+        <col id="3">B</col>
       </row>
 
     </data>
@@ -69,6 +106,108 @@
             <property name="margin-start">120</property>
             <property name="margin-end">120</property>
             <property name="orientation">vertical</property>
+
+            <child>
+              <object class="GtkFrame">
+                <property name="visible">True</property>
+                <property name="shadow-type">none</property>
+                <child type="label">
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="label">Data</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                    </attributes>
+                  </object>
+                </child>
+
+                <child>
+                  <object class="GtkFrame">
+                    <property name="margin-top">6</property>
+                    <property name="visible">True</property>
+
+                    <child>
+                      <object class="GtkTreeView" id="tree_view_data">
+                        <property name="visible">True</property>
+                        <property name="model">pmu_data_list_store</property>
+                        <property name="width-request">445</property>
+                        <property name="headers-visible">False</property>
+                        <property name="halign">center</property>
+
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="expand">true</property>
+                            <child>
+                              <object class="GtkCellRendererText">
+                                <property name="yalign">0.0</property>
+                                <property name="xalign">0</property>
+                                <property name="xpad">13</property>
+                                <property name="ypad">13</property>
+                                <property name="width-chars">0</property>
+                                <property name="ellipsize">end</property>
+                                <property name="wrap-mode">word-char</property>
+                              </object>
+                              <attributes>
+                                <attribute name="text">0</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="expand">true</property>
+                            <child>
+                              <object class="GtkCellRendererText" id="data_model1">
+                                <property name="yalign">0.0</property>
+                                <property name="xalign">0</property>
+                                <property name="ypad">13</property>
+                              </object>
+                              <attributes>
+                                <attribute name="text">1</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="expand">true</property>
+                            <child>
+                              <object class="GtkCellRendererText" id="data_model2">
+                                <property name="yalign">0.0</property>
+                                <property name="xalign">0</property>
+                                <property name="ypad">13</property>
+                              </object>
+                              <attributes>
+                                <attribute name="text">2</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="expand">true</property>
+                            <child>
+                              <object class="GtkCellRendererText" id="data_model3">
+                                <property name="yalign">0.0</property>
+                                <property name="xalign">0</property>
+                                <property name="ypad">13</property>
+                              </object>
+                              <attributes>
+                                <attribute name="text">3</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+                                                
+                      </object> <!-- ./GtkTreeView -->
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
 
             <child>
               <object class="GtkFrame">
