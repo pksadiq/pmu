@@ -213,6 +213,7 @@
               <object class="GtkFrame">
                 <property name="visible">True</property>
                 <property name="shadow-type">none</property>
+                <property name="margin-top">24</property>
                 <child type="label">
                   <object class="GtkLabel">
                     <property name="visible">True</property>
