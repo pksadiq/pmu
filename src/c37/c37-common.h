@@ -46,10 +46,12 @@ enum CtsType{
 
 
 unsigned short
-pmu_common_get_crc (const byte *data, size_t data_length);
+pmu_common_get_crc (const byte *data, size_t data_length, const byte *header);
 uint32_t
 pmu_common_get_time_seconds (void);
 uint32_t
 pmu_common_get_fraction_of_seconds (void);
 int
 pmu_common_get_type (const byte *data);
+uint16_t
+pmu_common_get_size (const byte *data);
