@@ -38,6 +38,10 @@ G_DEFINE_TYPE (PmuServer, pmu_server, G_TYPE_OBJECT)
 static void
 pmu_server_finalize (GObject *object)
 {
+  PmuServer *self = PMU_SERVER (object);
+
+  g_free (self->admin_ip);
+
   G_OBJECT_CLASS (pmu_server_parent_class)->finalize (object);
 }
 
@@ -77,6 +81,7 @@ complete_data_read (GInputStream *stream,
   data = g_bytes_get_data (bytes, &size);
   g_print ("%u", g_bytes_get_size (bytes));
   g_print ("#%X#\n", data[0]);
+  g_free (data_length);
 }
 
 static gboolean
