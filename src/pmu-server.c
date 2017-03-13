@@ -84,6 +84,7 @@ complete_data_read (GInputStream *stream,
   data = g_bytes_get_data (bytes, &size);
   g_print ("%u", g_bytes_get_size (bytes));
   g_print ("#%X#\n", data[0]);
+  g_bytes_unref (header_bytes);
 }
 
 static gboolean
