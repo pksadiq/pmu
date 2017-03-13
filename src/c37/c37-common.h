@@ -57,3 +57,5 @@ uint16_t
 cts_common_get_size (const byte *data, uint16_t offset);
 uint16_t
 cts_common_get_crc (const byte *data, uint16_t offset);
+bool
+cts_common_check_crc (const byte *data, size_t data_length, const byte *header, uint16_t offset);
