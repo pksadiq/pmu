@@ -79,11 +79,13 @@ complete_data_read (GInputStream *stream,
   if (error != NULL)
     {
       g_warning ("%s", error->message);
-      return;
+      goto out;
     }
   data = g_bytes_get_data (bytes, &size);
   g_print ("%u", g_bytes_get_size (bytes));
   g_print ("#%X#\n", data[0]);
+
+ out:
   g_bytes_unref (header_bytes);
 }
 
