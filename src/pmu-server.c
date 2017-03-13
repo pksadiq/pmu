@@ -62,15 +62,18 @@ pmu_server_init (PmuServer *self)
 static void
 complete_data_read (GInputStream *stream,
                     GAsyncResult *result,
-                    guint16      *data_length)
+                    GBytes       *header_bytes)
 {
   g_autoptr(GBytes) bytes = NULL;
   g_autoptr(GError) error = NULL;
   const guint8 *data;
   gsize size;
 
-  size = *data_length;
-  g_print ("%u\n", *data_length);
+  /* To read SYNC and FRAME size bytes from header */
+  size = REQUEST_HEADER_SIZE;
+  data = g_bytes_get_data (header_bytes, &size);
+  size = pmu_common_get_size (data);
+  g_print ("%u\n", size);
   bytes = g_input_stream_read_bytes_finish (stream, result, &error);
 
   if (error != NULL)
@@ -81,7 +84,6 @@ complete_data_read (GInputStream *stream,
   data = g_bytes_get_data (bytes, &size);
   g_print ("%u", g_bytes_get_size (bytes));
   g_print ("#%X#\n", data[0]);
-  g_free (data_length);
 }
 
 static gboolean
@@ -89,16 +91,15 @@ data_incoming_cb (GSocketService    *service,
                   GSocketConnection *connection,
                   GObject           *source_object)
 {
-  g_autoptr(GBytes) bytes = NULL;
+  GBytes *bytes;
   g_autoptr(GError) error = NULL;
-  guint16 *data_length;
+  guint16 data_length;
   GInputStream *in;
   const guint8 *data;
-  gsize size = 2;
+  gsize size = REQUEST_HEADER_SIZE;
 
   in = g_io_stream_get_input_stream (G_IO_STREAM (connection));
-
-  bytes = g_input_stream_read_bytes(in, 4, NULL, &error);
+  bytes = g_input_stream_read_bytes(in, REQUEST_HEADER_SIZE, NULL, &error);
 
   if (error != NULL)
     {
@@ -109,19 +110,21 @@ data_incoming_cb (GSocketService    *service,
   /* If 4 bytes of data not present, this request isn't interesting
    * for us.
    */
-  if (g_bytes_get_size (bytes) < 4)
+  if (g_bytes_get_size (bytes) < REQUEST_HEADER_SIZE)
     return TRUE;
 
   data = g_bytes_get_data (bytes, &size);
   if (pmu_common_get_type (data) != CTS_TYPE_COMMAND)
     return TRUE;
 
-  data_length = g_malloc (sizeof (guint16));
-  *data_length = pmu_common_get_size (data);
+  data_length = pmu_common_get_size (data);
 
-  g_input_stream_read_bytes_async (in, *data_length, G_PRIORITY_DEFAULT, NULL,
+  if (data_length <= REQUEST_HEADER_SIZE)
+    return TRUE;
+
+  g_input_stream_read_bytes_async (in, data_length - REQUEST_HEADER_SIZE, G_PRIORITY_DEFAULT, NULL,
                                    (GAsyncReadyCallback)complete_data_read,
-                                   data_length);
+                                   bytes);
   /* g_bytes_unref (bytes); */
 
   /* if (cts_common_get_type (data) == CTS_TYPE_COMMAND) */

@@ -22,6 +22,7 @@
 
 G_BEGIN_DECLS
 
+#define REQUEST_HEADER_SIZE 4
 #define PMU_TYPE_SERVER (pmu_server_get_type ())
 
 G_DECLARE_FINAL_TYPE (PmuServer, pmu_server, PMU, SERVER, GObject)
