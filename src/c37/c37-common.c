@@ -20,7 +20,7 @@
 
 /* Based on the sample code in IEEE Std C37.118.2-2011 */
 uint16_t
-pmu_common_calc_crc (const byte *data, size_t data_length, const byte *header)
+cts_common_calc_crc (const byte *data, size_t data_length, const byte *header)
 {
   uint16_t crc = 0xFFFF;
   uint16_t temp;
@@ -54,7 +54,7 @@ pmu_common_calc_crc (const byte *data, size_t data_length, const byte *header)
 }
 
 uint16_t
-pmu_common_get_crc (const byte *data, uint16_t offset)
+cts_common_get_crc (const byte *data, uint16_t offset)
 {
   uint16_t length;
   /* Eg: if data frame size is 20 bytes, offset will be 18 */
@@ -67,16 +67,16 @@ pmu_common_get_crc (const byte *data, uint16_t offset)
 }
 
 bool
-pmu_common_check_crc (const byte *data, size_t data_length, const byte *header, uint16_t offset)
+cts_common_check_crc (const byte *data, size_t data_length, const byte *header, uint16_t offset)
 {
-  uint16_t old_crc = pmu_common_get_crc (data, offset);
-  uint16_t new_crc = pmu_common_calc_crc (data, data_length, header);
+  uint16_t old_crc = cts_common_get_crc (data, offset);
+  uint16_t new_crc = cts_common_calc_crc (data, data_length, header);
 
   return old_crc == new_crc;
 }
 
 uint16_t
-pmu_common_get_size (const byte *data, uint16_t offset)
+cts_common_get_size (const byte *data, uint16_t offset)
 {
   uint16_t length;
   /* Eg: if data begins with SYNC bytes, offset will be 2 */
@@ -93,13 +93,13 @@ pmu_common_get_size (const byte *data, uint16_t offset)
 }
 
 uint32_t
-pmu_common_get_time_seconds (void)
+cts_common_get_time_seconds (void)
 {
   return time (NULL);
 }
 
 uint32_t
-pmu_common_get_fraction_of_seconds (void)
+cts_common_get_fraction_of_seconds (void)
 {
   struct timespec ts;
   uint32_t time;
@@ -114,7 +114,7 @@ pmu_common_get_fraction_of_seconds (void)
 }
 
 int
-pmu_common_get_type (const byte *data)
+cts_common_get_type (const byte *data)
 {
   if (data == NULL || *data != CTS_TYPE_SYNC)
     return CTS_TYPE_INVALID;
