@@ -20,7 +20,7 @@
 
 /* Based on the sample code in IEEE Std C37.118.2-2011 */
 uint16_t
-pmu_common_get_crc (const byte *data, size_t data_length, const byte *header)
+pmu_common_calc_crc (const byte *data, size_t data_length, const byte *header)
 {
   uint16_t crc = 0xFFFF;
   uint16_t temp;
@@ -51,6 +51,28 @@ pmu_common_get_crc (const byte *data, size_t data_length, const byte *header)
   }
 
   return crc;
+}
+
+uint16_t
+pmu_common_get_crc (const byte *data, uint16_t offset)
+{
+  uint16_t length;
+  /* Eg: if data frame size is 20 bytes, offset will be 18 */
+  const byte *offset_data = data + offset;
+  memcpy (&length, offset_data, 2);
+
+  length = ntohs (length);
+
+  return length;
+}
+
+bool
+pmu_common_check_crc (const byte *data, size_t data_length, const byte *header, uint16_t offset)
+{
+  uint16_t old_crc = pmu_common_get_crc (data, offset);
+  uint16_t new_crc = pmu_common_calc_crc (data, data_length, header);
+
+  return old_crc == new_crc;
 }
 
 uint16_t
