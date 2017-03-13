@@ -72,7 +72,8 @@ complete_data_read (GInputStream *stream,
   /* To read SYNC and FRAME size bytes from header */
   size = REQUEST_HEADER_SIZE;
   data = g_bytes_get_data (header_bytes, &size);
-  size = pmu_common_get_size (data);
+  /* Jump the 2 SYNC bytes */
+  size = pmu_common_get_size (data, 2);
   g_print ("%u\n", size);
   bytes = g_input_stream_read_bytes_finish (stream, result, &error);
 
@@ -120,7 +121,8 @@ data_incoming_cb (GSocketService    *service,
   if (pmu_common_get_type (data) != CTS_TYPE_COMMAND)
     return TRUE;
 
-  data_length = pmu_common_get_size (data);
+  /* Jump the 2 SYNC bytes */
+  data_length = pmu_common_get_size (data, 2);
 
   if (data_length <= REQUEST_HEADER_SIZE)
     return TRUE;

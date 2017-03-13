@@ -54,11 +54,11 @@ pmu_common_get_crc (const byte *data, size_t data_length, const byte *header)
 }
 
 uint16_t
-pmu_common_get_size (const byte *data)
+pmu_common_get_size (const byte *data, uint16_t offset)
 {
   uint16_t length;
-  /* The first 2 bytes are SYNC */
-  const byte *offset_data = data + 2;
+  /* Eg: if data begins with SYNC bytes, offset will be 2 */
+  const byte *offset_data = data + offset;
 
   /* Get the 2 bytes from data. memcpy was used instead of casting
    * to avoid possible alignment issues

@@ -54,4 +54,4 @@ pmu_common_get_fraction_of_seconds (void);
 int
 pmu_common_get_type (const byte *data);
 uint16_t
-pmu_common_get_size (const byte *data);
+pmu_common_get_size (const byte *data, uint16_t offset);
