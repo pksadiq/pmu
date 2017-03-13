@@ -25,21 +25,25 @@ cts_common_calc_crc (const byte *data, size_t data_length, const byte *header)
   uint16_t crc = 0xFFFF;
   uint16_t temp;
   uint16_t quick;
-  size_t j = 0;
 
-  for (size_t i = 0; i < data_length - 1; i++)
+  if (header != NULL)
+    {
+      data_length = data_length - 4;
+
+      for (size_t j = 0; j < 4; j++)
+        {
+          temp = (crc >> 8) ^ header[j];
+          crc <<= 8;
+          quick = temp ^ (temp >> 4);
+          crc ^= quick;
+          quick <<= 5;
+          crc ^= quick;
+          quick <<= 7;
+          crc ^= quick;
+        }
+    }
+  for (size_t i = 0; i < data_length; i++)
   {
-    for (; header != NULL && j < 4; j++)
-      {
-        temp = (crc >> 8) ^ header[i];
-        crc <<= 8;
-        quick = temp ^ (temp >> 4);
-        crc ^= quick;
-        quick <<= 5;
-        crc ^= quick;
-        quick <<= 7;
-        crc ^= quick;
-      }
     temp = (crc >> 8) ^ data[i];
     crc <<= 8;
     quick = temp ^ (temp >> 4);
