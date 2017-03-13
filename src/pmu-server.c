@@ -98,7 +98,7 @@ data_incoming_cb (GSocketService    *service,
 
   in = g_io_stream_get_input_stream (G_IO_STREAM (connection));
 
-  bytes = g_input_stream_read_bytes(in, 2, NULL, &error);
+  bytes = g_input_stream_read_bytes(in, 4, NULL, &error);
 
   if (error != NULL)
     {
@@ -106,36 +106,18 @@ data_incoming_cb (GSocketService    *service,
       return TRUE;
     }
 
-  /* If 2 bytes of data not present, this request isn't interesting
+  /* If 4 bytes of data not present, this request isn't interesting
    * for us.
    */
-  if (g_bytes_get_size (bytes) < 2)
+  if (g_bytes_get_size (bytes) < 4)
     return TRUE;
 
   data = g_bytes_get_data (bytes, &size);
   if (pmu_common_get_type (data) != CTS_TYPE_COMMAND)
     return TRUE;
 
-  g_bytes_unref (bytes);
-  bytes = g_input_stream_read_bytes (in, 2, NULL, &error);
-
-  if (error != NULL)
-    {
-      g_warning ("%s", error->message);
-      return TRUE;
-    }
-
-  /* reading data length, should be atleast 2 bytes */
-  if (g_bytes_get_size (bytes) < 2)
-    return TRUE;
-
   data_length = g_malloc (sizeof (guint16));
-  /* Get the 2 bytes from data. memcpy was used instead of casting
-   * to avoid possible alignment issues
-   */
-  memcpy (data_length, data, size);
-  *data_length = g_ntohs (*data_length);
-  g_print ("%X data length\n", *data_length);
+  *data_length = pmu_common_get_size (data);
 
   g_input_stream_read_bytes_async (in, *data_length, G_PRIORITY_DEFAULT, NULL,
                                    (GAsyncReadyCallback)complete_data_read,
