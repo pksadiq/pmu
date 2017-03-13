@@ -20,6 +20,8 @@ pmu_SOURCES = \
 	c37/c37-common.c 		\
 	c37/c37-config.h 		\
 	c37/c37-config.c 		\
+	c37/c37-command.h 		\
+	c37/c37-command.c 		\
 	c37/c37-data.h 		\
 	c37/c37-data.c 		\
 	resources.c

@@ -20,4 +20,5 @@
 
 #include "c37-common.h"
 #include "c37-config.h"
+#include "c37-command.h"
 #include "c37-data.h"

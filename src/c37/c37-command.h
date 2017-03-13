@@ -32,3 +32,7 @@ enum CtsCommand {
   CTS_COMMAND_USER           = 0xFF,
 };
 
+
+uint16_t
+cts_command_get_type (const byte *command,
+                      uint16_t    offset);
