@@ -67,6 +67,7 @@ complete_data_read (GInputStream *stream,
   g_autoptr(GBytes) bytes = NULL;
   g_autoptr(GError) error = NULL;
   const guint8 *data;
+  gsize real_size;
   gsize size;
 
   /* To read SYNC and FRAME size bytes from header */
@@ -74,6 +75,7 @@ complete_data_read (GInputStream *stream,
   data = g_bytes_get_data (header_bytes, &size);
   /* Jump the 2 SYNC bytes */
   size = cts_common_get_size (data, 2);
+  real_size = size;
   g_print ("%u\n", size);
   bytes = g_input_stream_read_bytes_finish (stream, result, &error);
 
@@ -83,6 +85,10 @@ complete_data_read (GInputStream *stream,
       goto out;
     }
   data = g_bytes_get_data (bytes, &size);
+
+  if (g_bytes_get_size (bytes) != (real_size - REQUEST_HEADER_SIZE))
+    goto out;
+
   g_print ("%u", g_bytes_get_size (bytes));
   g_print ("#%X#\n", data[0]);
 
