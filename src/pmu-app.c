@@ -184,8 +184,6 @@ pmu_app_class_init (PmuAppClass *klass)
 static void
 pmu_app_init (PmuApp *self)
 {
-  self->port = 4000;
-  pmu_server_start_default (&self->port);
 }
 
 PmuApp *

@@ -19,6 +19,7 @@
 
 #include "pmu-setup-window.h"
 #include "pmu-list.h"
+#include "pmu-server.h"
 
 #include "pmu-window.h"
 
@@ -162,6 +163,8 @@ static void
 start_button_clicked_cb (GtkWidget *button,
                          PmuWindow *window)
 {
+  pmu_server_start (window);
+
   gtk_label_set_label (GTK_LABEL (window->info_label), "PMU Server started successfully");
 
   revealer_timeout (window);

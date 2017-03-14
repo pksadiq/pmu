@@ -20,11 +20,16 @@
 
 #include <gtk/gtk.h>
 
+#include "pmu-types.h"
+
 G_BEGIN_DECLS
 
 #define REQUEST_HEADER_SIZE 4
 #define PMU_TYPE_SERVER (pmu_server_get_type ())
 
 G_DECLARE_FINAL_TYPE (PmuServer, pmu_server, PMU, SERVER, GObject)
+
+void       pmu_server_start       (PmuWindow *window);
+PmuServer *pmu_server_get_default (void);
 
 G_END_DECLS

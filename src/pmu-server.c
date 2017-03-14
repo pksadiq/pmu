@@ -17,8 +17,9 @@
  */
 
 #include "c37/c37-common.h"
-#include "pmu-server.h"
+#include "pmu-app.h"
 
+#include "pmu-server.h"
 
 struct _PmuServer
 {
@@ -41,6 +42,16 @@ PmuServer *default_server = NULL;
 
 G_DEFINE_TYPE (PmuServer, pmu_server, G_TYPE_OBJECT)
 
+enum {
+  SERVER_STARTED,
+  SERVER_STOPPED,
+  DATA_START_REQUEST,
+  DATA_STOP_REQUEST,
+  N_SIGNALS,
+};
+
+static guint signals[N_SIGNALS] = { 0, };
+
 static void
 pmu_server_finalize (GObject *object)
 {
@@ -57,6 +68,14 @@ pmu_server_class_init (PmuServerClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   object_class->finalize = pmu_server_finalize;
+
+  signals [SERVER_STARTED] =
+    g_signal_new ("server-started",
+                  G_TYPE_FROM_CLASS (klass),
+                  G_SIGNAL_RUN_LAST,
+                  0, NULL, NULL, NULL,
+                  G_TYPE_NONE,
+                  0);
 }
 
 static void
@@ -80,6 +99,7 @@ complete_data_read (GInputStream *stream,
 {
   g_autoptr(GBytes) bytes = NULL;
   g_autoptr(GError) error = NULL;
+  GInputStream *in;
   const guint8 *data;
   const guint8 *header_data;
   gsize real_size;
@@ -90,7 +110,7 @@ complete_data_read (GInputStream *stream,
   header_data = g_bytes_get_data (request->header, &size);
   size = request->data_length;
   real_size = size;
-  g_print ("%u\n", size);
+
   bytes = g_input_stream_read_bytes_finish (stream, result, &error);
 
   if (error != NULL)
@@ -100,15 +120,67 @@ complete_data_read (GInputStream *stream,
     }
   data = g_bytes_get_data (bytes, &size);
 
-  if (g_bytes_get_size (bytes) != (real_size - REQUEST_HEADER_SIZE) ||
-      !cts_common_check_crc (data, real_size, header_data, real_size - 2))
-    goto out;
+  for (int i = 0; i < 4; i++)
+    {
+      g_print ("%02X ", header_data[i]);
+    }
 
-  g_print ("%X crc\n", cts_common_calc_crc (data, 16, header_data));
-  g_print ("%u", real_size);
-  g_print ("#%X#%X#\n", data[12], data[real_size - REQUEST_HEADER_SIZE]);
+  for (int i = 0; i < real_size - REQUEST_HEADER_SIZE; i++)
+    {
+      g_print ("%02X ", data[i]);
+    }
+  g_print ("\n");
+
+  g_print ("Size:%d CRC: %X\n", g_bytes_get_size (bytes), cts_common_calc_crc (data, real_size - 2, header_data));
+
+  if (g_bytes_get_size (bytes) != (real_size - REQUEST_HEADER_SIZE) ||
+      !cts_common_check_crc (data, real_size - 2, header_data, real_size - REQUEST_HEADER_SIZE - 2))
+    {
+      g_print ("CRC check failed\n");
+      goto out;
+    }
+  in = g_io_stream_get_input_stream (G_IO_STREAM (request->socket_connection));
+
+  bytes = g_input_stream_read_bytes(in, REQUEST_HEADER_SIZE, NULL, &error);
+
+  if (error != NULL)
+    {
+      g_warning ("%s", error->message);
+      goto out;
+    }
+
+  /* If 4 bytes of data not present, this request isn't interesting
+   * for us.
+   */
+  if (g_bytes_get_size (bytes) < REQUEST_HEADER_SIZE)
+    {
+      g_print ("Size less than 4 bytes\n");
+      goto out;
+    }
+  data = g_bytes_get_data (bytes, &size);
+  if (cts_common_get_type (data) != CTS_TYPE_COMMAND)
+    {
+      g_print ("Not a command\n");
+      goto out;
+    }
+  /* Jump the 2 SYNC bytes */
+  size = cts_common_get_size (data, 2);
+
+  if (size <= REQUEST_HEADER_SIZE)
+    {
+      g_print ("size is <= 4 bytes\n");
+      goto out;
+    }
+
+  request->data_length = size;
+
+  g_input_stream_read_bytes_async (in, size - REQUEST_HEADER_SIZE, G_PRIORITY_DEFAULT, NULL,
+                                   (GAsyncReadyCallback)complete_data_read,
+                                   request);
+  return;
 
  out:
+  g_print ("Never here\n");
   tcp_request_free (request);
 }
 
@@ -164,8 +236,21 @@ data_incoming_cb (GSocketService    *service,
   return TRUE;
 }
 
+PmuServer *
+pmu_server_get_default (void)
+{
+  return default_server;
+}
+
 static void
-pmu_server_new (void)
+server_started_cb (PmuServer *self,
+                   PmuWindow *window)
+{
+  g_print ("Server started\n");
+}
+
+static void
+pmu_server_new (PmuWindow *window)
 {
   g_autoptr(GError) error = NULL;
   g_autoptr(GMainContext) server_context = NULL;
@@ -191,13 +276,18 @@ pmu_server_new (void)
   g_signal_connect (default_server->service, "incoming",
                     G_CALLBACK (data_incoming_cb), NULL);
 
+  g_signal_connect (default_server, "server-started",
+                    G_CALLBACK (server_started_cb), window);
+
+  g_signal_emit_by_name (default_server, "server-started");
+
   g_main_loop_run(server_loop);
 
   g_main_context_pop_thread_default (server_context);
 }
 
 void
-pmu_server_start_default (void)
+pmu_server_start (PmuWindow *window)
 {
   g_autoptr(GError) error = NULL;
 
@@ -205,9 +295,11 @@ pmu_server_start_default (void)
     {
       server_thread = g_thread_try_new ("server",
                                         (GThreadFunc)pmu_server_new,
-                                        NULL,
+                                        window,
                                         &error);
       if (error != NULL)
         g_warning ("Cannot create server thread. Error: %s", error->message);
     }
+  else
+    g_signal_emit_by_name (default_server, "server-started");
 }
