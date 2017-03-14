@@ -30,6 +30,12 @@ struct _PmuServer
   int port;
 };
 
+typedef struct TcpRequest {
+  GSocketConnection *socket_connection;
+  GBytes *header;
+  gsize data_length;
+} TcpRequest;
+
 GThread *server_thread = NULL;
 PmuServer *default_server = NULL;
 
@@ -60,9 +66,17 @@ pmu_server_init (PmuServer *self)
 }
 
 static void
+tcp_request_free (TcpRequest *request)
+{
+  g_object_unref (request->socket_connection);
+  g_bytes_unref (request->header);
+  g_free (request);
+}
+
+static void
 complete_data_read (GInputStream *stream,
                     GAsyncResult *result,
-                    GBytes       *header_bytes)
+                    TcpRequest   *request)
 {
   g_autoptr(GBytes) bytes = NULL;
   g_autoptr(GError) error = NULL;
@@ -73,9 +87,8 @@ complete_data_read (GInputStream *stream,
 
   /* To read SYNC and FRAME size bytes from header */
   size = REQUEST_HEADER_SIZE;
-  header_data = g_bytes_get_data (header_bytes, &size);
-  /* Jump the 2 SYNC bytes */
-  size = cts_common_get_size (header_data, 2);
+  header_data = g_bytes_get_data (request->header, &size);
+  size = request->data_length;
   real_size = size;
   g_print ("%u\n", size);
   bytes = g_input_stream_read_bytes_finish (stream, result, &error);
@@ -96,7 +109,7 @@ complete_data_read (GInputStream *stream,
   g_print ("#%X#%X#\n", data[12], data[real_size - REQUEST_HEADER_SIZE]);
 
  out:
-  g_bytes_unref (header_bytes);
+  tcp_request_free (request);
 }
 
 static gboolean
@@ -109,6 +122,7 @@ data_incoming_cb (GSocketService    *service,
   guint16 data_length;
   GInputStream *in;
   const guint8 *data;
+  TcpRequest *request;
   gsize size = REQUEST_HEADER_SIZE;
 
   in = g_io_stream_get_input_stream (G_IO_STREAM (connection));
@@ -136,9 +150,13 @@ data_incoming_cb (GSocketService    *service,
   if (data_length <= REQUEST_HEADER_SIZE)
     return TRUE;
 
+  request = g_new0 (TcpRequest, 1);
+  request->socket_connection = g_object_ref (connection);
+  request->header = bytes;
+  request->data_length = data_length;
   g_input_stream_read_bytes_async (in, data_length - REQUEST_HEADER_SIZE, G_PRIORITY_DEFAULT, NULL,
                                    (GAsyncReadyCallback)complete_data_read,
-                                   bytes);
+                                   request);
   /* g_bytes_unref (bytes); */
 
   /* if (cts_common_get_type (data) == CTS_TYPE_COMMAND) */
