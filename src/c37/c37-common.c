@@ -18,7 +18,25 @@
 
 #include "c37-common.h"
 
-/* Based on the sample code in IEEE Std C37.118.2-2011 */
+/**
+ * cts_common_calc_crc:
+ * @data: pointer to data for which crc has to be calculated.
+ * @data_length: size of complete data, excluding last 2 bytes CRC.
+ * @header: (nullable): 4 bytes header data (2 byte SYNC and 2 byte FRAME
+ * size).
+ *
+ * If @header is not %NULL, @data should not contain SYNC and FRAME size bytes
+ * (the first 4 bytes). Else, @data should begin with SYNC byte.
+ *
+ * In any case, @data_length is the total length of data (including the 2 byte
+ * SYNC and 2 byte FRAME size) excluding the 2 byte CRC.
+ *
+ * For example, the @data_length of the smallest COMMAND frame will be 16.
+ *
+ * This function is based on the sample code in IEEE Std C37.118.2-2011.
+ *
+ * Returns: The 2 byte CRC in host order.
+ */
 uint16_t
 cts_common_calc_crc (const byte *data, size_t data_length, const byte *header)
 {
@@ -57,6 +75,14 @@ cts_common_calc_crc (const byte *data, size_t data_length, const byte *header)
   return crc;
 }
 
+/**
+ * cts_common_get_crc:
+ * @data: pointer to received data for which crc has to be extracted.
+ * @offset: offset such that data[offset] will point to the first byte
+ * of the CRC.
+ *
+ * Returns: The 2 byte CRC extracted from @data in host order.
+ */
 uint16_t
 cts_common_get_crc (const byte *data, uint16_t offset)
 {
@@ -70,6 +96,27 @@ cts_common_get_crc (const byte *data, uint16_t offset)
   return length;
 }
 
+/**
+ * cts_common_check_crc:
+ * @data: pointer to data for which crc has to be matched.
+ * @data_length: size of complete data, excluding last 2 bytes CRC.
+ * @header: (nullable): 4 bytes header data (2 byte SYNC and 2 byte FRAME
+ * size).
+ * @offset: offset such that data[offset] will point to the first byte
+ * of the CRC.
+ *
+ * If @header is not %NULL, @data should not contain SYNC and FRAME size bytes
+ * (the first 4 bytes). Else, @data should begin with SYNC byte.
+ *
+ * In any case, @data_length is the total length of data (including the 2 byte
+ * SYNC and 2 byte FRAME size) excluding the 2 byte CRC.
+ *
+ * For example, the @data_length of the smallest COMMAND frame will be 16.
+ *
+ * This function is based on the sample code in IEEE Std C37.118.2-2011.
+ *
+ * Returns: %TRUE if CRC matches. Else, return %FALSE.
+ */
 bool
 cts_common_check_crc (const byte *data, size_t data_length, const byte *header, uint16_t offset)
 {
