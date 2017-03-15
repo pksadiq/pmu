@@ -123,7 +123,7 @@ complete_data_read (GInputStream *stream,
                     GAsyncResult *result,
                     TcpRequest   *request)
 {
-  g_autoptr(GBytes) bytes = NULL;
+  GBytes *bytes = NULL;
   g_autoptr(GError) error = NULL;
   GInputStream *in;
   const guint8 *data;
@@ -163,10 +163,13 @@ complete_data_read (GInputStream *stream,
       !cts_common_check_crc (data, real_size - 2, header_data, real_size - REQUEST_HEADER_SIZE - 2))
     {
       g_print ("CRC check failed\n");
+      g_bytes_unref (bytes);
       goto out;
     }
-  in = g_io_stream_get_input_stream (G_IO_STREAM (request->socket_connection));
 
+  g_bytes_unref (bytes);
+
+  in = g_io_stream_get_input_stream (G_IO_STREAM (request->socket_connection));
   bytes = g_input_stream_read_bytes(in, REQUEST_HEADER_SIZE, NULL, &error);
 
   if (error != NULL)
@@ -181,16 +184,20 @@ complete_data_read (GInputStream *stream,
   if (g_bytes_get_size (bytes) < REQUEST_HEADER_SIZE)
     {
       g_print ("Size less than 4 bytes\n");
+      g_bytes_unref (bytes);
       goto out;
     }
   data = g_bytes_get_data (bytes, &size);
   if (cts_common_get_type (data) != CTS_TYPE_COMMAND)
     {
       g_print ("Not a command\n");
+      g_bytes_unref (bytes);
       goto out;
     }
   /* Jump the 2 SYNC bytes */
   size = cts_common_get_size (data, 2);
+
+  g_bytes_unref (bytes);
 
   if (size <= REQUEST_HEADER_SIZE)
     {
