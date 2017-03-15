@@ -18,6 +18,7 @@
 
 #include "c37/c37-common.h"
 #include "pmu-app.h"
+#include "pmu-window.h"
 
 #include "pmu-server.h"
 
@@ -76,6 +77,14 @@ pmu_server_class_init (PmuServerClass *klass)
                   0, NULL, NULL, NULL,
                   G_TYPE_NONE,
                   0);
+  signals [SERVER_STOPPED] =
+    g_signal_new ("server-stopped",
+                  G_TYPE_FROM_CLASS (klass),
+                  G_SIGNAL_RUN_LAST,
+                  0, NULL, NULL, NULL,
+                  G_TYPE_NONE,
+                  0);
+
 }
 
 static void
@@ -246,7 +255,14 @@ static void
 server_started_cb (PmuServer *self,
                    PmuWindow *window)
 {
-  g_print ("Server started\n");
+  g_idle_add((GSourceFunc) pmu_window_server_started_cb, window);
+}
+
+static void
+server_stopped_cb (PmuServer *self,
+                   PmuWindow *window)
+{
+  g_idle_add((GSourceFunc) pmu_window_server_stopped_cb, window);
 }
 
 static void
@@ -279,6 +295,9 @@ pmu_server_new (PmuWindow *window)
   g_signal_connect (default_server, "server-started",
                     G_CALLBACK (server_started_cb), window);
 
+  g_signal_connect (default_server, "server-stopped",
+                    G_CALLBACK (server_stopped_cb), window);
+
   g_signal_emit_by_name (default_server, "server-started");
 
   g_main_loop_run(server_loop);
@@ -301,5 +320,15 @@ pmu_server_start (PmuWindow *window)
         g_warning ("Cannot create server thread. Error: %s", error->message);
     }
   else
-    g_signal_emit_by_name (default_server, "server-started");
+    {
+      g_socket_service_start (default_server->service);
+      g_signal_emit_by_name (default_server, "server-started");
+    }
+}
+
+void
+pmu_server_stop (void)
+{
+  g_socket_service_stop (default_server->service);
+  g_signal_emit_by_name (default_server, "server-stopped");
 }

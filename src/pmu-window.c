@@ -159,20 +159,41 @@ pmu_window_constructed (GObject *object)
   G_OBJECT_CLASS (pmu_window_parent_class)->constructed (object);
 }
 
+gboolean
+pmu_window_server_started_cb (PmuWindow *self)
+{
+  gtk_label_set_label (GTK_LABEL (self->info_label), "PMU Server started successfully");
+
+  revealer_timeout (self);
+  gtk_revealer_set_reveal_child (GTK_REVEALER (self->revealer), TRUE);
+  self->revealer_timeout_id = g_timeout_add_seconds (5, revealer_timeout, self);
+
+  gtk_widget_hide (self->start_button);
+  gtk_widget_show (self->stop_button);
+
+  return G_SOURCE_REMOVE;
+}
+
+gboolean
+pmu_window_server_stopped_cb (PmuWindow *self)
+{
+  gtk_label_set_label (GTK_LABEL (self->info_label), "PMU Server stopped");
+
+  revealer_timeout (self);
+  gtk_revealer_set_reveal_child (GTK_REVEALER (self->revealer), TRUE);
+  self->revealer_timeout_id = g_timeout_add_seconds (5, revealer_timeout, self);
+
+  gtk_widget_hide (self->stop_button);
+  gtk_widget_show (self->start_button);
+
+  return G_SOURCE_REMOVE;
+}
+
 static void
 start_button_clicked_cb (GtkWidget *button,
                          PmuWindow *window)
 {
   pmu_server_start (window);
-
-  gtk_label_set_label (GTK_LABEL (window->info_label), "PMU Server started successfully");
-
-  revealer_timeout (window);
-  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
-  window->revealer_timeout_id = g_timeout_add_seconds (5, revealer_timeout, window);
-
-  gtk_widget_hide (window->start_button);
-  gtk_widget_show (window->stop_button);
 }
 
 static void
@@ -186,14 +207,7 @@ static void
 stop_button_clicked_cb (GtkWidget *button,
                         PmuWindow *window)
 {
-  gtk_label_set_label (GTK_LABEL (window->info_label), "PMU Server stopped");
-
-  revealer_timeout (window);
-  gtk_revealer_set_reveal_child (GTK_REVEALER (window->revealer), TRUE);
-  window->revealer_timeout_id = g_timeout_add_seconds (5, revealer_timeout, window);
-
-  gtk_widget_hide (window->stop_button);
-  gtk_widget_show (window->start_button);
+  pmu_server_stop ();
 }
 
 static void
