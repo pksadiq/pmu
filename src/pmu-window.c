@@ -193,7 +193,10 @@ static void
 start_button_clicked_cb (GtkWidget *button,
                          PmuWindow *window)
 {
-  pmu_server_start (window);
+  GMainContext *context;
+
+  context = pmu_server_get_default_context ();
+  g_main_context_invoke (context, (GSourceFunc) pmu_server_start, window);
 }
 
 static void
@@ -207,7 +210,10 @@ static void
 stop_button_clicked_cb (GtkWidget *button,
                         PmuWindow *window)
 {
-  pmu_server_stop ();
+  GMainContext *context;
+
+  context = pmu_server_get_default_context ();
+  g_main_context_invoke (context, (GSourceFunc) pmu_server_stop, NULL);
 }
 
 static void

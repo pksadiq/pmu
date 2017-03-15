@@ -29,7 +29,10 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (PmuServer, pmu_server, PMU, SERVER, GObject)
 
-void       pmu_server_start       (PmuWindow *window);
-PmuServer *pmu_server_get_default (void);
+void          pmu_server_start_thread        (PmuWindow *window);
+PmuServer    *pmu_server_get_default         (void);
+GMainContext *pmu_server_get_default_context (void);
+gboolean      pmu_server_start               (PmuWindow *window);
+gboolean      pmu_server_stop                (gpointer user_data);
 
 G_END_DECLS

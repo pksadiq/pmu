@@ -27,6 +27,7 @@ struct _PmuServer
   GObject parent_instance;
 
   GSocketService *service;
+  GMainContext   *context;
 
   char *admin_ip;
   int port;
@@ -267,6 +268,12 @@ pmu_server_get_default (void)
   return default_server;
 }
 
+GMainContext *
+pmu_server_get_default_context (void)
+{
+  return default_server->context;
+}
+
 static void
 server_started_cb (PmuServer *self,
                    PmuWindow *window)
@@ -341,6 +348,7 @@ pmu_server_new (PmuWindow *window)
   default_server = g_object_new (PMU_TYPE_SERVER, NULL);
   default_server->service = NULL;
   default_server->port = 4000;
+  default_server->context = server_context;
 
   g_signal_connect (default_server, "start-server",
                     G_CALLBACK (start_server_cb), window);
@@ -376,17 +384,22 @@ pmu_server_start_thread (PmuWindow *window)
     }
 }
 
-void
+gboolean
 pmu_server_start (PmuWindow *window)
 {
   if (server_thread == NULL)
     pmu_server_start_thread (window);
 
-  g_signal_emit_by_name (default_server, "start-server");
+  if (default_server)
+    g_signal_emit_by_name (default_server, "start-server");
+
+  return G_SOURCE_REMOVE;
 }
 
-void
-pmu_server_stop (void)
+gboolean
+pmu_server_stop (gpointer user_data)
 {
   g_signal_emit_by_name (default_server, "stop-server");
+
+  return G_SOURCE_REMOVE;
 }
