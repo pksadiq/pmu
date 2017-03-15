@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "c37/c37-common.h"
+#include "c37/c37.h"
 #include "pmu-app.h"
 #include "pmu-window.h"
 
@@ -49,8 +49,11 @@ enum {
   SERVER_STOPPED,
   START_SERVER,
   STOP_SERVER,
-  DATA_START_REQUEST,
-  DATA_STOP_REQUEST,
+  DATA_START_REQUESTED,
+  DATA_STOP_REQUESTED,
+  CONFIG1_REQUESTED,
+  CONFIG2_REQUESTED,
+  HEADER_REQUESTED,
   N_SIGNALS,
 };
 
@@ -103,6 +106,45 @@ pmu_server_class_init (PmuServerClass *klass)
                   G_TYPE_NONE,
                   0);
 
+  signals [DATA_START_REQUESTED] =
+    g_signal_new ("data-start-requested",
+                  G_TYPE_FROM_CLASS (klass),
+                  G_SIGNAL_RUN_LAST,
+                  0, NULL, NULL, NULL,
+                  G_TYPE_NONE,
+                  0);
+
+  signals [DATA_STOP_REQUESTED] =
+    g_signal_new ("data-stop-requested",
+                  G_TYPE_FROM_CLASS (klass),
+                  G_SIGNAL_RUN_LAST,
+                  0, NULL, NULL, NULL,
+                  G_TYPE_NONE,
+                  0);
+
+  signals [CONFIG1_REQUESTED] =
+    g_signal_new ("config1-requested",
+                  G_TYPE_FROM_CLASS (klass),
+                  G_SIGNAL_RUN_LAST,
+                  0, NULL, NULL, NULL,
+                  G_TYPE_NONE,
+                  0);
+
+  signals [CONFIG2_REQUESTED] =
+    g_signal_new ("config2-requested",
+                  G_TYPE_FROM_CLASS (klass),
+                  G_SIGNAL_RUN_LAST,
+                  0, NULL, NULL, NULL,
+                  G_TYPE_NONE,
+                  0);
+
+  signals [HEADER_REQUESTED] =
+    g_signal_new ("header-requested",
+                  G_TYPE_FROM_CLASS (klass),
+                  G_SIGNAL_RUN_LAST,
+                  0, NULL, NULL, NULL,
+                  G_TYPE_NONE,
+                  0);
 }
 
 static void
@@ -165,6 +207,28 @@ complete_data_read (GInputStream *stream,
       g_print ("CRC check failed\n");
       g_bytes_unref (bytes);
       goto out;
+    }
+
+  /* rewind crc and command bytes, assuming no extendend requests */
+  switch (cts_command_get_type (data, real_size - REQUEST_HEADER_SIZE - 4))
+    {
+    case CTS_COMMAND_DATA_OFF:
+      g_signal_emit_by_name (default_server, "data-stop-requested");
+      break;
+    case CTS_COMMAND_DATA_ON:
+      g_signal_emit_by_name (default_server, "data-start-requested");
+      break;
+    case CTS_COMMAND_SEND_HDR:
+      g_signal_emit_by_name (default_server, "header-requested");
+      break;
+    case CTS_COMMAND_SEND_CONFIG1:
+      g_signal_emit_by_name (default_server, "config1-requested");
+      break;
+    case CTS_COMMAND_SEND_CONFIG2:
+      g_signal_emit_by_name (default_server, "config2-requested");
+      break;
+    default:
+      break;
     }
 
   g_bytes_unref (bytes);
