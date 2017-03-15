@@ -243,6 +243,8 @@ pmu_window_init (PmuWindow *self)
                                    self);
 
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  pmu_server_start_thread (self);
 }
 
 PmuWindow *

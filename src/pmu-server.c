@@ -46,6 +46,8 @@ G_DEFINE_TYPE (PmuServer, pmu_server, G_TYPE_OBJECT)
 enum {
   SERVER_STARTED,
   SERVER_STOPPED,
+  START_SERVER,
+  STOP_SERVER,
   DATA_START_REQUEST,
   DATA_STOP_REQUEST,
   N_SIGNALS,
@@ -85,12 +87,26 @@ pmu_server_class_init (PmuServerClass *klass)
                   G_TYPE_NONE,
                   0);
 
+  signals [START_SERVER] =
+    g_signal_new ("start-server",
+                  G_TYPE_FROM_CLASS (klass),
+                  G_SIGNAL_RUN_LAST,
+                  0, NULL, NULL, NULL,
+                  G_TYPE_NONE,
+                  0);
+  signals [STOP_SERVER] =
+    g_signal_new ("stop-server",
+                  G_TYPE_FROM_CLASS (klass),
+                  G_SIGNAL_RUN_LAST,
+                  0, NULL, NULL, NULL,
+                  G_TYPE_NONE,
+                  0);
+
 }
 
 static void
 pmu_server_init (PmuServer *self)
 {
-  self->service = g_socket_service_new ();
 }
 
 static void
@@ -266,6 +282,51 @@ server_stopped_cb (PmuServer *self,
 }
 
 static void
+start_server_cb (PmuServer *self,
+                 PmuWindow *window)
+{
+  g_autoptr(GError) error = NULL;
+
+  if (self->service == NULL)
+    {
+      self->service = g_socket_service_new ();
+
+      if (!g_socket_listener_add_inet_port (G_SOCKET_LISTENER (self->service),
+                                            self->port,
+                                            G_OBJECT (self),
+                                            &error))
+        {
+          g_print ("Here\n");
+          g_prefix_error (&error, "Unable to listen to port %d: ", self->port);
+          return;
+        }
+
+      g_signal_connect (self->service,
+                        "incoming",
+                        G_CALLBACK (data_incoming_cb),
+                        NULL);
+    }
+
+  g_signal_emit_by_name (default_server, "server-started");
+}
+
+static void
+stop_server_cb (PmuServer *self,
+                PmuWindow *window)
+{
+  g_autoptr(GError) error = NULL;
+
+  if (self->service)
+    {
+      g_socket_service_stop (self->service);
+      g_object_unref (self->service);
+      self->service = NULL;
+    }
+
+  g_signal_emit_by_name (default_server, "server-stopped");
+}
+
+static void
 pmu_server_new (PmuWindow *window)
 {
   g_autoptr(GError) error = NULL;
@@ -278,19 +339,14 @@ pmu_server_new (PmuWindow *window)
   g_main_context_push_thread_default (server_context);
 
   default_server = g_object_new (PMU_TYPE_SERVER, NULL);
+  default_server->service = NULL;
   default_server->port = 4000;
 
-  if (!g_socket_listener_add_inet_port (G_SOCKET_LISTENER (default_server->service),
-                                        default_server->port,
-                                        G_OBJECT (default_server),
-                                        &error))
-    {
-      g_print ("Here\n");
-      g_prefix_error (&error, "Unable to listen to port %d: ", default_server->port);
-      return;
-    }
-  g_signal_connect (default_server->service, "incoming",
-                    G_CALLBACK (data_incoming_cb), NULL);
+  g_signal_connect (default_server, "start-server",
+                    G_CALLBACK (start_server_cb), window);
+
+  g_signal_connect (default_server, "stop-server",
+                    G_CALLBACK (stop_server_cb), window);
 
   g_signal_connect (default_server, "server-started",
                     G_CALLBACK (server_started_cb), window);
@@ -298,15 +354,13 @@ pmu_server_new (PmuWindow *window)
   g_signal_connect (default_server, "server-stopped",
                     G_CALLBACK (server_stopped_cb), window);
 
-  g_signal_emit_by_name (default_server, "server-started");
-
   g_main_loop_run(server_loop);
 
   g_main_context_pop_thread_default (server_context);
 }
 
 void
-pmu_server_start (PmuWindow *window)
+pmu_server_start_thread (PmuWindow *window)
 {
   g_autoptr(GError) error = NULL;
 
@@ -318,17 +372,21 @@ pmu_server_start (PmuWindow *window)
                                         &error);
       if (error != NULL)
         g_warning ("Cannot create server thread. Error: %s", error->message);
+      return;
     }
-  else
-    {
-      g_socket_service_start (default_server->service);
-      g_signal_emit_by_name (default_server, "server-started");
-    }
+}
+
+void
+pmu_server_start (PmuWindow *window)
+{
+  if (server_thread == NULL)
+    pmu_server_start_thread (window);
+
+  g_signal_emit_by_name (default_server, "start-server");
 }
 
 void
 pmu_server_stop (void)
 {
-  g_socket_service_stop (default_server->service);
-  g_signal_emit_by_name (default_server, "server-stopped");
+  g_signal_emit_by_name (default_server, "stop-server");
 }
