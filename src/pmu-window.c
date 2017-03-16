@@ -36,8 +36,6 @@ struct _PmuWindow
   GtkWidget *info_label;
   GtkWidget *revealer;
 
-  gchar *subtitle;
-
   guint revealer_timeout_id;
 };
 
@@ -48,7 +46,6 @@ G_DEFINE_TYPE (PmuWindow, pmu_window, GTK_TYPE_APPLICATION_WINDOW)
 
 enum {
   PROP_0,
-  PROP_SUBTITLE,
   N_PROPS
 };
 
@@ -153,13 +150,8 @@ pmu_window_get_property (GObject    *object,
                          GValue     *value,
                          GParamSpec *pspec)
 {
-  PmuWindow *self = PMU_WINDOW (object);
-
   switch (prop_id)
     {
-    case PROP_SUBTITLE:
-      g_value_set_string (value, self->subtitle);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
     }
@@ -171,14 +163,8 @@ pmu_window_set_property (GObject      *object,
                          const GValue *value,
                          GParamSpec   *pspec)
 {
-  PmuWindow *self = PMU_WINDOW (object);
-
   switch (prop_id)
     {
-    case PROP_SUBTITLE:
-      g_free (self->subtitle);
-      self->subtitle = g_value_dup_string (value);
-      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
     }
@@ -187,10 +173,6 @@ pmu_window_set_property (GObject      *object,
 static void
 pmu_window_finalize (GObject *object)
 {
-  PmuWindow *self = PMU_WINDOW (object);
-
-  g_free (self->subtitle);
-
   G_OBJECT_CLASS (pmu_window_parent_class)->finalize (object);
 }
 
@@ -270,7 +252,6 @@ stop_button_clicked_cb (GtkWidget *button,
 static void
 pmu_window_class_init (PmuWindowClass *klass)
 {
-  GParamSpec *pspec;
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
@@ -278,11 +259,6 @@ pmu_window_class_init (PmuWindowClass *klass)
   object_class->set_property = pmu_window_set_property;
   object_class->finalize = pmu_window_finalize;
   object_class->constructed = pmu_window_constructed;
-
-  pspec = g_param_spec_string ("subtitle", NULL, NULL,
-                               NULL,
-                               G_PARAM_READWRITE);
-  g_object_class_install_property (object_class, PROP_SUBTITLE, pspec);
 
   g_type_ensure (PMU_TYPE_LIST);
   g_type_ensure (PMU_TYPE_DETAILS);
@@ -329,12 +305,8 @@ pmu_window_init (PmuWindow *self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  g_object_bind_property (self, "subtitle",
-                          self->header_bar, "subtitle",
-                          G_BINDING_DEFAULT);
-
   g_object_bind_property_full (pmu_details_get_default (), "station-name",
-                               self, "subtitle",
+                               self->header_bar, "subtitle",
                                G_BINDING_DEFAULT,
                                pmu_window_set_subtitle, NULL,
                                NULL, NULL);
@@ -342,7 +314,7 @@ pmu_window_init (PmuWindow *self)
   subtitle = g_strdup_printf ("%s - %u", pmu_details_get_station_name (),
                               pmu_details_get_pmu_id ());
 
-  g_object_set (self, "subtitle", subtitle, NULL);
+  g_object_set (self->header_bar, "subtitle", subtitle, NULL);
 
   g_free (subtitle);
 
