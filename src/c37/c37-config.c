@@ -460,9 +460,9 @@ cts_config_get_number_of_status_words_of_pmu (CtsConfig *self,
 }
 
 uint16_t
-cts_config_set_number_of_status_word_of_pmu (CtsConfig *self,
-                                             uint16_t   pmu_index,
-                                             uint16_t   count)
+cts_config_set_number_of_status_words_of_pmu (CtsConfig *self,
+                                              uint16_t   pmu_index,
+                                              uint16_t   count)
 {
   CtsPmuConfig *config;
   bool done;
