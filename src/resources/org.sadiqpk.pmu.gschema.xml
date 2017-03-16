@@ -7,7 +7,7 @@
       <description>Whether to do PMU intial setup or not</description>
     </key>
     <key name="pmu-id" type="u">
-      <range min="1" max="1000"/>
+      <range min="1" max="65535"/>
       <default>1</default>
       <summary>An Identifier for the PMU</summary>
     </key>
@@ -20,7 +20,7 @@
       <summary>IP Address of the Admin Client</summary>
     </key>
     <key name="port" type="u">
-      <range min="1025" max="20000"/>
+      <range min="1025" max="65535"/>
       <default>4713</default>
       <summary>Port to use for PMU server</summary>
     </key>

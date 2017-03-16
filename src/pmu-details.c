@@ -135,7 +135,7 @@ pmu_details_class_init (PmuDetailsClass *klass)
   g_object_class_install_property (object_class, PROP_FIRST_RUN, pspec);
 
   pspec = g_param_spec_uint ("pmu-id", NULL, NULL,
-                             1, 1000, 1,
+                             1, 65535, 1,
                              G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_PMU_ID, pspec);
 
@@ -150,7 +150,7 @@ pmu_details_class_init (PmuDetailsClass *klass)
   g_object_class_install_property (object_class, PROP_ADMIN_IP, pspec);
 
   pspec = g_param_spec_uint ("port-number", NULL, NULL,
-                             1025, 20000, 4713,
+                             1025, 65535, 4713,
                              G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_PORT_NUMBER, pspec);
 
