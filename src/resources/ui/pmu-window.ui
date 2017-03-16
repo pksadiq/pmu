@@ -9,8 +9,8 @@
 
     <child type="titlebar">
       <object class="GtkHeaderBar" id="headerbar">
-        <property name="title" translatable="yes">PMC</property>
-        <property name="subtitle" translatable="yes">pmc application</property>
+        <property name="title" translatable="yes">PMU</property>
+        <property name="subtitle" translatable="yes">PMU application</property>
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="show-close-button">True</property>
