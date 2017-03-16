@@ -19,6 +19,7 @@
 
 #include "pmu-setup-window.h"
 #include "pmu-list.h"
+#include "pmu-details.h"
 #include "pmu-server.h"
 
 #include "pmu-window.h"
@@ -28,11 +29,14 @@ struct _PmuWindow
 {
   GtkApplicationWindow parent_instance;
 
+  GtkWidget *header_bar;
   GtkWidget *start_button;
   GtkWidget *stop_button;
   GtkWidget *menu_button;
   GtkWidget *info_label;
   GtkWidget *revealer;
+
+  gchar *subtitle;
 
   guint revealer_timeout_id;
 };
@@ -140,6 +144,10 @@ static void sync_ntp_time_cb (GSimpleAction *action,
 static void
 pmu_window_finalize (GObject *object)
 {
+  PmuWindow *self = PMU_WINDOW (object);
+
+  g_free (self->subtitle);
+
   G_OBJECT_CLASS (pmu_window_parent_class)->finalize (object);
 }
 
@@ -226,9 +234,11 @@ pmu_window_class_init (PmuWindowClass *klass)
   object_class->constructed = pmu_window_constructed;
 
   g_type_ensure (PMU_TYPE_LIST);
+  g_type_ensure (PMU_TYPE_DETAILS);
 
   gtk_widget_class_set_template_from_resource (widget_class, "/org/sadiqpk/pmu/ui/pmu-window.ui");
 
+  gtk_widget_class_bind_template_child (widget_class, PmuWindow, header_bar);
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, menu_button);
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, start_button);
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, stop_button);
@@ -250,6 +260,10 @@ pmu_window_init (PmuWindow *self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  self->subtitle = g_strdup_printf ("%s - %u", pmu_details_get_station_name (),
+                                    pmu_details_get_pmu_id ());
+
+  gtk_header_bar_set_subtitle (GTK_HEADER_BAR (self->header_bar), self->subtitle);
   pmu_server_start_thread (self);
 }
 

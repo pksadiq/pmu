@@ -8,7 +8,7 @@
     <property name="resizable">1</property>
 
     <child type="titlebar">
-      <object class="GtkHeaderBar" id="headerbar">
+      <object class="GtkHeaderBar" id="header_bar">
         <property name="title" translatable="yes">PMU</property>
         <property name="subtitle" translatable="yes">PMU application</property>
         <property name="visible">True</property>
