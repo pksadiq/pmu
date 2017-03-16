@@ -171,11 +171,13 @@ pmu_details_save_settings (void)
 static void
 pmu_details_populate (PmuDetails *self)
 {
-  self->first_run = g_settings_get_boolean (settings, "first-run");
-  self->pmu_id = g_settings_get_uint (settings, "pmu-id");
-  self->station_name = g_settings_get_string (settings, "station-name");
-  self->admin_ip = g_settings_get_string (settings, "admin-ip");
-  self->port_number = g_settings_get_uint (settings, "port");
+  g_object_set (self,
+                "first-run", g_settings_get_boolean (settings, "first-run"),
+                "pmu-id", g_settings_get_uint (settings, "pmu-id"),
+                "station-name", g_settings_get_string (settings, "station-name"),
+                "admin-ip", g_settings_get_string (settings, "admin-ip"),
+                "port-number", g_settings_get_uint (settings, "port"),
+                NULL);
 }
 
 static void

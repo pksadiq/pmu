@@ -46,6 +46,12 @@ static GThread *ntp_thread;
 
 G_DEFINE_TYPE (PmuWindow, pmu_window, GTK_TYPE_APPLICATION_WINDOW)
 
+enum {
+  PROP_0,
+  PROP_SUBTITLE,
+  N_PROPS
+};
+
 static void sync_ntp_time_cb  (GSimpleAction       *action,
                                GVariant            *param,
                                gpointer             user_data);
@@ -142,6 +148,43 @@ static void sync_ntp_time_cb (GSimpleAction *action,
 }
 
 static void
+pmu_window_get_property (GObject    *object,
+                         guint       prop_id,
+                         GValue     *value,
+                         GParamSpec *pspec)
+{
+  PmuWindow *self = PMU_WINDOW (object);
+
+  switch (prop_id)
+    {
+    case PROP_SUBTITLE:
+      g_value_set_string (value, self->subtitle);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    }
+}
+
+static void
+pmu_window_set_property (GObject      *object,
+                         guint         prop_id,
+                         const GValue *value,
+                         GParamSpec   *pspec)
+{
+  PmuWindow *self = PMU_WINDOW (object);
+
+  switch (prop_id)
+    {
+    case PROP_SUBTITLE:
+      g_free (self->subtitle);
+      self->subtitle = g_value_dup_string (value);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    }
+}
+
+static void
 pmu_window_finalize (GObject *object)
 {
   PmuWindow *self = PMU_WINDOW (object);
@@ -227,11 +270,19 @@ stop_button_clicked_cb (GtkWidget *button,
 static void
 pmu_window_class_init (PmuWindowClass *klass)
 {
+  GParamSpec *pspec;
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+  object_class->get_property = pmu_window_get_property;
+  object_class->set_property = pmu_window_set_property;
   object_class->finalize = pmu_window_finalize;
   object_class->constructed = pmu_window_constructed;
+
+  pspec = g_param_spec_string ("subtitle", NULL, NULL,
+                               NULL,
+                               G_PARAM_READWRITE);
+  g_object_class_install_property (object_class, PROP_SUBTITLE, pspec);
 
   g_type_ensure (PMU_TYPE_LIST);
   g_type_ensure (PMU_TYPE_DETAILS);
@@ -250,9 +301,27 @@ pmu_window_class_init (PmuWindowClass *klass)
   gtk_widget_class_bind_template_callback (widget_class, revealer_button_clicked_cb);
 }
 
+gboolean
+pmu_window_set_subtitle (GBinding     *binding,
+                         const GValue *from_value,
+                         GValue       *value,
+                         gpointer      user_data)
+{
+  gchar *subtitle;
+
+  subtitle = g_strdup_printf ("%s - %u", pmu_details_get_station_name (),
+                              pmu_details_get_pmu_id ());
+  g_value_set_string (value, subtitle);
+  g_free (subtitle);
+
+  return TRUE;
+}
+
 static void
 pmu_window_init (PmuWindow *self)
 {
+  gchar *subtitle;
+
   g_action_map_add_action_entries (G_ACTION_MAP (self),
                                    win_entries,
                                    G_N_ELEMENTS (win_entries),
@@ -260,10 +329,23 @@ pmu_window_init (PmuWindow *self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->subtitle = g_strdup_printf ("%s - %u", pmu_details_get_station_name (),
-                                    pmu_details_get_pmu_id ());
+  g_object_bind_property (self, "subtitle",
+                          self->header_bar, "subtitle",
+                          G_BINDING_DEFAULT);
 
-  gtk_header_bar_set_subtitle (GTK_HEADER_BAR (self->header_bar), self->subtitle);
+  g_object_bind_property_full (pmu_details_get_default (), "station-name",
+                               self, "subtitle",
+                               G_BINDING_DEFAULT,
+                               pmu_window_set_subtitle, NULL,
+                               NULL, NULL);
+
+  subtitle = g_strdup_printf ("%s - %u", pmu_details_get_station_name (),
+                              pmu_details_get_pmu_id ());
+
+  g_object_set (self, "subtitle", subtitle, NULL);
+
+  g_free (subtitle);
+
   pmu_server_start_thread (self);
 }
 
