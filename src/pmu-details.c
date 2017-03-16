@@ -31,6 +31,7 @@ struct _PmuDetails
 };
 
 GSettings *settings;
+PmuDetails *default_details;
 
 G_DEFINE_TYPE (PmuDetails, pmu_details, G_TYPE_OBJECT)
 
@@ -49,7 +50,7 @@ pmu_details_finalize (GObject *object)
 {
   PmuDetails *self = PMU_DETAILS (object);
 
-  pmu_details_save_settings (self);
+  pmu_details_save_settings ();
 
   g_free (self->station_name);
   g_free (self->admin_ip);
@@ -158,12 +159,12 @@ pmu_details_class_init (PmuDetailsClass *klass)
 }
 
 void
-pmu_details_save_settings (PmuDetails *self)
+pmu_details_save_settings (void)
 {
-  g_settings_set_uint (settings, "pmu-id", self->pmu_id);
-  g_settings_set_uint (settings, "port", self->port_number);
-  g_settings_set_string (settings, "admin-ip", self->admin_ip);
-  g_settings_set_string (settings, "station-name", self->station_name);
+  g_settings_set_uint (settings, "pmu-id", default_details->pmu_id);
+  g_settings_set_uint (settings, "port", default_details->port_number);
+  g_settings_set_string (settings, "admin-ip", default_details->admin_ip);
+  g_settings_set_string (settings, "station-name", default_details->station_name);
   g_settings_set_boolean (settings, "first-run", 0);
 }
 
@@ -184,38 +185,63 @@ pmu_details_init (PmuDetails *self)
 }
 
 gchar *
-pmu_details_get_station_name (PmuDetails *self)
+pmu_details_get_station_name (void)
 {
-  return self->station_name;
+  if (default_details)
+    return default_details->station_name;
+
+  return NULL;
 }
 
 gchar *
-pmu_details_get_admin_ip (PmuDetails *self)
+pmu_details_get_admin_ip (void)
 {
-  return self->admin_ip;
+  if (default_details)
+    return default_details->admin_ip;
+
+  return NULL;
 }
 
 guint
-pmu_details_get_port_number (PmuDetails *self)
+pmu_details_get_port_number (void)
 {
-  return self->port_number;
+  if (default_details)
+    return default_details->port_number;
+
+  return 0;
 }
 
 guint
-pmu_details_get_pmu_id (PmuDetails *self)
+pmu_details_get_pmu_id (void)
 {
-  return self->pmu_id;
+  if (default_details)
+    return default_details->pmu_id;
+
+  return 0;
 }
 
 gboolean
-pmu_details_get_is_first_run (PmuDetails *self)
+pmu_details_get_is_first_run (void)
 {
-  return self->first_run;
+  if (default_details)
+    return default_details->first_run;
+
+  /* Assume that it is running first */
+  return TRUE;
 }
 
-PmuDetails *
+static PmuDetails *
 pmu_details_new (void)
 {
   return g_object_new (PMU_TYPE_DETAILS,
                        NULL);
+}
+
+PmuDetails *
+pmu_details_get_default (void)
+{
+  if (default_details == NULL)
+    default_details = pmu_details_new ();
+
+  return default_details;
 }

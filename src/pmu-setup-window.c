@@ -33,8 +33,6 @@ struct _PmuSetupWindow
   GtkWidget *pmu_id_entry;
   GtkWidget *port_number_entry;
   GtkWidget *admin_ip_entry;
-
-  PmuDetails *details;
 };
 
 
@@ -54,7 +52,7 @@ cancel_button_clicked_cb (GtkWidget      *button,
   GApplication *app;
   gboolean is_first_run;
 
-  is_first_run = pmu_details_get_is_first_run (window->details);
+  is_first_run = pmu_details_get_is_first_run ();
 
   app = G_APPLICATION (gtk_window_get_application (self));
 
@@ -72,9 +70,9 @@ save_button_clicked_cb (GtkWidget      *button,
   gboolean is_first_run;
 
   app = gtk_window_get_application (GTK_WINDOW (window));
-  is_first_run = pmu_details_get_is_first_run (window->details);
+  is_first_run = pmu_details_get_is_first_run ();
 
-  g_object_set (window->details,
+  g_object_set (pmu_details_get_default (),
                 "pmu-id",
                 (guint) gtk_spin_button_get_value (GTK_SPIN_BUTTON (window->pmu_id_entry)),
                 "port-number",
@@ -85,7 +83,7 @@ save_button_clicked_cb (GtkWidget      *button,
                 gtk_entry_get_text (GTK_ENTRY (window->admin_ip_entry)),
                 NULL);
 
-  pmu_details_save_settings (window->details);
+  pmu_details_save_settings ();
   gtk_widget_destroy (GTK_WIDGET (window));
 
   if (is_first_run)
@@ -119,15 +117,15 @@ static void
 pmu_setup_window_populate (PmuSetupWindow *self)
 {
   gtk_entry_set_text (GTK_ENTRY (self->station_name_entry),
-                      pmu_details_get_station_name (self->details));
+                      pmu_details_get_station_name ());
   gtk_entry_set_text (GTK_ENTRY (self->admin_ip_entry),
-                      pmu_details_get_admin_ip (self->details));
+                      pmu_details_get_admin_ip ());
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (self->port_number_entry),
-                             pmu_details_get_port_number (self->details));
+                             pmu_details_get_port_number ());
   gtk_spin_button_set_value (GTK_SPIN_BUTTON (self->pmu_id_entry),
-                             pmu_details_get_pmu_id (self->details));
+                             pmu_details_get_pmu_id ());
 
-  if (!pmu_details_get_is_first_run (self->details))
+  if (!pmu_details_get_is_first_run ())
     gtk_widget_set_sensitive (self->save_button, FALSE);
 }
 
@@ -159,7 +157,6 @@ pmu_setup_window_init (PmuSetupWindow *self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->details = pmu_details_new ();
   pmu_setup_window_populate (self);
 }
 

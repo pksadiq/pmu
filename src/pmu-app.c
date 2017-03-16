@@ -30,7 +30,6 @@ struct _PmuApp
 {
   GtkApplication parent_instance;
 
-  PmuDetails *details;
   int port;
 
   CtsConfig  *pmu_config_one;
@@ -109,7 +108,7 @@ pmu_app_activate (GApplication *app)
   g_assert (GTK_IS_APPLICATION (app));
 
   self = PMU_APP (app);
-  first_run = pmu_details_get_is_first_run (self->details);
+  first_run = pmu_details_get_is_first_run ();
 
   if (first_run)
     {
@@ -149,7 +148,7 @@ pmu_app_startup (GApplication *app)
                                    app_entries,
                                    G_N_ELEMENTS (app_entries),
                                    app);
-  self->details = pmu_details_new ();
+  pmu_details_get_default ();
 
   self->pmu_config_one = cts_config_get_default_config_one ();
   self->pmu_config_two = cts_config_get_default_config_two ();
