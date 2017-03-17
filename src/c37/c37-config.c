@@ -944,7 +944,7 @@ cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_set_phasor_measurement_type_of_pmu:
+ * cts_config_set_phasor_conv_factor_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the Phasor measurement type
  * has to be set. If this code is being run on a PMU,
@@ -994,10 +994,25 @@ cts_config_set_phasor_conv_factor_of_pmu (CtsConfig *self,
   return true;
 }
 
+/**
+ * cts_config_set_all_phasor_conv_factor_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the Phasor measurement type
+ * has to be set. If this code is being run on a PMU,
+ * this will be always 1.
+ * @conv_factor: The convertion factor of transmitted Phasor value.
+ * Should be an unsigned integer not greater than 24 bits.
+ *
+ * Set @conv_factor as convertion factor for every phasor values of PMU
+ * with index @pmu_index.
+ * See cts_config_set_phasor_conv_factor_of_pmu() for more details
+ *
+ * Returns: %true if Phasor convertion factor was set and %false otherwise.
+ */
 bool
 cts_config_set_all_phasor_conv_factor_of_pmu (CtsConfig *self,
                                               uint16_t   pmu_index,
-                                              uint32_t   data)
+                                              uint32_t   conv_factor)
 {
   CtsPmuConfig *config;
   uint16_t num_phasors;
@@ -1011,16 +1026,27 @@ cts_config_set_all_phasor_conv_factor_of_pmu (CtsConfig *self,
   for (uint16_t i = 1; i <= num_phasors; i++)
     {
       bool status = cts_config_set_phasor_conv_factor_of_pmu (self, pmu_index,
-                                                              i, data);
+                                                              i, conv_factor);
       if (!status)
         return false;
     }
   return true;
 }
 
+/**
+ * cts_config_set_all_phasor_conv_factor_of_all_pmu:
+ * @self: A valid configuration
+ * @conv_factor: The convertion factor of transmitted Phasor value.
+ * Should be an unsigned integer not greater than 24 bits.
+ *
+ * Set @conv_factor as convertion factor for every phasor of every PMU.
+ * See cts_config_set_phasor_conv_factor_of_pmu() for more details
+ *
+ * Returns: %true if Phasor convertion factor was set and %false otherwise.
+ */
 bool
 cts_config_set_all_phasor_conv_factor_of_all_pmu (CtsConfig *self,
-                                                  uint32_t   data)
+                                                  uint32_t   conv_factor)
 {
   uint16_t num_pmu;
 
@@ -1029,7 +1055,7 @@ cts_config_set_all_phasor_conv_factor_of_all_pmu (CtsConfig *self,
   for (uint16_t i = 1; i <= num_pmu; i++)
     {
       bool status = cts_config_set_all_phasor_conv_factor_of_pmu (self, i,
-                                                                  data);
+                                                                  conv_factor);
       if (!status)
         return false;
     }
@@ -1485,7 +1511,14 @@ populate_raw_data (CtsConfig *self)
 }
 
 /**
- * Raw data in Big Endian order (ie, network order)
+ * cts_config_get_raw_data:
+ * @self: A valid configuration
+ *
+ * Returns the data populated from #CtsConfig that can be directly
+ * transfered over network.
+ *
+ * Returns: (nullable) (transfer full): return pointer to #byte in
+ * Big Endian (network) order. free with free() when no longer needed.
  */
 byte *
 cts_config_get_raw_data (CtsConfig *self)
