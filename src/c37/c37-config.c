@@ -864,6 +864,76 @@ cts_config_set_channel_names_of_pmu (CtsConfig  *self,
   return true;
 }
 
+/**
+ * cts_config_set_phasor_measurement_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the Phasor measurement type
+ * has to be set. If this code is being run on a PMU,
+ * this will be always 1.
+ * @phasor_index: The phasor index which has to be changed.
+ * @measurement_type: The type (voltage or current) of phasor.
+ *
+ * @measrurement_type can be %VALUE_TYPE_CURRENT or %VALUE_TYPE_VOLTAGE.
+ *
+ * Returns: %true if channel names were set and %false otherwise.
+ */
+bool
+cts_config_set_phasor_measurement_type_of_pmu (CtsConfig *self,
+                                               uint16_t   pmu_index,
+                                               uint16_t   phasor_index,
+                                               byte       measurement_type)
+{
+  CtsPmuConfig *config;
+  uint32_t data;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  config = self->pmu_config + pmu_index - 1;
+
+  if (phasor_index > config->num_phasors)
+    return false;
+
+  data = *(config->conv_factor_phasor + phasor_index - 1);
+  /* Save to the  1st byte of a 32 bit int */
+  data = (data & 0x00FFFFFF) | (measurement_type << 24);
+  *(config->conv_factor_phasor + phasor_index - 1) = data;
+
+  return true;
+}
+
+/**
+ * cts_config_set_phasor_measurement_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the Phasor measurement type
+ * has to be retrieved. If this code is being run on a PMU,
+ * this will be always 1.
+ * @phasor_index: The phasor index for which the value has to be retrieved.
+ *
+ * Returns: %VALUE_TYPE_CURRENT if current is being measured, or
+ * %VALUE_TYPE_VOLTAGE for voltage measurements. %VALUE_TYPE_INVALID
+ * is returned on error.
+ */
+byte
+cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
+                                               uint16_t   pmu_index,
+                                               uint16_t   phasor_index)
+{
+  CtsPmuConfig *config;
+  uint32_t data;
+
+  if (pmu_index > self->num_pmu)
+    return VALUE_TYPE_INVALID;
+
+  config = self->pmu_config + pmu_index - 1;
+
+  if (phasor_index > config->num_phasors)
+    return VALUE_TYPE_INVALID;
+
+  data = *(config->conv_factor_phasor + phasor_index - 1);
+
+  return data >> 24;
+}
 
 bool
 cts_config_set_phasor_conv_factor_of_pmu (CtsConfig *self,
