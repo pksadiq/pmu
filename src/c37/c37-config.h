@@ -144,6 +144,20 @@ bool cts_config_set_all_phasor_conv_factor_of_pmu     (CtsConfig *self,
 bool cts_config_set_all_phasor_conv_factor_of_all_pmu (CtsConfig *self,
                                                        uint32_t   conv_factor);
 
+bool cts_config_set_analog_measurement_type_of_pmu         (CtsConfig *self,
+                                                            uint16_t   pmu_index,
+                                                            uint16_t   analog_index,
+                                                            byte       type);
+bool cts_config_set_all_analog_measurement_type_of_pmu     (CtsConfig *self,
+                                                            uint16_t   pmu_index,
+                                                            byte       type);
+bool cts_config_set_all_analog_measurement_type_of_all_pmu (CtsConfig *self,
+                                                            byte       type);
+
+byte cts_config_get_analog_measurement_type_of_pmu (CtsConfig *self,
+                                                    uint16_t   pmu_index,
+                                                    uint16_t   analog_index);
+
 uint32_t cts_config_get_phasor_conv_factor_from_data  (uint32_t multiplier,
                                                        byte     type);
 uint32_t cts_config_get_analog_conv_factor_from_data  (uint32_t multiplier,

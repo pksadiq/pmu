@@ -1161,6 +1161,153 @@ cts_config_get_digital_status_word_from_data (uint16_t upper,
   return data;
 }
 
+/**
+ * cts_config_set_analog_measurement_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the Analog measurement type
+ * has to be set. If this code is being run on a PMU,
+ * this will be always 1.
+ * @analog_index: The analog index of which the type has to be changed.
+ * @type: The type of analog.
+ *
+ * @type can be %VALUE_TYPE_SINGLE_POINT_ON_WAVE, %VALUE_TYPE_RMS,
+ * or %VALUE_TYPE_PEAK.
+ *
+ * Returns: %true if analog measurement type was set and %false otherwise.
+ */
+bool
+cts_config_set_analog_measurement_type_of_pmu (CtsConfig *self,
+                                               uint16_t   pmu_index,
+                                               uint16_t   analog_index,
+                                               byte       type)
+{
+  CtsPmuConfig *config;
+  uint32_t data;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  config = self->pmu_config + pmu_index - 1;
+
+  if (analog_index > config->num_analog_values)
+    return false;
+
+  data = *(config->conv_factor_analog + analog_index - 1);
+  /* Save to the  1st byte of a 32 bit int */
+  data = (data & 0x00FFFFFF) | (type << 24);
+  *(config->conv_factor_analog + analog_index - 1) = data;
+
+  return true;
+}
+
+/**
+ * cts_config_set_all_analog_measurement_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the Analog measurement type
+ * has to be set. If this code is being run on a PMU,
+ * this will be always 1.
+ * @type: The type of analog.
+ *
+ * @type can be %VALUE_TYPE_SINGLE_POINT_ON_WAVE, %VALUE_TYPE_RMS,
+ * or %VALUE_TYPE_PEAK.
+ *
+ * Returns: %true if analog measurement type was set and %false otherwise.
+ */
+bool
+cts_config_set_all_analog_measurement_type_of_pmu (CtsConfig *self,
+                                                   uint16_t   pmu_index,
+                                                   byte       type)
+{
+  CtsPmuConfig *config;
+  uint16_t num_analogs;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  config = self->pmu_config + pmu_index - 1;
+  num_analogs = config->num_analog_values;
+
+  for (uint16_t i = 1; i <= num_analogs; i++)
+    {
+      bool status = cts_config_set_analog_measurement_type_of_pmu (self,
+                                                                   pmu_index,
+                                                              i, type);
+      if (!status)
+        return false;
+    }
+  return true;
+}
+
+/**
+ * cts_config_set_all_analog_measurement_type_of_all_pmu:
+ * @self: A valid configuration
+ * @type: The type of Analog value.
+ *
+ * @type can be %VALUE_TYPE_SINGLE_POINT_ON_WAVE, %VALUE_TYPE_RMS,
+ * or %VALUE_TYPE_PEAK.
+ *
+ * Returns: %true if analog measurement type was set and %false otherwise.
+ */
+bool
+cts_config_set_all_analog_measurement_type_of_all_pmu (CtsConfig *self,
+                                                       byte       type)
+{
+  uint16_t num_pmu;
+
+  num_pmu = self->num_pmu;
+
+  for (uint16_t i = 1; i <= num_pmu; i++)
+    {
+      bool status = cts_config_set_all_analog_measurement_type_of_pmu (self, i,
+                                                                  type);
+      if (!status)
+        return false;
+    }
+  return true;
+}
+
+/**
+ * cts_config_get_analog_measurement_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the analog measurement type
+ * has to be retrieved. If this code is being run on a PMU,
+ * this will be always 1.
+ * @analog_index: The analog index for which the value has to be retrieved.
+ *
+ * Returns: %VALUE_TYPE_SINGLE_POINT_ON_WAVE, %VALUE_TYPE_RMS,
+ * or %VALUE_TYPE_PEAK.
+ * %VALUE_TYPE_INVALID is returned on error.
+ */
+byte
+cts_config_get_analog_measurement_type_of_pmu (CtsConfig *self,
+                                               uint16_t   pmu_index,
+                                               uint16_t   analog_index)
+{
+  CtsPmuConfig *config;
+  uint32_t data;
+  byte measurement_type;
+
+  if (pmu_index > self->num_pmu)
+    return VALUE_TYPE_INVALID;
+
+  config = self->pmu_config + pmu_index - 1;
+
+  if (analog_index > config->num_analog_values)
+    return VALUE_TYPE_INVALID;
+
+  data = *(config->conv_factor_analog + analog_index - 1);
+
+  /* Get the last byte */
+  measurement_type = data >> 24;
+
+  if (measurement_type == VALUE_TYPE_RMS ||
+      measurement_type == VALUE_TYPE_PEAK ||
+      measurement_type == VALUE_TYPE_SINGLE_POINT_ON_WAVE)
+    return measurement_type;
+  else
+    return VALUE_TYPE_INVALID;
+}
+
 bool
 cts_config_set_analog_conv_factor_of_pmu (CtsConfig *self,
                                           uint16_t   pmu_index,
