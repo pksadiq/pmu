@@ -217,7 +217,7 @@ cts_config_set_pmu_count (CtsConfig *self,
  * @self: A valid configuration
  *
  * Returns the resolution of fractional second that shall be returned
- * by @cts_common_get_fraction_of_seconds(). See @cts_config_set_time_base()
+ * by cts_common_get_fraction_of_seconds(). See cts_config_set_time_base()
  * for more details.
  *
  * Returns: A unsigned 32 bit integer
@@ -234,18 +234,18 @@ cts_config_get_time_base (CtsConfig *self)
  * @time_base: the time base.
  *
  * Set the resolution of fractional second that shall be returned
- * by @cts_common_get_fraction_of_seconds().
+ * by cts_common_get_fraction_of_seconds().
  *
  * This @time_base shall be used to extract the right fraction of second
- * got via @cts_common_get_fraction_of_seconds().
+ * got via cts_common_get_fraction_of_seconds().
  *
- * Say for example, if @cts_common_get_fraction_of_seconds() returns
+ * Say for example, if cts_common_get_fraction_of_seconds() returns
  * 9000, and @time_base is 10000, this means that the real fraction
  * of second is 0.9 seconds (That is,
- * @cts_common_get_fraction_of_seconds()/@time_base)
+ * cts_common_get_fraction_of_seconds()/@time_base)
  *
- * And the real time will be @cts_common_get_time_seconds() +
- * @cts_common_get_fraction_of_seconds()/@cts_config_get_time_base() seconds
+ * And the real time will be cts_common_get_time_seconds() +
+ * cts_common_get_fraction_of_seconds()/cts_config_get_time_base() seconds
  * Since epoch (Jan. 1 1970, the UNIX time)
  *
  * Returns: A unsigned 32 bit integer
@@ -262,7 +262,7 @@ cts_config_set_time_base (CtsConfig *self,
  * @self: A valid configuration
  *
  * The rate of transmitted phasor data via network. Please see
- * @cts_config_set_data_rate() for more details.
+ * cts_config_set_data_rate() for more details.
  *
  * Returns: A signed 16 bit integer
  */
@@ -875,7 +875,7 @@ cts_config_set_channel_names_of_pmu (CtsConfig  *self,
  *
  * @measrurement_type can be %VALUE_TYPE_CURRENT or %VALUE_TYPE_VOLTAGE.
  *
- * Returns: %true if channel names were set and %false otherwise.
+ * Returns: %true if phasor measurement type was set and %false otherwise.
  */
 bool
 cts_config_set_phasor_measurement_type_of_pmu (CtsConfig *self,
