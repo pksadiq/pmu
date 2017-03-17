@@ -921,6 +921,7 @@ cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
 {
   CtsPmuConfig *config;
   uint32_t data;
+  byte measurement_type;
 
   if (pmu_index > self->num_pmu)
     return VALUE_TYPE_INVALID;
@@ -932,7 +933,14 @@ cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
 
   data = *(config->conv_factor_phasor + phasor_index - 1);
 
-  return data >> 24;
+  /* Get the last byte */ 
+  measurement_type = data >> 24;
+
+  if (measurement_type == VALUE_TYPE_CURRENT ||
+      measurement_type == VALUE_TYPE_VOLTAGE)
+    return measurement_type;
+  else
+    return VALUE_TYPE_INVALID;
 }
 
 bool
