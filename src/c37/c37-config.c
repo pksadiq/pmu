@@ -933,7 +933,7 @@ cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
 
   data = *(config->conv_factor_phasor + phasor_index - 1);
 
-  /* Get the last byte */ 
+  /* Get the last byte */
   measurement_type = data >> 24;
 
   if (measurement_type == VALUE_TYPE_CURRENT ||
