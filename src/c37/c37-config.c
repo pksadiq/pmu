@@ -105,12 +105,26 @@ typedef struct _CtsConfig
 CtsConfig *config_default_one = NULL;
 CtsConfig *config_default_two = NULL;
 
+/**
+ * cts_config_get_id_code:
+ * @self: A valid configuration
+ *
+ * Returns the ID code of the PMU/PDC.
+ *
+ * Returns: a value b/w 1 and 65535 including those. 0 signals an error
+ * or it hints that the configuration is not yet complete.
+ */
 uint16_t
 cts_config_get_id_code (CtsConfig *self)
 {
   return self->id_code;
 }
 
+/**
+ * cts_config_set_id_code:
+ * @self: A valid configuration
+ * @id_code: A 2 byte integer between (and including) 1 and 65535
+ */
 void
 cts_config_set_id_code (CtsConfig *self,
                         uint16_t   id_code)
@@ -134,6 +148,19 @@ pmu_config_clear_all_data (CtsPmuConfig *config)
  config->conf_change_count = 0;
 }
 
+/**
+ * cts_config_get_pmu_count:
+ * @self: A valid configuration
+ *
+ * Returns the total number of PMU connected.
+ * This should be always 1 if this code is being
+ * run on PMU.
+ *
+ * Returns: a value between 1 and 65535 including those. 0
+ * hints a non fully configured state (if the code is being run
+ * on PMU) or no PMU is connected (if the code is being run on
+ * a PDC)
+ */
 uint16_t
 cts_config_get_pmu_count (CtsConfig *self)
 {
@@ -141,8 +168,20 @@ cts_config_get_pmu_count (CtsConfig *self)
 }
 
 /**
- * Note: This is a very costly function.
- * Please use only once if possible
+ * cts_config_set_pmu_count:
+ * @self: A valid configuration
+ * @count: A 2 byte integer between (and including) 1 and 65535
+ *
+ * Set the number of PMUs connected. If this code is being
+ * run on a PMU, @count should be 1.
+ *
+ * Along with setting count, this code also allocates enough memory
+ * To handle @count number of PMUs on success.
+ *
+ * Returns: a value between 1 and 65535 including those.
+ * The memory for this many PMUs shall be allocated.
+ * If memory allocation succeeded, @count will be returned.
+ * Else, the previous PMU count shall be returned.
  */
 uint16_t
 cts_config_set_pmu_count (CtsConfig *self,
@@ -169,12 +208,44 @@ cts_config_set_pmu_count (CtsConfig *self,
   return self->pmu_config ? self->num_pmu : 0;
 }
 
+/**
+ * cts_config_get_time_base:
+ * @self: A valid configuration
+ *
+ * Returns the resolution of fractional second that shall be returned
+ * by @cts_common_get_fraction_of_seconds. See @cts_config_set_time_base
+ * for more details.
+ *
+ * Returns: A unsigned 32 bit integer
+ */
 uint32_t
 cts_config_get_time_base (CtsConfig *self)
 {
   return self->time_base;
 }
 
+/**
+ * cts_config_set_time_base:
+ * @self: A valid configuration
+ * @time_base: the time base.
+ *
+ * Set the resolution of fractional second that shall be returned
+ * by @cts_common_get_fraction_of_seconds.
+ *
+ * This @time_base shall be used to extract the right fraction of second
+ * got via @cts_common_get_fraction_of_seconds.
+ *
+ * Say for example, if @cts_common_get_fraction_of_seconds returns
+ * 9000, and @time_base is 10000, this means that the real fraction
+ * of second is 0.9 seconds (That is,
+ * @cts_common_get_fraction_of_seconds/@time_base)
+ *
+ * And the real time will be @cts_common_get_time_seconds +
+ * @cts_common_get_fraction_of_seconds/@cts_config_get_time_base seconds
+ * Since epoch (Jan. 1 1970, the UNIX time)
+ *
+ * Returns: A unsigned 32 bit integer
+ */
 void
 cts_config_set_time_base (CtsConfig *self,
                           uint32_t   time_base)
@@ -182,12 +253,34 @@ cts_config_set_time_base (CtsConfig *self,
   self->time_base = time_base;
 }
 
+/**
+ * cts_config_get_data_rate:
+ * @self: A valid configuration
+ *
+ * The rate of transmitted phasor data via network. Please see
+ * @cts_config_set_data_rate for more details.
+ *
+ * Returns: A signed 16 bit integer
+ */
 uint16_t
 cts_config_get_data_rate (CtsConfig *self)
 {
   return self->data_rate;
 }
 
+/**
+ * cts_config_set_data_rate:
+ * @self: A valid configuration
+ * @data_rate: A signed 16 bit integer
+ *
+ * The rate of transmitted pashor data via network.
+ * If @data_rate is > 0, @data_rate denotes the number of frames per second.
+ * If @data_rate is < 0, @data_rate is negative of seconds per frame.
+ *
+ * Say for example, if @data_rate is 10, 10 frames will be transfered
+ * every second. If @data_rate is -10, then 1 frame will be transfered
+ * every 10 seconds.
+ */
 void
 cts_config_set_data_rate (CtsConfig *self,
                           uint16_t   data_rate)
@@ -195,6 +288,19 @@ cts_config_set_data_rate (CtsConfig *self,
   self->data_rate = data_rate;
 }
 
+/**
+ * cts_config_get_station_name_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the station name
+ * has to be retrieved. If this code is being run on a PMU
+ * This will be always 1.
+ *
+ * The returned array shall not be ending with '\0'. It will
+ * Always be 16 bytes. And the name will be filled with
+ * white space (0x20) if name is less than 16 bytes in size.
+ *
+ * Returns: An array of 16 byte char
+ */
 char *
 cts_config_get_station_name_of_pmu (CtsConfig *self,
                                     uint16_t   pmu_index)
@@ -202,6 +308,21 @@ cts_config_get_station_name_of_pmu (CtsConfig *self,
   return (self->pmu_config + pmu_index - 1)->station_name;
 }
 
+/**
+ * cts_config_set_station_name_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the station name
+ * has to be set. If this code is being run on a PMU
+ * This will be always 1.
+ * @station_name: the station name to be set.
+ * @name_size: the size of @station_name excluding '\0', as
+ * got from functions like @strlen.
+ *
+ * Note: Only the first 16 bytes of @station_name will be stored,
+ * even if @name_size is greater than 16.
+ *
+ * Returns: #TRUE if succeeded setting name, else #FALSE.
+ */
 bool
 cts_config_set_station_name_of_pmu (CtsConfig  *self,
                                     uint16_t    pmu_index,
@@ -227,6 +348,17 @@ cts_config_set_station_name_of_pmu (CtsConfig  *self,
   return true;
 }
 
+/**
+ * cts_config_get_id_code_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the id code
+ * has to be retrieved. If this code is being run on a PMU
+ * This will be always 1.
+ *
+ *
+ * Returns: a 2 byte unsigned integer. A value 0 denotes
+ * an error, or the value is not set.
+ */
 uint16_t
 cts_config_get_id_code_of_pmu (CtsConfig *self,
                                uint16_t   pmu_index)
@@ -237,6 +369,18 @@ cts_config_get_id_code_of_pmu (CtsConfig *self,
   return (self->pmu_config + pmu_index - 1)->id_code;
 }
 
+/**
+ * cts_config_set_id_code_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the id code
+ * has to be retrieved. If this code is being run on a PMU
+ * This will be always 1.
+ * @id_code: The ID code to set for PMU with index @pmu_index.
+ * @id_code should be a 2 byte unsigned integer, and not 0.
+ *
+ * Returns: #true if ID code is set. #false if a PMU with index
+ * @pmu_index doesn't exit.
+ */
 bool
 cts_config_set_id_code_of_pmu (CtsConfig *self,
                                uint16_t   pmu_index,
