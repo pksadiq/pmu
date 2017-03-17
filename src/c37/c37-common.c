@@ -150,7 +150,7 @@ cts_common_get_time_seconds (void)
 }
 
 uint32_t
-cts_common_get_fraction_of_seconds (void)
+cts_common_get_fraction_of_seconds (uint32_t time_base)
 {
   struct timespec ts;
   uint32_t time;
@@ -159,7 +159,7 @@ cts_common_get_fraction_of_seconds (void)
   timespec_get(&ts, TIME_UTC);
 
   /* Only μs accuracy required at most */
-  time = ts.tv_nsec / 1000;
+  time = ts.tv_nsec * (time_base / (pow (10, 2) * 1.0));
 
   return time;
 }

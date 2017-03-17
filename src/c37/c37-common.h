@@ -23,6 +23,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <math.h>
 #include <time.h>
 #include <arpa/inet.h>
 
@@ -50,7 +51,7 @@ cts_common_calc_crc (const byte *data, size_t data_length, const byte *header);
 uint32_t
 cts_common_get_time_seconds (void);
 uint32_t
-cts_common_get_fraction_of_seconds (void);
+cts_common_get_fraction_of_seconds (uint32_t time_base);
 int
 cts_common_get_type (const byte *data);
 uint16_t
