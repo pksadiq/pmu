@@ -217,7 +217,7 @@ cts_config_set_pmu_count (CtsConfig *self,
  * @self: A valid configuration
  *
  * Returns the resolution of fractional second that shall be returned
- * by @cts_common_get_fraction_of_seconds. See @cts_config_set_time_base
+ * by @cts_common_get_fraction_of_seconds(). See @cts_config_set_time_base()
  * for more details.
  *
  * Returns: A unsigned 32 bit integer
@@ -234,18 +234,18 @@ cts_config_get_time_base (CtsConfig *self)
  * @time_base: the time base.
  *
  * Set the resolution of fractional second that shall be returned
- * by @cts_common_get_fraction_of_seconds.
+ * by @cts_common_get_fraction_of_seconds().
  *
  * This @time_base shall be used to extract the right fraction of second
- * got via @cts_common_get_fraction_of_seconds.
+ * got via @cts_common_get_fraction_of_seconds().
  *
- * Say for example, if @cts_common_get_fraction_of_seconds returns
+ * Say for example, if @cts_common_get_fraction_of_seconds() returns
  * 9000, and @time_base is 10000, this means that the real fraction
  * of second is 0.9 seconds (That is,
- * @cts_common_get_fraction_of_seconds/@time_base)
+ * @cts_common_get_fraction_of_seconds()/@time_base)
  *
- * And the real time will be @cts_common_get_time_seconds +
- * @cts_common_get_fraction_of_seconds/@cts_config_get_time_base seconds
+ * And the real time will be @cts_common_get_time_seconds() +
+ * @cts_common_get_fraction_of_seconds()/@cts_config_get_time_base() seconds
  * Since epoch (Jan. 1 1970, the UNIX time)
  *
  * Returns: A unsigned 32 bit integer
@@ -262,7 +262,7 @@ cts_config_set_time_base (CtsConfig *self,
  * @self: A valid configuration
  *
  * The rate of transmitted phasor data via network. Please see
- * @cts_config_set_data_rate for more details.
+ * @cts_config_set_data_rate() for more details.
  *
  * Returns: A signed 16 bit integer
  */
@@ -303,7 +303,7 @@ cts_config_set_data_rate (CtsConfig *self,
  * Always be 16 bytes. And the name will be filled with
  * white space (0x20) if name is less than 16 bytes in size.
  *
- * Returns: An array of 16 byte char
+ * Returns: (nullable) (transfer none): An array of 16 byte char
  */
 char *
 cts_config_get_station_name_of_pmu (CtsConfig *self,
@@ -325,7 +325,7 @@ cts_config_get_station_name_of_pmu (CtsConfig *self,
  * Note: Only the first 16 bytes of @station_name will be stored,
  * even if @name_size is greater than 16.
  *
- * Returns: #TRUE if succeeded setting name, else #FALSE.
+ * Returns: %true if succeeded setting name, else %false.
  */
 bool
 cts_config_set_station_name_of_pmu (CtsConfig  *self,
@@ -382,7 +382,7 @@ cts_config_get_id_code_of_pmu (CtsConfig *self,
  * @id_code: The ID code to set for PMU with index @pmu_index.
  * @id_code should be a 2 byte unsigned integer, and not 0.
  *
- * Returns: #true if ID code is set. #false if a PMU with index
+ * Returns: %true if ID code is set. %false if a PMU with index
  * @pmu_index doesn't exit.
  */
 bool
@@ -405,10 +405,10 @@ cts_config_set_id_code_of_pmu (CtsConfig *self,
  * This will be always 1.
  *
  *
- * Returns: #VALUE_TYPE_FLOAT if frequency (and ROCOF) data type
- * is floating point (4 byte), or #VALUE_TYPE_INT if data type is
+ * Returns: %VALUE_TYPE_FLOAT if frequency (and ROCOF) data type
+ * is floating point (4 byte), or %VALUE_TYPE_INT if data type is
  * an integer (2 byte unsigned).
- * if @pmu_index is invalid, #VALUE_TYPE_INVALID is returned.
+ * if @pmu_index is invalid, %VALUE_TYPE_INVALID is returned.
  */
 byte
 cts_config_get_freq_data_type_of_pmu (CtsConfig *self,
@@ -433,8 +433,8 @@ cts_config_get_freq_data_type_of_pmu (CtsConfig *self,
  * This will be always 1.
  * @data_type: the data type of frequency or ROCOF to be set.
  *
- * @data_type can be #VALUE_TYPE_FLOAT for 4 byte floating
- * point, or #VALUE_TYPE_INT for 2 byte unsigned integer.
+ * @data_type can be %VALUE_TYPE_FLOAT for 4 byte floating
+ * point, or %VALUE_TYPE_INT for 2 byte unsigned integer.
  */
 void
 cts_config_set_freq_data_type_of_pmu (CtsConfig *self,
@@ -460,10 +460,10 @@ cts_config_set_freq_data_type_of_pmu (CtsConfig *self,
  * This will be always 1.
  *
  *
- * Returns: #VALUE_TYPE_FLOAT if Analog data type
- * is floating point (4 byte), or #VALUE_TYPE_INT if data type is
+ * Returns: %VALUE_TYPE_FLOAT if Analog data type
+ * is floating point (4 byte), or %VALUE_TYPE_INT if data type is
  * an integer (2 byte unsigned).
- * if @pmu_index is invalid, #VALUE_TYPE_INVALID is returned.
+ * if @pmu_index is invalid, %VALUE_TYPE_INVALID is returned.
  */
 byte
 cts_config_get_analog_data_type_of_pmu (CtsConfig *self,
@@ -488,8 +488,8 @@ cts_config_get_analog_data_type_of_pmu (CtsConfig *self,
  * This will be always 1.
  * @data_type: the data type of Analog value
  *
- * @data_type can be #VALUE_TYPE_FLOAT for 4 byte floating
- * point, or #VALUE_TYPE_INT for 2 byte unsigned integer.
+ * @data_type can be %VALUE_TYPE_FLOAT for 4 byte floating
+ * point, or %VALUE_TYPE_INT for 2 byte unsigned integer.
  */
 void
 cts_config_set_analog_data_type_of_pmu (CtsConfig *self,
@@ -515,10 +515,10 @@ cts_config_set_analog_data_type_of_pmu (CtsConfig *self,
  * This will be always 1.
  *
  *
- * Returns: #VALUE_TYPE_FLOAT if Phasor data type
- * is floating point (4 byte), or #VALUE_TYPE_INT if data type is
+ * Returns: %VALUE_TYPE_FLOAT if Phasor data type
+ * is floating point (4 byte), or %VALUE_TYPE_INT if data type is
  * an integer (2 byte unsigned).
- * if @pmu_index is invalid, #VALUE_TYPE_INVALID is returned.
+ * if @pmu_index is invalid, %VALUE_TYPE_INVALID is returned.
  */
 byte
 cts_config_get_phasor_data_type_of_pmu (CtsConfig *self,
@@ -543,8 +543,8 @@ cts_config_get_phasor_data_type_of_pmu (CtsConfig *self,
  * This will be always 1.
  * @data_type: the data type of Phasor value
  *
- * @data_type can be #VALUE_TYPE_FLOAT for 4 byte floating
- * point, or #VALUE_TYPE_INT for 2 byte unsigned integer.
+ * @data_type can be %VALUE_TYPE_FLOAT for 4 byte floating
+ * point, or %VALUE_TYPE_INT for 2 byte unsigned integer.
  */
 void
 cts_config_set_phasor_data_type_of_pmu (CtsConfig *self,
@@ -570,10 +570,10 @@ cts_config_set_phasor_data_type_of_pmu (CtsConfig *self,
  * This will be always 1.
  *
  *
- * Returns: #VALUE_TYPE_RECTANGULAR if Phasor data type
- * is set as real and imaginary, or #VALUE_TYPE_POLAR if data type is
+ * Returns: %VALUE_TYPE_RECTANGULAR if Phasor data type
+ * is set as real and imaginary, or %VALUE_TYPE_POLAR if data type is
  * divided as magnitude and angle (That is, polar type).
- * if @pmu_index is invalid, #VALUE_TYPE_INVALID is returned.
+ * if @pmu_index is invalid, %VALUE_TYPE_INVALID is returned.
  */
 byte
 cts_config_get_phasor_complex_type_of_pmu (CtsConfig *self,
@@ -595,9 +595,9 @@ cts_config_get_phasor_complex_type_of_pmu (CtsConfig *self,
  * This will be always 1.
  * @data_type: the complex data type of Phasor value
  *
- * @data_type can be #VALUE_TYPE_RECTANGULAR if complex type
+ * @data_type can be %VALUE_TYPE_RECTANGULAR if complex type
  * has rectangular coordinates (divided as real and imaginary)
- * or #VALUE_TYPE_POLAR if coordinates are  divided as magnitude and angle.
+ * or %VALUE_TYPE_POLAR if coordinates are  divided as magnitude and angle.
  */
 void
 cts_config_set_phasor_complex_type_of_pmu (CtsConfig *self,
@@ -641,6 +641,16 @@ cts_config_set_values_of_pmu (CtsConfig  *self,
   return false;
 }
 
+/**
+ * cts_config_get_number_of_phasors_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the number of Phasors
+ * has to be retrieved. If this code is being run on a PMU
+ * This will be always 1.
+ *
+ * Returns: An unsigned 16 bit integer. 0 denotes that @pmu_index
+ * is invalid, or number of Phasors is not set.
+ */
 uint16_t
 cts_config_get_number_of_phasors_of_pmu (CtsConfig *self,
                                          uint16_t   pmu_index)
@@ -651,6 +661,20 @@ cts_config_get_number_of_phasors_of_pmu (CtsConfig *self,
   return (self->pmu_config + pmu_index - 1)->num_phasors;
 }
 
+/**
+ * cts_config_set_number_of_phasors_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the number of Phasors
+ * has to be set. If this code is being run on a PMU,
+ * this will be always 1.
+ * @count: the Phasor count to be set.
+ *
+ * Along with setting count, this function also allocates the memory
+ * required for @count Phasors.
+ *
+ * Returns: returns @count if allocating memory succeeded. Else,
+ * returns the previously set value of number of Phasors.
+ */
 uint16_t
 cts_config_set_number_of_phasors_of_pmu (CtsConfig *self,
                                          uint16_t   pmu_index,
@@ -672,6 +696,16 @@ cts_config_set_number_of_phasors_of_pmu (CtsConfig *self,
   return config->num_phasors;
 }
 
+/**
+ * cts_config_get_number_of_analog_vals_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the number of Analog values
+ * has to be retrieved. If this code is being run on a PMU,
+ * this will be always 1.
+ *
+ * Returns: An unsigned 16 bit integer. 0 denotes that @pmu_index
+ * is invalid, or number of Analog values is not set.
+ */
 uint16_t
 cts_config_get_number_of_analog_vals_of_pmu (CtsConfig *self,
                                              uint16_t   pmu_index)
@@ -682,6 +716,20 @@ cts_config_get_number_of_analog_vals_of_pmu (CtsConfig *self,
   return (self->pmu_config + pmu_index - 1)->num_analog_values;
 }
 
+/**
+ * cts_config_set_number_of_analog_vals_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the number of Analog values
+ * has to be set. If this code is being run on a PMU,
+ * this will be always 1.
+ * @count: the Analog value count to be set.
+ *
+ * Along with setting count, this function also allocates the memory
+ * required for @count Analog values.
+ *
+ * Returns: returns @count if allocating memory succeeded. Else,
+ * returns the previously set value of number of Analog values.
+ */
 uint16_t
 cts_config_set_number_of_analog_vals_of_pmu (CtsConfig *self,
                                              uint16_t   pmu_index,
@@ -703,6 +751,16 @@ cts_config_set_number_of_analog_vals_of_pmu (CtsConfig *self,
   return config->num_analog_values;
 }
 
+/**
+ * cts_config_get_number_of_status_words_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the number of digital status words
+ * has to be retrieved. If this code is being run on a PMU,
+ * this will be always 1.
+ *
+ * Returns: An unsigned 16 bit integer. 0 denotes that @pmu_index
+ * is invalid, or number of digital status words is not set.
+ */
 uint16_t
 cts_config_get_number_of_status_words_of_pmu (CtsConfig *self,
                                               uint16_t   pmu_index)
@@ -713,6 +771,20 @@ cts_config_get_number_of_status_words_of_pmu (CtsConfig *self,
   return (self->pmu_config + pmu_index - 1)->num_status_words;
 }
 
+/**
+ * cts_config_set_number_of_status_words_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the number of digital status words
+ * has to be set. If this code is being run on a PMU,
+ * this will be always 1.
+ * @count: the digital status words count to be set.
+ *
+ * Along with setting count, this function also allocates the memory
+ * required for @count digital status words.
+ *
+ * Returns: returns @count if allocating memory succeeded. Else,
+ * returns the previously set value of digital status words count.
+ */
 uint16_t
 cts_config_set_number_of_status_words_of_pmu (CtsConfig *self,
                                               uint16_t   pmu_index,
@@ -734,6 +806,18 @@ cts_config_set_number_of_status_words_of_pmu (CtsConfig *self,
   return config->num_status_words;
 }
 
+/**
+ * cts_config_get_channel_names_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the channel names
+ * has to be retrieved. If this code is being run on a PMU,
+ * this will be always 1.
+ *
+ * Returns: (nullable) (transfer none): A pointer to an array of chars.
+ * Each array will exactly 16 bytes in size. The last item in the array shall
+ * be %NULL.
+ * if @pmu_index is invalid, %NULL is returned.
+ */
 char **
 cts_config_get_channel_names_of_pmu (CtsConfig *self,
                                      uint16_t   pmu_index)
@@ -744,6 +828,23 @@ cts_config_get_channel_names_of_pmu (CtsConfig *self,
   return (self->pmu_config + pmu_index - 1)->channel_names;
 }
 
+/**
+ * cts_config_set_channel_names_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the channel names
+ * has to be set. If this code is being run on a PMU,
+ * this will be always 1.
+ * @channel_names: a pointer to an array of 16 byte chars each,
+ * that ends with %NULL.
+ *
+ * Set the channel names of pmu with index @pmu_index.
+ * No copy of @channel_names is made. ensure that @channel_names
+ * exist as long as #CtsConfig exist.
+ *
+ * Phasor count should be atleast one for the function to succeed.
+ *
+ * Returns: %true of channel names were set and %false otherwise.
+ */
 bool
 cts_config_set_channel_names_of_pmu (CtsConfig  *self,
                                      uint16_t    pmu_index,
