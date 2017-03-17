@@ -930,8 +930,9 @@ cts_config_set_all_phasor_measurement_type_of_pmu (CtsConfig *self,
 
   for (uint16_t i = 1; i <= num_phasors; i++)
     {
-      bool status = cts_config_set_phasor_conv_factor_of_pmu (self, pmu_index,
-                                                              i, type);
+      bool status = cts_config_set_phasor_measurement_type_of_pmu (self,
+                                                                   pmu_index,
+                                                                   i, type);
       if (!status)
         return false;
     }
@@ -957,8 +958,8 @@ cts_config_set_all_phasor_measurement_type_of_all_pmu (CtsConfig *self,
 
   for (uint16_t i = 1; i <= num_pmu; i++)
     {
-      bool status = cts_config_set_all_phasor_conv_factor_of_pmu (self, i,
-                                                                  type);
+      bool status = cts_config_set_all_phasor_measurement_type_of_pmu (self, i,
+                                                                       type);
       if (!status)
         return false;
     }
