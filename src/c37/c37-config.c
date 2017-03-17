@@ -954,10 +954,17 @@ cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
  * Should be an unsigned integer not greater than 24 bits.
  *
  * @conv_factor is used to interpret the phasor value transfered.
- * Say for example, for voltages, if @conv_factor is 100000, and if
+ * Say for example,  if @conv_factor is 100000, and if
  * the phasor value (retrieved via :TODO:) is 140. Then the real phasor
- * voltage value will be 140 * 100000 * 10^(-5) V. That is
- * @transmitted_value * @conv_factor * 10^(-5) V.
+ * voltage value will be 140 * 100000 * 10^(-5) V (or A if current). That is
+ * @transmitted_value * @conv_factor * 10^(-5) V (or A if current).
+ *
+ * The logic for calculating a sensible @conv_factor:
+ * 1. Get the maximum possible value that shall be measured, say max_value.
+ * 2. The maximu possible value that can be saved in 2 bytes (the max possbile
+ *    size of phasor integers) is 32768 (and the negative half)
+ * 3. Now the @conv_factor can be calculated as:
+ *    max_value/@conv_factor * 10^5.
  *
  * This convertion factor shall not be used if the tranmitted data
  * is set as float (using cts_config_set_phasor_data_type_of_pmu())
