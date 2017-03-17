@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "c37/c37.h"
+
 #include "pmu-details.h"
 
 
@@ -232,11 +234,33 @@ pmu_details_get_is_first_run (void)
   return TRUE;
 }
 
+void
+pmu_details_configure_pmu (PmuDetails *details)
+{
+  CtsConfig *config1 = cts_config_get_default_config_one ();
+
+  cts_config_set_id_code (config1, pmu_details_get_pmu_id ());
+  cts_config_set_id_code_of_pmu (config1, 1, pmu_details_get_pmu_id ());
+  cts_config_set_pmu_count (config1, 1);
+  cts_config_set_time_base (config1, 1000);
+  cts_config_set_data_rate (config1, 1000);
+  cts_config_set_station_name_of_pmu (config1, 1,
+                                      pmu_details_get_station_name (),
+                                      strlen (pmu_details_get_station_name ()));
+  cts_config_set_freq_data_type_of_pmu (config1, 1, VALUE_TYPE_INT);
+  cts_config_set_analog_data_type_of_pmu (config1, 1, VALUE_TYPE_INT);
+}
+
 static PmuDetails *
 pmu_details_new (void)
 {
-  return g_object_new (PMU_TYPE_DETAILS,
-                       NULL);
+  PmuDetails *details;
+
+  details = g_object_new (PMU_TYPE_DETAILS,
+                          NULL);
+  pmu_details_configure_pmu (details);
+
+  return details;
 }
 
 PmuDetails *
