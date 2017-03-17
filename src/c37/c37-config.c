@@ -943,13 +943,35 @@ cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
     return VALUE_TYPE_INVALID;
 }
 
+/**
+ * cts_config_set_phasor_measurement_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the Phasor measurement type
+ * has to be set. If this code is being run on a PMU,
+ * this will be always 1.
+ * @phasor_index: The phasor index which has to be changed.
+ * @conv_factor: The convertion factor of transmitted Phasor value.
+ * Should be an unsigned integer not greater than 24 bits.
+ *
+ * @conv_factor is used to interpret the phasor value transfered.
+ * Say for example, for voltages, if @conv_factor is 100000, and if
+ * the phasor value (retrieved via :TODO:) is 140. Then the real phasor
+ * voltage value will be 140 * 100000 * 10^(-5) V. That is
+ * @transmitted_value * @conv_factor * 10^(-5) V.
+ *
+ * This convertion factor shall not be used if the tranmitted data
+ * is set as float (using cts_config_set_phasor_data_type_of_pmu())
+ *
+ * Returns: %true if Phasor convertion factor was set and %false otherwise.
+ */
 bool
 cts_config_set_phasor_conv_factor_of_pmu (CtsConfig *self,
                                           uint16_t   pmu_index,
                                           uint16_t   phasor_index,
-                                          uint32_t   data)
+                                          uint32_t   conv_factor)
 {
   CtsPmuConfig *config;
+  uint32_t data;
 
   if (pmu_index > self->num_pmu)
     return false;
@@ -959,7 +981,9 @@ cts_config_set_phasor_conv_factor_of_pmu (CtsConfig *self,
   if (phasor_index > config->num_phasors)
     return false;
 
-  *(config->conv_factor_phasor + phasor_index - 1) = data;
+  data = *(config->conv_factor_phasor + phasor_index - 1);
+  /* Save to the last 3 bytes */
+  data = (data & 0xFF000000) | (conv_factor & 0x00FFFFFF);
   return true;
 }
 
