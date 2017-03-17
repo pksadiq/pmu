@@ -20,6 +20,10 @@
 #include "stdio.h"
 #include "c37-config.h"
 
+#define FREQUENCY_DATA_TYPE_BIT 3
+#define ANALOG_DATA_TYPE_BIT 2
+#define PHASOR_DATA_TYPE_BIT 1
+#define PHASOR_COMPLEX_TYPE_BIT 0
 /*
  * This will be common to every configuration
  * SYNC (2) + frame size (2) + id code (2) + epoch time (4) +
@@ -373,7 +377,7 @@ cts_config_get_id_code_of_pmu (CtsConfig *self,
  * cts_config_set_id_code_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the id code
- * has to be retrieved. If this code is being run on a PMU
+ * has to be set. If this code is being run on a PMU
  * This will be always 1.
  * @id_code: The ID code to set for PMU with index @pmu_index.
  * @id_code should be a 2 byte unsigned integer, and not 0.
@@ -393,46 +397,100 @@ cts_config_set_id_code_of_pmu (CtsConfig *self,
   return true;
 }
 
-bool
+/**
+ * cts_config_get_freq_data_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the frequency/ROCOF data type
+ * has to be retrieved. If this code is being run on a PMU
+ * This will be always 1.
+ *
+ *
+ * Returns: #VALUE_TYPE_FLOAT if frequency (and ROCOF) data type
+ * is floating point (4 byte), or #VALUE_TYPE_INT if data type is
+ * an integer (2 byte unsigned).
+ * if @pmu_index is invalid, #VALUE_TYPE_INVALID is returned.
+ */
+byte
 cts_config_get_freq_data_type_of_pmu (CtsConfig *self,
                                       uint16_t   pmu_index)
 {
   if (pmu_index > self->num_pmu)
-    return false;
+    return VALUE_TYPE_INVALID;
 
   CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
 
-  return BIT_IS_SET (config->data_format, 3);
+  if (BIT_IS_SET (config->data_format, FREQUENCY_DATA_TYPE_BIT))
+    return VALUE_TYPE_FLOAT;
+  else
+    return VALUE_TYPE_INT;
 }
 
+/**
+ * cts_config_set_freq_data_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the frequency/ROCOF
+ * data type has to be set. If this code is being run on a PMU
+ * This will be always 1.
+ * @data_type: the data type of frequency or ROCOF to be set.
+ *
+ * @data_type can be #VALUE_TYPE_FLOAT for 4 byte floating
+ * point, or #VALUE_TYPE_INT for 2 byte unsigned integer.
+ */
 void
 cts_config_set_freq_data_type_of_pmu (CtsConfig *self,
                                       uint16_t   pmu_index,
-                                      bool       is_float)
+                                      byte       data_type)
 {
   if (pmu_index > self->num_pmu)
     return;
 
   CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
 
-  if (is_float)
-    SET_BIT (config->data_format, 3);
+  if (data_type == VALUE_TYPE_FLOAT)
+    SET_BIT (config->data_format, FREQUENCY_DATA_TYPE_BIT);
   else
-    CLEAR_BIT (config->data_format, 3);
+    CLEAR_BIT (config->data_format, FREQUENCY_DATA_TYPE_BIT);
 }
 
-bool
+/**
+ * cts_config_get_analog_data_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the Analog
+ * has to be retrieved. If this code is being run on a PMU
+ * This will be always 1.
+ *
+ *
+ * Returns: #VALUE_TYPE_FLOAT if Analog data type
+ * is floating point (4 byte), or #VALUE_TYPE_INT if data type is
+ * an integer (2 byte unsigned).
+ * if @pmu_index is invalid, #VALUE_TYPE_INVALID is returned.
+ */
+byte
 cts_config_get_analog_data_type_of_pmu (CtsConfig *self,
                                         uint16_t   pmu_index)
 {
   if (pmu_index > self->num_pmu)
-    return false;
+    return VALUE_TYPE_INVALID;
 
   CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
 
-  return BIT_IS_SET (config->data_format, 2);
+  if (BIT_IS_SET (config->data_format, ANALOG_DATA_TYPE_BIT))
+    return VALUE_TYPE_FLOAT;
+  else
+    return VALUE_TYPE_INT;
 }
 
+/**
+ * cts_config_set_analog_data_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the Analog
+ * data type has to be set. If this code is being run on a PMU
+ * This will be always 1.
+ * @data_type: the data type of Analog value
+ *
+ * @data_type can be #VALUE_TYPE_FLOAT for 4 byte floating
+ * point, or #VALUE_TYPE_INT for 2 byte unsigned integer.
+ */
 void
 cts_config_set_analog_data_type_of_pmu (CtsConfig *self,
                                         uint16_t   pmu_index,
@@ -443,52 +501,104 @@ cts_config_set_analog_data_type_of_pmu (CtsConfig *self,
 
   CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
 
-  if (data_type)
-    SET_BIT (config->data_format, 2);
+  if (data_type == VALUE_TYPE_FLOAT)
+    SET_BIT (config->data_format, ANALOG_DATA_TYPE_BIT);
   else
-    CLEAR_BIT (config->data_format, 2);
+    CLEAR_BIT (config->data_format, ANALOG_DATA_TYPE_BIT);
 }
 
-bool
+/**
+ * cts_config_get_phasor_data_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the Phasor data type
+ * has to be retrieved. If this code is being run on a PMU
+ * This will be always 1.
+ *
+ *
+ * Returns: #VALUE_TYPE_FLOAT if Phasor data type
+ * is floating point (4 byte), or #VALUE_TYPE_INT if data type is
+ * an integer (2 byte unsigned).
+ * if @pmu_index is invalid, #VALUE_TYPE_INVALID is returned.
+ */
+byte
 cts_config_get_phasor_data_type_of_pmu (CtsConfig *self,
                                         uint16_t   pmu_index)
 {
   if (pmu_index > self->num_pmu)
-    return false;
+    return VALUE_TYPE_INVALID;
 
   CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
 
-  return BIT_IS_SET (config->data_format, 1);
+  if (BIT_IS_SET (config->data_format, PHASOR_DATA_TYPE_BIT))
+    return VALUE_TYPE_FLOAT;
+  else
+    return VALUE_TYPE_INT;
 }
 
+/**
+ * cts_config_set_phasor_data_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the Phasor
+ * data type has to be set. If this code is being run on a PMU
+ * This will be always 1.
+ * @data_type: the data type of Phasor value
+ *
+ * @data_type can be #VALUE_TYPE_FLOAT for 4 byte floating
+ * point, or #VALUE_TYPE_INT for 2 byte unsigned integer.
+ */
 void
 cts_config_set_phasor_data_type_of_pmu (CtsConfig *self,
                                         uint16_t   pmu_index,
-                                        bool       is_float)
+                                        byte       data_type)
 {
   if (pmu_index > self->num_pmu)
     return;
 
   CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
 
-  if (is_float)
-    SET_BIT (config->data_format, 1);
+  if (data_type == VALUE_TYPE_FLOAT)
+    SET_BIT (config->data_format, PHASOR_DATA_TYPE_BIT);
   else
-    CLEAR_BIT (config->data_format, 1);
+    CLEAR_BIT (config->data_format, PHASOR_DATA_TYPE_BIT);
 }
 
-bool
+/**
+ * cts_config_get_phasor_complex_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the Phasor Complex type
+ * has to be retrieved. If this code is being run on a PMU
+ * This will be always 1.
+ *
+ *
+ * Returns: #VALUE_TYPE_RECTANGULAR if Phasor data type
+ * is set as real and imaginary, or #VALUE_TYPE_POLAR if data type is
+ * divided as magnitude and angle (That is, polar type).
+ * if @pmu_index is invalid, #VALUE_TYPE_INVALID is returned.
+ */
+byte
 cts_config_get_phasor_complex_type_of_pmu (CtsConfig *self,
                                            uint16_t   pmu_index)
 {
   if (pmu_index > self->num_pmu)
-    return false;
+    return VALUE_TYPE_INVALID;
 
   CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
 
-  return BIT_IS_SET (config->data_format, 0);
+  return BIT_IS_SET (config->data_format, PHASOR_COMPLEX_TYPE_BIT);
 }
 
+/**
+ * cts_config_set_phasor_complex_type_of_pmu:
+ * @self: A valid configuration
+ * @pmu_index: The index of PMU of which the Phasor Complex type
+ * has to be set. If this code is being run on a PMU
+ * This will be always 1.
+ * @data_type: the complex data type of Phasor value
+ *
+ * @data_type can be #VALUE_TYPE_RECTANGULAR if complex type
+ * has rectangular coordinates (divided as real and imaginary)
+ * or #VALUE_TYPE_POLAR if coordinates are  divided as magnitude and angle.
+ */
 void
 cts_config_set_phasor_complex_type_of_pmu (CtsConfig *self,
                                            uint16_t   pmu_index,
@@ -500,9 +610,9 @@ cts_config_set_phasor_complex_type_of_pmu (CtsConfig *self,
   CtsPmuConfig *config = self->pmu_config + pmu_index - 1;
 
   if (is_polar)
-    SET_BIT (config->data_format, 0);
+    SET_BIT (config->data_format, PHASOR_COMPLEX_TYPE_BIT);
   else
-    CLEAR_BIT (config->data_format, 0);
+    CLEAR_BIT (config->data_format, PHASOR_COMPLEX_TYPE_BIT);
 }
 
 static bool
@@ -722,7 +832,7 @@ cts_config_get_phasor_conv_factor_from_data (uint32_t multiplier,
 {
   uint32_t data = multiplier;
 
-  if (type == TYPE_CURRENT)
+  if (type == VALUE_TYPE_CURRENT)
     SET_BIT(data, 24);
   else
     CLEAR_BIT(data, 24);

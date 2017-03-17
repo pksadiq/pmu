@@ -29,18 +29,18 @@ typedef struct _CtsConfig CtsConfig;
 #define NOMINAL_FREQ_50 0x01 /* Hertz */
 #define NOMINAL_FREQ_60 0x00 /* Hertz */
 
-#define TYPE_FLOAT 1
-#define TYPE_INT 0
-
-#define TYPE_POLAR 1
-#define TYPE_RECTANGULAR 0
-
-#define TYPE_CURRENT 1
-#define TYPE_VOLTAGE 0
-
-#define TYPE_SINGLE_POINT_ON_WAVE 0
-#define TYPE_RMS 1
-#define TYPE_PEAK 2
+enum ValueType {
+  VALUE_TYPE_INT                  = 0x00,
+  VALUE_TYPE_FLOAT                = 0x01,
+  VALUE_TYPE_RECTANGULAR          = 0x00,
+  VALUE_TYPE_POLAR                = 0x01,
+  VALUE_TYPE_VOLTAGE              = 0x00,
+  VALUE_TYPE_CURRENT              = 0x01,
+  VALUE_TYPE_SINGLE_POINT_ON_WAVE = 0x00,
+  VALUE_TYPE_RMS                  = 0x01,
+  VALUE_TYPE_PEAK                 = 0x02,
+  VALUE_TYPE_INVALID              = 0xFF
+};
 
 uint16_t cts_config_get_id_code (CtsConfig *self);
 void     cts_config_set_id_code (CtsConfig *self,
@@ -72,25 +72,25 @@ bool     cts_config_set_id_code_of_pmu (CtsConfig *self,
                                         uint16_t   pmu_index,
                                         uint16_t   id_code);
 
-bool cts_config_get_freq_data_type_of_pmu (CtsConfig *self,
+byte cts_config_get_freq_data_type_of_pmu (CtsConfig *self,
                                            uint16_t   pmu_index);
 void cts_config_set_freq_data_type_of_pmu (CtsConfig *self,
                                            uint16_t   pmu_index,
-                                           bool       is_float);
+                                           byte       data_type);
 
-bool cts_config_get_analog_data_type_of_pmu (CtsConfig *self,
+byte cts_config_get_analog_data_type_of_pmu (CtsConfig *self,
                                              uint16_t   pmu_index);
 void cts_config_set_analog_data_type_of_pmu (CtsConfig *self,
                                              uint16_t   pmu_index,
                                              bool       data_type);
 
-bool cts_config_get_phasor_data_type_of_pmu (CtsConfig *self,
+byte cts_config_get_phasor_data_type_of_pmu (CtsConfig *self,
                                              uint16_t   pmu_index);
 void cts_config_set_phasor_data_type_of_pmu (CtsConfig *self,
                                              uint16_t   pmu_index,
-                                             bool       is_float);
+                                             byte       data_type);
 
-bool cts_config_get_phasor_complex_type_of_pmu (CtsConfig *self,
+byte cts_config_get_phasor_complex_type_of_pmu (CtsConfig *self,
                                                 uint16_t   pmu_index);
 void cts_config_set_phasor_complex_type_of_pmu (CtsConfig *self,
                                                 uint16_t   pmu_index,
