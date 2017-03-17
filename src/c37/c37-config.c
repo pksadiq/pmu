@@ -843,7 +843,7 @@ cts_config_get_channel_names_of_pmu (CtsConfig *self,
  *
  * Phasor count should be atleast one for the function to succeed.
  *
- * Returns: %true of channel names were set and %false otherwise.
+ * Returns: %true if channel names were set and %false otherwise.
  */
 bool
 cts_config_set_channel_names_of_pmu (CtsConfig  *self,
