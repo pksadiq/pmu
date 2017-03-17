@@ -120,10 +120,16 @@ bool   cts_config_set_channel_names_of_pmu (CtsConfig *self,
                                             uint16_t   pmu_index,
                                             char     **channel_names);
 
-bool cts_config_set_phasor_measurement_type_of_pmu (CtsConfig *self,
-                                                    uint16_t   pmu_index,
-                                                    uint16_t   phasor_index,
-                                                    byte       measurement_type);
+bool cts_config_set_phasor_measurement_type_of_pmu         (CtsConfig *self,
+                                                            uint16_t   pmu_index,
+                                                            uint16_t   phasor_index,
+                                                            byte       measurement_type);
+bool cts_config_set_all_phasor_measurement_type_of_pmu     (CtsConfig *self,
+                                                            uint16_t   pmu_index,
+                                                            byte       type);
+bool cts_config_set_all_phasor_measurement_type_of_all_pmu (CtsConfig *self,
+                                                            byte       type);
+
 byte cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
                                                     uint16_t   pmu_index,
                                                     uint16_t   phasor_index);
