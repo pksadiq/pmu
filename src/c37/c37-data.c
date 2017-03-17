@@ -230,7 +230,7 @@ cts_data_populate_from_raw_data (CtsData *self,
       /* Phasors */
       count = cts_config_get_number_of_phasors_of_pmu (self->config,
                                                        i + 1);
-      if (pmu_data->phasor_type == TYPE_INT)
+      if (pmu_data->phasor_type == VALUE_TYPE_INT)
         {
           for (uint16_t i = 0; i < count; i++)
             {
@@ -262,7 +262,7 @@ cts_data_populate_from_raw_data (CtsData *self,
 
       count = cts_config_get_number_of_analog_vals_of_pmu (self->config,
                                                            i + 1);
-      if (pmu_data->analog_type == TYPE_INT)
+      if (pmu_data->analog_type == VALUE_TYPE_INT)
         {
           for (uint16_t i = 0; i < count; i++)
             {
@@ -281,7 +281,7 @@ cts_data_populate_from_raw_data (CtsData *self,
             }
         }
 
-      if (pmu_data->freq_type == TYPE_INT)
+      if (pmu_data->freq_type == VALUE_TYPE_INT)
         {
           memcpy(byte2, *data, 2);
           pmu_data->freq_deviation.int_val = *byte2;
@@ -294,7 +294,7 @@ cts_data_populate_from_raw_data (CtsData *self,
           *data += 2;
         }
 
-      if (pmu_data->freq_type == TYPE_INT)
+      if (pmu_data->freq_type == VALUE_TYPE_INT)
         {
           memcpy(byte2, *data, 2);
           pmu_data->rocof.int_val = *byte2;
