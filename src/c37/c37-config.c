@@ -964,7 +964,7 @@ cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
  * 2. The maximu possible value that can be saved in 2 bytes (the max possbile
  *    size of phasor integers) is 32768 (and the negative half)
  * 3. Now the @conv_factor can be calculated as:
- *    max_value/@conv_factor * 10^5.
+ *    @conv_factor = max_value/32768 * 10^5.
  *
  * This convertion factor shall not be used if the tranmitted data
  * is set as float (using cts_config_set_phasor_data_type_of_pmu())
