@@ -60,3 +60,8 @@ uint16_t
 cts_common_get_crc (const byte *data, uint16_t offset);
 bool
 cts_common_check_crc (const byte *data, size_t data_length, const byte *header, uint16_t offset);
+void
+cts_common_set_time (uint32_t *time);
+void
+cts_common_set_frac_of_second (uint32_t *frac_of_second,
+                               uint16_t  time_base);

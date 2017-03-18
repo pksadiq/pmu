@@ -183,3 +183,22 @@ cts_common_get_type (const byte *data)
       return CTS_TYPE_INVALID;
     }
 }
+
+void
+cts_common_set_time (uint32_t *time)
+{
+  *time = cts_common_get_time_seconds ();
+}
+
+void
+cts_common_set_frac_of_second (uint32_t *frac_of_second,
+                               uint16_t  time_base)
+{
+  uint32_t data;
+  uint32_t new_frac_of_second;
+
+  data = *frac_of_second;
+  new_frac_of_second = cts_common_get_fraction_of_second (time_base);
+  data = (data & 0xFF000000) | (new_frac_of_second & 0x00FFFFFF);
+  *frac_of_second = data;
+}
