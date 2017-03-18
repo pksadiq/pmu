@@ -168,12 +168,12 @@ uint32_t cts_config_get_digital_status_word_from_data (uint16_t upper,
 bool cts_config_set_analog_conv_factor_of_pmu         (CtsConfig *self,
                                                        uint16_t   pmu_index,
                                                        uint16_t   analog_index,
-                                                       uint32_t   data);
+                                                       uint32_t   conv_factor);
 bool cts_config_set_all_analog_conv_factor_of_pmu     (CtsConfig *self,
                                                        uint16_t   pmu_index,
-                                                       uint32_t   data);
+                                                       uint32_t   conv_factor);
 bool cts_config_set_all_analog_conv_factor_of_all_pmu (CtsConfig *self,
-                                                       uint32_t   data);
+                                                       uint32_t   conv_factor);
 
 bool cts_config_set_status_word_masks_of_pmu         (CtsConfig *self,
                                                       uint16_t   pmu_index,

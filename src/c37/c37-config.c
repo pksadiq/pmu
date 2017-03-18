@@ -1313,9 +1313,10 @@ bool
 cts_config_set_analog_conv_factor_of_pmu (CtsConfig *self,
                                           uint16_t   pmu_index,
                                           uint16_t   analog_index,
-                                          uint32_t   data)
+                                          uint32_t   conv_factor)
 {
   CtsPmuConfig *config;
+  uint32_t data;
 
   if (pmu_index > self->num_pmu)
     return false;
@@ -1325,14 +1326,16 @@ cts_config_set_analog_conv_factor_of_pmu (CtsConfig *self,
   if (analog_index > config->num_analog_values)
     return false;
 
-  *(config->conv_factor_analog + analog_index - 1) = data;
+  data = *(config->conv_factor_analog + analog_index - 1);
+  /* Save to the last 3 bytes */
+  data = (data & 0xFF000000) | (conv_factor & 0x00FFFFFF);
   return true;
 }
 
 bool
 cts_config_set_all_analog_conv_factor_of_pmu (CtsConfig *self,
                                               uint16_t   pmu_index,
-                                              uint32_t   data)
+                                              uint32_t   conv_factor)
 {
   CtsPmuConfig *config;
   uint16_t num_analog;
@@ -1346,7 +1349,7 @@ cts_config_set_all_analog_conv_factor_of_pmu (CtsConfig *self,
   for (uint16_t i = 0; i < num_analog; i++)
     {
       bool status = cts_config_set_analog_conv_factor_of_pmu (self, pmu_index,
-                                                              i, data);
+                                                              i, conv_factor);
       if (!status)
         return false;
     }
@@ -1355,7 +1358,7 @@ cts_config_set_all_analog_conv_factor_of_pmu (CtsConfig *self,
 
 bool
 cts_config_set_all_analog_conv_factor_of_all_pmu (CtsConfig *self,
-                                                  uint32_t   data)
+                                                  uint32_t   conv_factor)
 {
   uint16_t num_pmu;
 
@@ -1364,7 +1367,7 @@ cts_config_set_all_analog_conv_factor_of_all_pmu (CtsConfig *self,
   for (uint16_t i = 0; i < num_pmu; i++)
     {
       bool status = cts_config_set_all_analog_conv_factor_of_pmu (self, i,
-                                                                  data);
+                                                                  conv_factor);
       if (!status)
         return false;
     }
