@@ -43,10 +43,10 @@ typedef struct _CtsPmuData
 {
   uint16_t stat;
 
-  bool freq_type;
-  bool analog_type;
+  byte freq_type;
+  byte analog_type;
   // XXX: is it worth saving 3 bytes on 32 bit here some way? */
-  bool phasor_type;
+  byte phasor_type;
 
   /* Use Only either of the one */
   /* One for real and other for imaginary */
@@ -78,8 +78,10 @@ typedef struct _CtsData
   uint32_t frac_of_second;
 
   uint16_t num_pmu;
+  uint16_t check;
+
   CtsConfig *config;
-  
+
   CtsPmuData *pmu_data;
 } CtsData;
 
@@ -132,25 +134,25 @@ allocate_data_memory_for_pmu (CtsPmuData *pmu_data,
                               uint16_t    pmu_index)
 {
   uint16_t count;
-  bool is_float;
+  byte type;
 
-  is_float = cts_config_get_phasor_data_type_of_pmu (config, pmu_index);
+  type = cts_config_get_phasor_data_type_of_pmu (config, pmu_index);
   count = cts_config_get_number_of_phasors_of_pmu (config, pmu_index);
 
-  if (is_float)
+  if (type == VALUE_TYPE_FLOAT)
     pmu_data->phasor_float = malloc (sizeof *pmu_data->phasor_float * count);
-  else
+  else if (type == VALUE_TYPE_INT)
     pmu_data->phasor_int = malloc (sizeof *pmu_data->phasor_int * count);
 
   if (pmu_data->phasor_float == NULL && pmu_data->phasor_int == NULL)
     return false;
 
-  is_float = cts_config_get_analog_data_type_of_pmu (config, pmu_index);
+  type = cts_config_get_analog_data_type_of_pmu (config, pmu_index);
   count = cts_config_get_number_of_analog_vals_of_pmu (config, pmu_index);
 
-  if (is_float)
+  if (type == VALUE_TYPE_FLOAT)
     pmu_data->analog_float = malloc (sizeof *pmu_data->analog_float * count);
-  else
+  else if (type == VALUE_TYPE_INT)
     pmu_data->analog_int = malloc (sizeof *pmu_data->analog_int * count);
 
   if (pmu_data->analog_float == NULL && pmu_data->analog_int == NULL)
@@ -213,8 +215,9 @@ cts_data_set_config (CtsData   *self,
 }
 
 void
-cts_data_populate_from_raw_data (CtsData *self,
-                                 byte    **data)
+cts_data_populate_from_raw_data (CtsData  *self,
+                                 byte    **data,
+                                 bool      is_data_only)
 {
   uint16_t count;
   uint16_t *byte2;
@@ -223,9 +226,30 @@ cts_data_populate_from_raw_data (CtsData *self,
   byte2 = malloc (sizeof *byte2);
   byte4 = malloc (sizeof *byte4);
 
+  if (!is_data_only)
+    {
+      /* time (in seconds since epoch) */
+      memcpy (byte4, *data, 4);
+      self->epoch_seconds = ntohl (*byte4);
+      *data += 4;
+
+      /* Fraction of seconds */
+      memcpy (byte4, *data, 4);
+      self->frac_of_second = ntohl (*byte4);
+      *data += 4;
+    }
+
   for (int16_t i = 0; i < self->num_pmu; i++)
     {
       CtsPmuData *pmu_data = self->pmu_data + i;
+
+      if (!is_data_only)
+        {
+          /* Status flags */
+          memcpy (byte2, *data, 2);
+          pmu_data->stat = ntohs (*byte2);
+          *data += 2;
+        }
 
       /* Phasors */
       count = cts_config_get_number_of_phasors_of_pmu (self->config,
@@ -236,28 +260,27 @@ cts_data_populate_from_raw_data (CtsData *self,
             {
               /* Real or Magnitude */
               memcpy(byte2, *data, 2);
-              *(pmu_data->phasor_int + i) [0] = *byte2;
+              *(pmu_data->phasor_int + i) [0] = ntohs (*byte2);
               *data += 2;
 
               /* Imaginary or Angle */
               memcpy(byte2, *data, 2);
-              *(pmu_data->phasor_int + i) [1] = *byte2;
+              *(pmu_data->phasor_int + i) [1] = ntohs (*byte2);
               *data += 2;
             }
         }
-      else
+      else if (pmu_data->phasor_type == VALUE_TYPE_FLOAT)
         {
           for (uint16_t i = 0; i < count; i++)
             {
               memcpy(byte4, *data, 4);
-              *(pmu_data->phasor_float + i) [0] = *byte4;
-              *data += 2;
+              *(pmu_data->phasor_float + i) [0] = ntohs (*byte4);
+              *data += 4;
 
               memcpy(byte4, *data, 4);
-              *(pmu_data->phasor_float + i) [1] = *byte4;
-              *data += 2;
+              *(pmu_data->phasor_float + i) [1] = ntohs (*byte4);
+              *data += 4;
             }
-
         }
 
       count = cts_config_get_number_of_analog_vals_of_pmu (self->config,
@@ -267,54 +290,62 @@ cts_data_populate_from_raw_data (CtsData *self,
           for (uint16_t i = 0; i < count; i++)
             {
               memcpy(byte2, *data, 2);
-              *(pmu_data->analog_int + i) = *byte2;
+              *(pmu_data->analog_int + i) = ntohs (*byte2);
               *data += 2;
             }
         }
-      else
+      else if (pmu_data->analog_type == VALUE_TYPE_FLOAT)
         {
           for (uint16_t i = 0; i < count; i++)
             {
               memcpy(byte4, *data, 4);
-              *(pmu_data->analog_float + i) = *byte4;
-              *data += 2;
+              *(pmu_data->analog_float + i) = ntohl (*byte4);
+              *data += 4;
             }
         }
 
       if (pmu_data->freq_type == VALUE_TYPE_INT)
         {
           memcpy(byte2, *data, 2);
-          pmu_data->freq_deviation.int_val = *byte2;
+          pmu_data->freq_deviation.int_val = ntohs (*byte2);
           *data += 2;
         }
-      else
+      else if (pmu_data->freq_type == VALUE_TYPE_FLOAT)
         {
           memcpy(byte4, *data, 4);
-          pmu_data->freq_deviation.float_val = *byte2;
-          *data += 2;
+          pmu_data->freq_deviation.float_val = ntohl (*byte2);
+          *data += 4;
         }
 
       if (pmu_data->freq_type == VALUE_TYPE_INT)
         {
           memcpy(byte2, *data, 2);
-          pmu_data->rocof.int_val = *byte2;
+          pmu_data->rocof.int_val = ntohl (*byte2);
           *data += 2;
         }
-      else
+      else if (pmu_data->freq_type == VALUE_TYPE_FLOAT)
         {
           memcpy(byte4, *data, 4);
-          pmu_data->rocof.float_val = *byte2;
-          *data += 2;
+          pmu_data->rocof.float_val = ntohl (*byte2);
+          *data += 4;
         }
 
       count = cts_config_get_number_of_status_words_of_pmu (self->config,
                                                             i + 1);
-        for (uint16_t i = 0; i < count; i++)
-          {
-            memcpy(byte2, *data, 2);
-            *(pmu_data->digital_data + i) = *byte2;
-            *data += 2;
-          }
+      for (uint16_t i = 0; i < count; i++)
+        {
+          memcpy(byte2, *data, 2);
+          *(pmu_data->digital_data + i) = ntohs(*byte2);
+          *data += 2;
+        }
+    }
+
+  if (!is_data_only)
+    {
+      /* Cyclic redundancy check */
+      memcpy (byte2, *data, 2);
+      self->check = ntohs (*byte2);
+      *data += 2;
     }
 
   free (byte2);
