@@ -265,15 +265,8 @@ cts_conf_set_time_base (CtsConf  *self,
 void
 cts_conf_update_time (CtsConf *self)
 {
-  uint32_t data;
-  uint32_t frac_of_second;
-
-  self->epoch_seconds = cts_common_get_time_seconds ();
-
-  data = self->frac_of_second;
-  frac_of_second = cts_common_get_fraction_of_second (self->time_base);
-  data = (data & 0xFF000000) | (frac_of_second & 0x00FFFFFF);
-  self->frac_of_second = data;
+  cts_common_set_time (&self->epoch_seconds);
+  cts_common_set_frac_of_second (&self->frac_of_second, self->time_base);
 }
 
 uint32_t
