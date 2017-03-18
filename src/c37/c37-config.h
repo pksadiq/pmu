@@ -176,15 +176,26 @@ bool cts_config_set_all_analog_conv_factor_of_pmu     (CtsConfig *self,
 bool cts_config_set_all_analog_conv_factor_of_all_pmu (CtsConfig *self,
                                                        uint32_t   conv_factor);
 
-bool cts_config_set_status_word_masks_of_pmu         (CtsConfig *self,
-                                                      uint16_t   pmu_index,
-                                                      uint16_t   status_index,
-                                                      uint32_t   data);
-bool cts_config_set_all_status_word_masks_of_pmu     (CtsConfig *self,
-                                                      uint16_t   pmu_index,
-                                                      uint32_t   data);
-bool cts_config_set_all_status_word_masks_of_all_pmu (CtsConfig *self,
-                                                      uint32_t   data);
+
+bool cts_config_set_status_word_masks_normal_state_of_pmu         (CtsConfig *self,
+                                                                   uint16_t   pmu_index,
+                                                                   uint16_t   status_index,
+                                                                   uint16_t   normal_state);
+bool cts_config_set_all_status_word_masks_normal_state_of_pmu     (CtsConfig *self,
+                                                                   uint16_t   pmu_index,
+                                                                   uint16_t   normal_state);
+bool cts_config_set_all_status_word_masks_normal_state_of_all_pmu (CtsConfig *self,
+                                                                   uint16_t   normal_state);
+
+bool cts_config_set_status_word_masks_validity_of_pmu        (CtsConfig *self,
+                                                              uint16_t   pmu_index,
+                                                              uint16_t   status_index,
+                                                              uint16_t   validity);
+bool cts_config_set_all_status_word_masks_validity_of_pmu    (CtsConfig *self,
+                                                              uint16_t   pmu_index,
+                                                              uint16_t   validity);
+bool cts_config_set_all_status_word_masks_validityof_all_pmu (CtsConfig *self,
+                                                              uint16_t   validity);
 
 bool cts_config_set_nominal_frequency_of_pmu (CtsConfig *self,
                                               uint16_t   pmu_index,

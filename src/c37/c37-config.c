@@ -1399,12 +1399,13 @@ cts_config_set_all_analog_conv_factor_of_all_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_status_word_masks_of_pmu (CtsConfig *self,
-                                         uint16_t   pmu_index,
-                                         uint16_t   status_index,
-                                         uint32_t   data)
+cts_config_set_status_word_masks_normal_state_of_pmu (CtsConfig *self,
+                                                      uint16_t   pmu_index,
+                                                      uint16_t   status_index,
+                                                      uint16_t   normal_state)
 {
   CtsPmuConfig *config;
+  uint32_t data;
 
   if (pmu_index > self->num_pmu)
     return false;
@@ -1414,14 +1415,18 @@ cts_config_set_status_word_masks_of_pmu (CtsConfig *self,
   if (status_index > config->num_status_words)
     return false;
 
+  data = *(config->status_word_masks + status_index - 1);
+  /* Save to the first 2 bytes */
+  data = (data & 0x0000FFFF) | (normal_state & 0xFFFF0000);
   *(config->status_word_masks + status_index - 1) = data;
+
   return true;
 }
 
 bool
-cts_config_set_all_status_word_masks_of_pmu (CtsConfig *self,
-                                              uint16_t   pmu_index,
-                                              uint32_t   data)
+cts_config_set_all_status_word_masks_normal_state_of_pmu (CtsConfig *self,
+                                                          uint16_t   pmu_index,
+                                                          uint16_t   normal_state)
 {
   CtsPmuConfig *config;
   uint16_t num_status;
@@ -1434,8 +1439,10 @@ cts_config_set_all_status_word_masks_of_pmu (CtsConfig *self,
 
   for (uint16_t i = 0; i < num_status; i++)
     {
-      bool status = cts_config_set_status_word_masks_of_pmu (self, pmu_index,
-                                                             i, data);
+      bool status =
+        cts_config_set_status_word_masks_normal_state_of_pmu (self,
+                                                              pmu_index,
+                                                              i, normal_state);
       if (!status)
         return false;
     }
@@ -1443,8 +1450,8 @@ cts_config_set_all_status_word_masks_of_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_all_status_word_masks_of_all_pmu (CtsConfig *self,
-                                                  uint32_t   data)
+cts_config_set_all_status_word_masks_normal_state_of_all_pmu (CtsConfig *self,
+                                                              uint16_t   normal_state)
 {
   uint16_t num_pmu;
 
@@ -1452,8 +1459,79 @@ cts_config_set_all_status_word_masks_of_all_pmu (CtsConfig *self,
 
   for (uint16_t i = 0; i < num_pmu; i++)
     {
-      bool status = cts_config_set_all_status_word_masks_of_pmu (self, i,
-                                                                 data);
+      bool status =
+        cts_config_set_all_status_word_masks_normal_state_of_pmu (self, i,
+                                                                  normal_state);
+      if (!status)
+        return false;
+    }
+  return true;
+}
+
+bool
+cts_config_set_status_word_masks_validity_of_pmu (CtsConfig *self,
+                                                 uint16_t   pmu_index,
+                                                  uint16_t   status_index,
+                                                  uint16_t   validity)
+{
+  CtsPmuConfig *config;
+  uint32_t data;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  config = self->pmu_config + pmu_index - 1;
+
+  if (status_index > config->num_status_words)
+    return false;
+
+  data = *(config->status_word_masks + status_index - 1);
+  /* Save to the last 2 bytes */
+  data = (data & 0xFFFF0000) | (validity & 0x0000FFFF);
+  *(config->status_word_masks + status_index - 1) = data;
+
+  return true;
+}
+
+bool
+cts_config_set_all_status_word_masks_validity_of_pmu (CtsConfig *self,
+                                                      uint16_t   pmu_index,
+                                                      uint16_t   validity)
+{
+  CtsPmuConfig *config;
+  uint16_t num_status;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  config = self->pmu_config + pmu_index - 1;
+  num_status = config->num_status_words;
+
+  for (uint16_t i = 0; i < num_status; i++)
+    {
+      bool status =
+        cts_config_set_status_word_masks_validity_of_pmu (self,
+                                                          pmu_index,
+                                                          i, validity);
+      if (!status)
+        return false;
+    }
+  return true;
+}
+
+bool
+cts_config_set_all_status_word_masks_validityof_all_pmu (CtsConfig *self,
+                                                         uint16_t   validity)
+{
+  uint16_t num_pmu;
+
+  num_pmu = self->num_pmu;
+
+  for (uint16_t i = 0; i < num_pmu; i++)
+    {
+      bool status =
+        cts_config_set_all_status_word_masks_validity_of_pmu (self, i,
+                                                              validity);
       if (!status)
         return false;
     }
