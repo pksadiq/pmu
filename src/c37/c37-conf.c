@@ -158,7 +158,7 @@ pmu_config_clear_all_data (CtsPmuConf *config)
 }
 
 /**
- * cts_conf_get_pmu_count:
+ * cts_conf_get_num_of_pmu:
  * @self: A valid configuration
  *
  * Returns the total number of PMU connected.
@@ -171,13 +171,13 @@ pmu_config_clear_all_data (CtsPmuConf *config)
  * a PDC)
  */
 uint16_t
-cts_conf_get_pmu_count (CtsConf *self)
+cts_conf_get_num_of_pmu (CtsConf *self)
 {
   return self->num_pmu;
 }
 
 /**
- * cts_conf_set_pmu_count:
+ * cts_conf_set_num_of_pmu:
  * @self: A valid configuration
  * @count: A 2 byte integer between (and including) 1 and 65535
  *
@@ -193,8 +193,8 @@ cts_conf_get_pmu_count (CtsConf *self)
  * Else, the previous PMU count shall be returned.
  */
 uint16_t
-cts_conf_set_pmu_count (CtsConf  *self,
-                        uint16_t  count)
+cts_conf_set_num_of_pmu (CtsConf  *self,
+                         uint16_t  count)
 {
   CtsPmuConf *pmu_config = NULL;
 

@@ -46,9 +46,9 @@ uint16_t cts_conf_get_id_code (CtsConf   *self);
 void     cts_conf_set_id_code (CtsConf   *self,
                                uint16_t   id_code);
 
-uint16_t   cts_conf_get_pmu_count (CtsConf  *self);
-uint16_t   cts_conf_set_pmu_count (CtsConf  *self,
-                                   uint16_t  count);
+uint16_t   cts_conf_get_num_of_pmu (CtsConf  *self);
+uint16_t   cts_conf_set_num_of_pmu (CtsConf  *self,
+                                    uint16_t  count);
 
 uint32_t   cts_conf_get_time_base (CtsConf  *self);
 void       cts_conf_set_time_base (CtsConf  *self,

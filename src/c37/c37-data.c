@@ -190,7 +190,7 @@ cts_data_set_config (CtsData *self,
 {
   uint16_t num_pmu;
 
-  num_pmu = cts_conf_get_pmu_count (config);
+  num_pmu = cts_conf_get_num_of_pmu (config);
   if (num_pmu)
     self->pmu_data = malloc (sizeof *self->pmu_data * num_pmu);
 
