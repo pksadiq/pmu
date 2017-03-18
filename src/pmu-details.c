@@ -258,8 +258,6 @@ pmu_details_new (void)
 
   details = g_object_new (PMU_TYPE_DETAILS,
                           NULL);
-  pmu_details_configure_pmu (details);
-
   return details;
 }
 
@@ -267,7 +265,10 @@ PmuDetails *
 pmu_details_get_default (void)
 {
   if (default_details == NULL)
-    default_details = pmu_details_new ();
+    {
+      default_details = pmu_details_new ();
+      pmu_details_configure_pmu (default_details);
+    }
 
   return default_details;
 }
