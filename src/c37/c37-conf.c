@@ -144,17 +144,17 @@ cts_conf_set_id_code (CtsConf  *self,
 static void
 pmu_config_clear_all_data (CtsPmuConf *config)
 {
- config->id_code = 0;
- config->data_format = 0;
- config->num_phasors = 0;
- config->num_analog_values = 0;
- config->num_status_words = 0;
- config->channel_names = NULL;
- config->conv_factor_phasor = NULL;
- config->conv_factor_analog = NULL;
- config->status_word_masks = NULL;
- config->nominal_freq = 1; /* Assume 50 Hz by default */
- config->conf_change_count = 0;
+  config->id_code = 0;
+  config->data_format = 0;
+  config->num_phasors = 0;
+  config->num_analog_values = 0;
+  config->num_status_words = 0;
+  config->channel_names = NULL;
+  config->conv_factor_phasor = NULL;
+  config->conv_factor_analog = NULL;
+  config->status_word_masks = NULL;
+  config->nominal_freq = 1; /* Assume 50 Hz by default */
+  config->conf_change_count = 0;
 }
 
 /**
@@ -712,7 +712,7 @@ cts_conf_set_num_of_phasors_of_pmu (CtsConf  *self,
 
   config = self->pmu_config + pmu_index - 1;
   done = cts_conf_set_values_of_pmu (self, &config->conv_factor_phasor,
-                                       pmu_index, count);
+                                     pmu_index, count);
 
   if (done)
     config->num_phasors = count;
@@ -767,7 +767,7 @@ cts_conf_set_num_of_analogs_of_pmu (CtsConf  *self,
 
   config = self->pmu_config + pmu_index - 1;
   done = cts_conf_set_values_of_pmu (self, &config->conv_factor_analog,
-                                       pmu_index, count);
+                                     pmu_index, count);
 
   if (done)
     config->num_analog_values = count;
@@ -822,7 +822,7 @@ cts_conf_set_num_of_status_of_pmu (CtsConf  *self,
 
   config = self->pmu_config + pmu_index - 1;
   done = cts_conf_set_values_of_pmu (self, &config->status_word_masks,
-                                       pmu_index, count);
+                                     pmu_index, count);
 
   if (done)
     config->num_status_words = count;
@@ -955,8 +955,8 @@ cts_conf_set_all_phasor_measure_type_of_pmu (CtsConf  *self,
   for (uint16_t i = 1; i <= num_phasors; i++)
     {
       bool status = cts_conf_set_phasor_measure_type_of_pmu (self,
-                                                               pmu_index,
-                                                               i, type);
+                                                             pmu_index,
+                                                             i, type);
       if (!status)
         return false;
     }
@@ -983,7 +983,7 @@ cts_conf_set_all_phasor_measure_type_of_all_pmu (CtsConf *self,
   for (uint16_t i = 1; i <= num_pmu; i++)
     {
       bool status = cts_conf_set_all_phasor_measure_type_of_pmu (self, i,
-                                                                       type);
+                                                                 type);
       if (!status)
         return false;
     }
@@ -1143,7 +1143,7 @@ cts_conf_set_all_phasor_conv_of_all_pmu (CtsConf  *self,
   for (uint16_t i = 1; i <= num_pmu; i++)
     {
       bool status = cts_conf_set_all_phasor_conv_of_pmu (self, i,
-                                                           conv_factor);
+                                                         conv_factor);
       if (!status)
         return false;
     }
@@ -1284,7 +1284,7 @@ cts_conf_set_all_analog_measure_type_of_all_pmu (CtsConf *self,
   for (uint16_t i = 1; i <= num_pmu; i++)
     {
       bool status = cts_conf_set_all_analog_measure_type_of_pmu (self, i,
-                                                                  type);
+                                                                 type);
       if (!status)
         return false;
     }
@@ -1391,7 +1391,7 @@ cts_conf_set_all_analog_conv_of_all_pmu (CtsConf  *self,
   for (uint16_t i = 0; i < num_pmu; i++)
     {
       bool status = cts_conf_set_all_analog_conv_of_pmu (self, i,
-                                                           conv_factor);
+                                                         conv_factor);
       if (!status)
         return false;
     }
