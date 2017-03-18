@@ -103,7 +103,7 @@ typedef struct _CtsConfig
   CtsPmuConfig *pmu_config;
 
   /* Rate of data transmissions */
-  uint16_t data_rate;
+  int16_t data_rate;
 } CtsConfig;
 
 CtsConfig *config_default_one = NULL;
@@ -287,7 +287,7 @@ cts_config_get_data_rate (CtsConfig *self)
  */
 void
 cts_config_set_data_rate (CtsConfig *self,
-                          uint16_t   data_rate)
+                          int16_t   data_rate)
 {
   self->data_rate = data_rate;
 }

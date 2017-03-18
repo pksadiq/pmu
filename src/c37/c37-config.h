@@ -56,7 +56,7 @@ void       cts_config_set_time_base (CtsConfig  *self,
 
 uint16_t cts_config_get_data_rate (CtsConfig *self);
 void     cts_config_set_data_rate (CtsConfig *self,
-                                   uint16_t   data_rate);
+                                   int16_t    data_rate);
 
 char *cts_config_get_station_name_of_pmu (CtsConfig *self,
                                           uint16_t   pmu_index);
