@@ -237,18 +237,33 @@ pmu_details_get_is_first_run (void)
 void
 pmu_details_configure_pmu (PmuDetails *details)
 {
-  CtsConfig *config1 = cts_config_get_default_config_one ();
+  CtsConf *config1 = cts_conf_get_default_config_one ();
 
-  cts_config_set_id_code (config1, pmu_details_get_pmu_id ());
-  cts_config_set_id_code_of_pmu (config1, 1, pmu_details_get_pmu_id ());
-  cts_config_set_pmu_count (config1, 1);
-  cts_config_set_time_base (config1, 1000);
-  cts_config_set_data_rate (config1, 1000);
-  cts_config_set_station_name_of_pmu (config1, 1,
-                                      pmu_details_get_station_name (),
-                                      strlen (pmu_details_get_station_name ()));
-  cts_config_set_freq_data_type_of_pmu (config1, 1, VALUE_TYPE_INT);
-  cts_config_set_analog_data_type_of_pmu (config1, 1, VALUE_TYPE_INT);
+  /* cts_config_set_id_code (config1, pmu_details_get_pmu_id ()); */
+  /* cts_config_set_time_base (config1, 1000); */
+  /* cts_config_set_data_rate (config1, 1000); */
+  /* cts_config_set_pmu_count (config1, 1); */
+  /* cts_config_set_station_name_of_pmu (config1, 1, */
+  /*                                     pmu_details_get_station_name (), */
+  /*                                     strlen (pmu_details_get_station_name ())); */
+  /* cts_config_set_id_code_of_pmu (config1, 1, pmu_details_get_pmu_id ()); */
+
+  /* cts_config_set_number_of_phasors_of_pmu (config1, 1, 3); */
+  /* cts_config_set_number_of_analog_vals_of_pmu (config1, 1, 3); */
+  /* cts_config_set_number_of_status_words_of_pmu (config1, 1, 3); */
+
+  /* cts_config_set_freq_data_type_of_pmu (config1, 1, VALUE_TYPE_INT); */
+
+  /* cts_config_set_analog_data_type_of_pmu (config1, 1, VALUE_TYPE_INT); */
+  /* cts_config_set_all_analog_measurement_type_of_pmu (config1, 1, VALUE_TYPE_RMS); */
+  /* cts_config_set_all_analog_conv_factor_of_pmu (config1, 1, 10000); */
+
+  /* cts_config_set_phasor_data_type_of_pmu (config1, 1, VALUE_TYPE_INT); */
+  /* cts_config_set_phasor_complex_type_of_pmu (config1, 1, VALUE_TYPE_POLAR); */
+  /* cts_config_set_all_phasor_measurement_type_of_pmu (config1, 1, VALUE_TYPE_VOLTAGE); */
+  /* cts_config_set_all_phasor_conv_factor_of_pmu (config1, 1, 10000); */
+
+  /* cts_config_update_time (config1); */
 }
 
 static PmuDetails *

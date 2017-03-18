@@ -32,8 +32,8 @@ struct _PmuApp
 
   int port;
 
-  CtsConfig  *pmu_config_one;
-  CtsConfig  *pmu_config_two;
+  CtsConf  *pmu_config_one;
+  CtsConf  *pmu_config_two;
 };
 
 
@@ -128,11 +128,11 @@ pmu_app_activate (GApplication *app)
 
 static void
 pmu_app_update_pmu_config (PmuApp    *self,
-                           CtsConfig *config)
+                           CtsConf *config)
 {
-  cts_config_set_pmu_count (config, 1);
-  cts_config_set_station_name_of_pmu (config, 1, "Good", 4);
-  guchar *b = cts_config_get_raw_data (config);
+  cts_conf_set_pmu_count (config, 1);
+  cts_conf_set_station_name_of_pmu (config, 1, "Good", 4);
+  guchar *b = cts_conf_get_raw_data (config);
 }
 
 static void
@@ -150,8 +150,8 @@ pmu_app_startup (GApplication *app)
                                    app);
   pmu_details_get_default ();
 
-  self->pmu_config_one = cts_config_get_default_config_one ();
-  self->pmu_config_two = cts_config_get_default_config_two ();
+  self->pmu_config_one = cts_conf_get_default_config_one ();
+  self->pmu_config_two = cts_conf_get_default_config_two ();
 
   pmu_app_update_pmu_config (self, self->pmu_config_one);
 
