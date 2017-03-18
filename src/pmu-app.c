@@ -130,7 +130,7 @@ static void
 pmu_app_update_pmu_config (PmuApp    *self,
                            CtsConf *config)
 {
-  cts_conf_set_pmu_count (config, 1);
+  cts_conf_set_num_of_pmu (config, 1);
   cts_conf_set_station_name_of_pmu (config, 1, "Good", 4);
   guchar *b = cts_conf_get_raw_data (config);
 }
