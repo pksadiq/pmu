@@ -1079,6 +1079,8 @@ cts_conf_set_phasor_conv_of_pmu (CtsConf  *self,
   data = *(config->conv_factor_phasor + phasor_index - 1);
   /* Save to the last 3 bytes */
   data = (data & 0xFF000000) | (conv_factor & 0x00FFFFFF);
+  *(config->conv_factor_phasor + phasor_index - 1) = data;
+
   return true;
 }
 
@@ -1353,6 +1355,8 @@ cts_conf_set_analog_conv_of_pmu (CtsConf  *self,
   data = *(config->conv_factor_analog + analog_index - 1);
   /* Save to the last 3 bytes */
   data = (data & 0xFF000000) | (conv_factor & 0x00FFFFFF);
+  *(config->conv_factor_analog + analog_index - 1) = data;
+
   return true;
 }
 
