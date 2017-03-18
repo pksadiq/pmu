@@ -98,6 +98,8 @@ typedef struct _CtsConfig
   uint16_t num_pmu;
 
   uint32_t time_base;
+  uint32_t epoch_seconds;
+  uint32_t frac_of_second;
 
   /* One per PMU */
   CtsPmuConfig *pmu_config;
@@ -255,6 +257,13 @@ cts_config_set_time_base (CtsConfig *self,
                           uint32_t   time_base)
 {
   self->time_base = time_base;
+}
+
+void
+cts_config_update_time (CtsConfig *self)
+{
+  self->epoch_seconds = cts_common_get_time_seconds ();
+  self->frac_of_second = cts_common_get_fraction_of_seconds (self->time_base);
 }
 
 /**

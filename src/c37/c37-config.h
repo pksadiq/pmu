@@ -53,6 +53,7 @@ uint16_t   cts_config_set_pmu_count (CtsConfig  *self,
 uint32_t   cts_config_get_time_base (CtsConfig  *self);
 void       cts_config_set_time_base (CtsConfig  *self,
                                      uint32_t    time_base);
+void       cts_config_update_time   (CtsConfig *self);
 
 int16_t  cts_config_get_data_rate (CtsConfig *self);
 void     cts_config_set_data_rate (CtsConfig *self,
