@@ -1816,6 +1816,20 @@ cts_conf_get_raw_data (CtsConf *self)
   return data;
 }
 
+/**
+ * cts_conf_update_frame_size:
+ * @self: A valid configuration
+ *
+ * Update the configuration size based on configuration.
+ * This function should be called ONLY after setting
+ * cts_conf_set_num_of_pmu(), cts_conf_set_num_of_analogs_of_pmu()
+ * cts_conf_set_num_of_phasors_of_pmu(), cts_conf_set_phasor_data_type_of_pmu(),
+ * cts_conf_set_analog_data_type_of_pmu(), cts_conf_set_num_of_status_of_pmu(),
+ * and cts_conf_set_freq_data_type_of_pmu().
+ *
+ * The updated frame size can be retrieved by calling
+ * cts_conf_get_frame_size().
+ */
 void
 cts_conf_update_frame_size (CtsConf *self)
 {
