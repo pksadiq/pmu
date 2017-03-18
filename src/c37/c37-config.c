@@ -222,7 +222,7 @@ cts_config_set_pmu_count (CtsConfig *self,
  * @self: A valid configuration
  *
  * Returns the resolution of fractional second that shall be returned
- * by cts_common_get_fraction_of_seconds(). See cts_config_set_time_base()
+ * by cts_common_get_fraction_of_second(). See cts_config_set_time_base()
  * for more details.
  *
  * Returns: A unsigned 32 bit integer
@@ -239,18 +239,18 @@ cts_config_get_time_base (CtsConfig *self)
  * @time_base: the time base.
  *
  * Set the resolution of fractional second that shall be returned
- * by cts_common_get_fraction_of_seconds().
+ * by cts_common_get_fraction_of_second().
  *
  * This @time_base shall be used to extract the right fraction of second
- * got via cts_common_get_fraction_of_seconds().
+ * got via cts_common_get_fraction_of_second().
  *
- * Say for example, if cts_common_get_fraction_of_seconds() returns
+ * Say for example, if cts_common_get_fraction_of_second() returns
  * 9000, and @time_base is 10000, this means that the real fraction
  * of second is 0.9 seconds (That is,
- * cts_common_get_fraction_of_seconds()/@time_base)
+ * cts_common_get_fraction_of_second()/@time_base)
  *
  * And the real time will be cts_common_get_time_seconds() +
- * cts_common_get_fraction_of_seconds()/cts_config_get_time_base() seconds
+ * cts_common_get_fraction_of_second()/cts_config_get_time_base() seconds
  * Since epoch (Jan. 1 1970, the UNIX time)
  *
  * Returns: A unsigned 32 bit integer
@@ -266,7 +266,7 @@ void
 cts_config_update_time (CtsConfig *self)
 {
   self->epoch_seconds = cts_common_get_time_seconds ();
-  self->frac_of_second = cts_common_get_fraction_of_seconds (self->time_base);
+  self->frac_of_second = cts_common_get_fraction_of_second (self->time_base);
 }
 
 uint32_t

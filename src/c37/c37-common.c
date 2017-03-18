@@ -150,7 +150,7 @@ cts_common_get_time_seconds (void)
 }
 
 uint32_t
-cts_common_get_fraction_of_seconds (uint32_t time_base)
+cts_common_get_fraction_of_second (uint32_t time_base)
 {
   struct timespec ts;
   uint32_t time;
