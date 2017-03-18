@@ -101,7 +101,7 @@
             <property name="expand">true</property>
             <property name="visible">True</property>
             <property name="halign">center</property>
-            <property name="margin-top">55</property>
+            <property name="margin-top">33</property>
             <property name="margin-bottom">18</property>
             <property name="margin-start">120</property>
             <property name="margin-end">120</property>
