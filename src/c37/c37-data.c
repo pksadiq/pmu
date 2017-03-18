@@ -137,7 +137,7 @@ allocate_data_memory_for_pmu (CtsPmuData *pmu_data,
   byte type;
 
   type = cts_config_get_phasor_data_type_of_pmu (config, pmu_index);
-  count = cts_config_get_number_of_phasors_of_pmu (config, pmu_index);
+  count = cts_config_get_num_of_phasors_of_pmu (config, pmu_index);
 
   if (type == VALUE_TYPE_FLOAT)
     pmu_data->phasor_float = malloc (sizeof *pmu_data->phasor_float * count);
@@ -148,7 +148,7 @@ allocate_data_memory_for_pmu (CtsPmuData *pmu_data,
     return false;
 
   type = cts_config_get_analog_data_type_of_pmu (config, pmu_index);
-  count = cts_config_get_number_of_analog_vals_of_pmu (config, pmu_index);
+  count = cts_config_get_num_of_analogs_of_pmu (config, pmu_index);
 
   if (type == VALUE_TYPE_FLOAT)
     pmu_data->analog_float = malloc (sizeof *pmu_data->analog_float * count);
@@ -159,7 +159,7 @@ allocate_data_memory_for_pmu (CtsPmuData *pmu_data,
     return false;
 
 
-  count = cts_config_get_number_of_status_words_of_pmu (config, pmu_index);
+  count = cts_config_get_num_of_status_of_pmu (config, pmu_index);
 
   pmu_data->digital_data = malloc (sizeof *pmu_data->digital_data * count);
 
@@ -252,8 +252,8 @@ cts_data_populate_from_raw_data (CtsData  *self,
         }
 
       /* Phasors */
-      count = cts_config_get_number_of_phasors_of_pmu (self->config,
-                                                       i + 1);
+      count = cts_config_get_num_of_phasors_of_pmu (self->config,
+                                                    i + 1);
       if (pmu_data->phasor_type == VALUE_TYPE_INT)
         {
           for (uint16_t i = 0; i < count; i++)
@@ -283,8 +283,8 @@ cts_data_populate_from_raw_data (CtsData  *self,
             }
         }
 
-      count = cts_config_get_number_of_analog_vals_of_pmu (self->config,
-                                                           i + 1);
+      count = cts_config_get_num_of_analogs_of_pmu (self->config,
+                                                    i + 1);
       if (pmu_data->analog_type == VALUE_TYPE_INT)
         {
           for (uint16_t i = 0; i < count; i++)
@@ -330,8 +330,8 @@ cts_data_populate_from_raw_data (CtsData  *self,
           *data += 4;
         }
 
-      count = cts_config_get_number_of_status_words_of_pmu (self->config,
-                                                            i + 1);
+      count = cts_config_get_num_of_status_of_pmu (self->config,
+                                                   i + 1);
       for (uint16_t i = 0; i < count; i++)
         {
           memcpy(byte2, *data, 2);

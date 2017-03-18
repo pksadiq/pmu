@@ -666,7 +666,7 @@ cts_config_set_values_of_pmu (CtsConfig  *self,
 }
 
 /**
- * cts_config_get_number_of_phasors_of_pmu:
+ * cts_config_get_num_of_phasors_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the number of Phasors
  * has to be retrieved. If this code is being run on a PMU
@@ -676,8 +676,8 @@ cts_config_set_values_of_pmu (CtsConfig  *self,
  * is invalid, or number of Phasors is not set.
  */
 uint16_t
-cts_config_get_number_of_phasors_of_pmu (CtsConfig *self,
-                                         uint16_t   pmu_index)
+cts_config_get_num_of_phasors_of_pmu (CtsConfig *self,
+                                      uint16_t   pmu_index)
 {
   if (pmu_index > self->num_pmu)
     return 0;
@@ -686,7 +686,7 @@ cts_config_get_number_of_phasors_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_set_number_of_phasors_of_pmu:
+ * cts_config_set_num_of_phasors_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the number of Phasors
  * has to be set. If this code is being run on a PMU,
@@ -700,9 +700,9 @@ cts_config_get_number_of_phasors_of_pmu (CtsConfig *self,
  * returns the previously set value of number of Phasors.
  */
 uint16_t
-cts_config_set_number_of_phasors_of_pmu (CtsConfig *self,
-                                         uint16_t   pmu_index,
-                                         uint16_t   count)
+cts_config_set_num_of_phasors_of_pmu (CtsConfig *self,
+                                      uint16_t   pmu_index,
+                                      uint16_t   count)
 {
   CtsPmuConfig *config;
   bool done;
@@ -721,7 +721,7 @@ cts_config_set_number_of_phasors_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_get_number_of_analog_vals_of_pmu:
+ * cts_config_get_num_of_analogs_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the number of Analog values
  * has to be retrieved. If this code is being run on a PMU,
@@ -731,8 +731,8 @@ cts_config_set_number_of_phasors_of_pmu (CtsConfig *self,
  * is invalid, or number of Analog values is not set.
  */
 uint16_t
-cts_config_get_number_of_analog_vals_of_pmu (CtsConfig *self,
-                                             uint16_t   pmu_index)
+cts_config_get_num_of_analogs_of_pmu (CtsConfig *self,
+                                          uint16_t   pmu_index)
 {
   if (pmu_index > self->num_pmu)
     return 0;
@@ -741,7 +741,7 @@ cts_config_get_number_of_analog_vals_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_set_number_of_analog_vals_of_pmu:
+ * cts_config_set_num_of_analogs_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the number of Analog values
  * has to be set. If this code is being run on a PMU,
@@ -755,9 +755,9 @@ cts_config_get_number_of_analog_vals_of_pmu (CtsConfig *self,
  * returns the previously set value of number of Analog values.
  */
 uint16_t
-cts_config_set_number_of_analog_vals_of_pmu (CtsConfig *self,
-                                             uint16_t   pmu_index,
-                                             uint16_t   count)
+cts_config_set_num_of_analogs_of_pmu (CtsConfig *self,
+                                      uint16_t   pmu_index,
+                                      uint16_t   count)
 {
   CtsPmuConfig *config;
   bool done;
@@ -776,7 +776,7 @@ cts_config_set_number_of_analog_vals_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_get_number_of_status_words_of_pmu:
+ * cts_config_get_num_of_status_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the number of digital status words
  * has to be retrieved. If this code is being run on a PMU,
@@ -786,8 +786,8 @@ cts_config_set_number_of_analog_vals_of_pmu (CtsConfig *self,
  * is invalid, or number of digital status words is not set.
  */
 uint16_t
-cts_config_get_number_of_status_words_of_pmu (CtsConfig *self,
-                                              uint16_t   pmu_index)
+cts_config_get_num_of_status_of_pmu (CtsConfig *self,
+                                     uint16_t   pmu_index)
 {
   if (pmu_index > self->num_pmu)
     return 0;
@@ -796,7 +796,7 @@ cts_config_get_number_of_status_words_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_set_number_of_status_words_of_pmu:
+ * cts_config_set_num_of_status_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the number of digital status words
  * has to be set. If this code is being run on a PMU,
@@ -810,9 +810,9 @@ cts_config_get_number_of_status_words_of_pmu (CtsConfig *self,
  * returns the previously set value of digital status words count.
  */
 uint16_t
-cts_config_set_number_of_status_words_of_pmu (CtsConfig *self,
-                                              uint16_t   pmu_index,
-                                              uint16_t   count)
+cts_config_set_num_of_status_of_pmu (CtsConfig *self,
+                                     uint16_t   pmu_index,
+                                     uint16_t   count)
 {
   CtsPmuConfig *config;
   bool done;
@@ -889,7 +889,7 @@ cts_config_set_channel_names_of_pmu (CtsConfig  *self,
 }
 
 /**
- * cts_config_set_phasor_measurement_type_of_pmu:
+ * cts_config_set_phasor_measure_type_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the Phasor measurement type
  * has to be set. If this code is being run on a PMU,
@@ -902,10 +902,10 @@ cts_config_set_channel_names_of_pmu (CtsConfig  *self,
  * Returns: %true if phasor measurement type was set and %false otherwise.
  */
 bool
-cts_config_set_phasor_measurement_type_of_pmu (CtsConfig *self,
-                                               uint16_t   pmu_index,
-                                               uint16_t   phasor_index,
-                                               byte       type)
+cts_config_set_phasor_measure_type_of_pmu (CtsConfig *self,
+                                           uint16_t   pmu_index,
+                                           uint16_t   phasor_index,
+                                           byte       type)
 {
   CtsPmuConfig *config;
   uint32_t data;
@@ -927,7 +927,7 @@ cts_config_set_phasor_measurement_type_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_set_all_phasor_measurement_type_of_pmu:
+ * cts_config_set_all_phasor_measure_type_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the Phasor measurement type
  * has to be set. If this code is being run on a PMU,
@@ -939,9 +939,9 @@ cts_config_set_phasor_measurement_type_of_pmu (CtsConfig *self,
  * Returns: %true if phasor measurement type was set and %false otherwise.
  */
 bool
-cts_config_set_all_phasor_measurement_type_of_pmu (CtsConfig *self,
-                                                   uint16_t   pmu_index,
-                                                   byte       type)
+cts_config_set_all_phasor_measure_type_of_pmu (CtsConfig *self,
+                                               uint16_t   pmu_index,
+                                               byte       type)
 {
   CtsPmuConfig *config;
   uint16_t num_phasors;
@@ -954,9 +954,9 @@ cts_config_set_all_phasor_measurement_type_of_pmu (CtsConfig *self,
 
   for (uint16_t i = 1; i <= num_phasors; i++)
     {
-      bool status = cts_config_set_phasor_measurement_type_of_pmu (self,
-                                                                   pmu_index,
-                                                                   i, type);
+      bool status = cts_config_set_phasor_measure_type_of_pmu (self,
+                                                               pmu_index,
+                                                               i, type);
       if (!status)
         return false;
     }
@@ -964,7 +964,7 @@ cts_config_set_all_phasor_measurement_type_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_set_all_phasor_measurement_type_of_all_pmu:
+ * cts_config_set_all_phasor_measure_type_of_all_pmu:
  * @self: A valid configuration
  * @type: The type (voltage or current) of phasor.
  *
@@ -973,8 +973,8 @@ cts_config_set_all_phasor_measurement_type_of_pmu (CtsConfig *self,
  * Returns: %true if phasor measurement type was set and %false otherwise.
  */
 bool
-cts_config_set_all_phasor_measurement_type_of_all_pmu (CtsConfig *self,
-                                                       byte       type)
+cts_config_set_all_phasor_measure_type_of_all_pmu (CtsConfig *self,
+                                                   byte       type)
 {
   uint16_t num_pmu;
 
@@ -982,7 +982,7 @@ cts_config_set_all_phasor_measurement_type_of_all_pmu (CtsConfig *self,
 
   for (uint16_t i = 1; i <= num_pmu; i++)
     {
-      bool status = cts_config_set_all_phasor_measurement_type_of_pmu (self, i,
+      bool status = cts_config_set_all_phasor_measure_type_of_pmu (self, i,
                                                                        type);
       if (!status)
         return false;
@@ -991,7 +991,7 @@ cts_config_set_all_phasor_measurement_type_of_all_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_set_phasor_measurement_type_of_pmu:
+ * cts_config_set_phasor_measure_type_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the Phasor measurement type
  * has to be retrieved. If this code is being run on a PMU,
@@ -1003,9 +1003,9 @@ cts_config_set_all_phasor_measurement_type_of_all_pmu (CtsConfig *self,
  * is returned on error.
  */
 byte
-cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
-                                               uint16_t   pmu_index,
-                                               uint16_t   phasor_index)
+cts_config_get_phasor_measure_type_of_pmu (CtsConfig *self,
+                                           uint16_t   pmu_index,
+                                           uint16_t   phasor_index)
 {
   CtsPmuConfig *config;
   uint32_t data;
@@ -1032,7 +1032,7 @@ cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_set_phasor_conv_factor_of_pmu:
+ * cts_config_set_phasor_conv_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the Phasor measurement type
  * has to be set. If this code is being run on a PMU,
@@ -1060,10 +1060,10 @@ cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
  * Returns: %true if Phasor convertion factor was set and %false otherwise.
  */
 bool
-cts_config_set_phasor_conv_factor_of_pmu (CtsConfig *self,
-                                          uint16_t   pmu_index,
-                                          uint16_t   phasor_index,
-                                          uint32_t   conv_factor)
+cts_config_set_phasor_conv_of_pmu (CtsConfig *self,
+                                   uint16_t   pmu_index,
+                                   uint16_t   phasor_index,
+                                   uint32_t   conv_factor)
 {
   CtsPmuConfig *config;
   uint32_t data;
@@ -1083,7 +1083,7 @@ cts_config_set_phasor_conv_factor_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_set_all_phasor_conv_factor_of_pmu:
+ * cts_config_set_all_phasor_conv_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the Phasor measurement type
  * has to be set. If this code is being run on a PMU,
@@ -1093,14 +1093,14 @@ cts_config_set_phasor_conv_factor_of_pmu (CtsConfig *self,
  *
  * Set @conv_factor as convertion factor for every phasor values of PMU
  * with index @pmu_index.
- * See cts_config_set_phasor_conv_factor_of_pmu() for more details
+ * See cts_config_set_phasor_conv_of_pmu() for more details
  *
  * Returns: %true if Phasor convertion factor was set and %false otherwise.
  */
 bool
-cts_config_set_all_phasor_conv_factor_of_pmu (CtsConfig *self,
-                                              uint16_t   pmu_index,
-                                              uint32_t   conv_factor)
+cts_config_set_all_phasor_conv_of_pmu (CtsConfig *self,
+                                       uint16_t   pmu_index,
+                                       uint32_t   conv_factor)
 {
   CtsPmuConfig *config;
   uint16_t num_phasors;
@@ -1113,8 +1113,8 @@ cts_config_set_all_phasor_conv_factor_of_pmu (CtsConfig *self,
 
   for (uint16_t i = 1; i <= num_phasors; i++)
     {
-      bool status = cts_config_set_phasor_conv_factor_of_pmu (self, pmu_index,
-                                                              i, conv_factor);
+      bool status = cts_config_set_phasor_conv_of_pmu (self, pmu_index,
+                                                       i, conv_factor);
       if (!status)
         return false;
     }
@@ -1122,19 +1122,19 @@ cts_config_set_all_phasor_conv_factor_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_set_all_phasor_conv_factor_of_all_pmu:
+ * cts_config_set_all_phasor_conv_of_all_pmu:
  * @self: A valid configuration
  * @conv_factor: The convertion factor of transmitted Phasor value.
  * Should be an unsigned integer not greater than 24 bits.
  *
  * Set @conv_factor as convertion factor for every phasor of every PMU.
- * See cts_config_set_phasor_conv_factor_of_pmu() for more details
+ * See cts_config_set_phasor_conv_of_pmu() for more details
  *
  * Returns: %true if Phasor convertion factor was set and %false otherwise.
  */
 bool
-cts_config_set_all_phasor_conv_factor_of_all_pmu (CtsConfig *self,
-                                                  uint32_t   conv_factor)
+cts_config_set_all_phasor_conv_of_all_pmu (CtsConfig *self,
+                                           uint32_t   conv_factor)
 {
   uint16_t num_pmu;
 
@@ -1142,8 +1142,8 @@ cts_config_set_all_phasor_conv_factor_of_all_pmu (CtsConfig *self,
 
   for (uint16_t i = 1; i <= num_pmu; i++)
     {
-      bool status = cts_config_set_all_phasor_conv_factor_of_pmu (self, i,
-                                                                  conv_factor);
+      bool status = cts_config_set_all_phasor_conv_of_pmu (self, i,
+                                                           conv_factor);
       if (!status)
         return false;
     }
@@ -1187,7 +1187,7 @@ cts_config_get_digital_status_word_from_data (uint16_t upper,
 }
 
 /**
- * cts_config_set_analog_measurement_type_of_pmu:
+ * cts_config_set_analog_measure_type_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the Analog measurement type
  * has to be set. If this code is being run on a PMU,
@@ -1201,10 +1201,10 @@ cts_config_get_digital_status_word_from_data (uint16_t upper,
  * Returns: %true if analog measurement type was set and %false otherwise.
  */
 bool
-cts_config_set_analog_measurement_type_of_pmu (CtsConfig *self,
-                                               uint16_t   pmu_index,
-                                               uint16_t   analog_index,
-                                               byte       type)
+cts_config_set_analog_measure_type_of_pmu (CtsConfig *self,
+                                           uint16_t   pmu_index,
+                                           uint16_t   analog_index,
+                                           byte       type)
 {
   CtsPmuConfig *config;
   uint32_t data;
@@ -1226,7 +1226,7 @@ cts_config_set_analog_measurement_type_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_set_all_analog_measurement_type_of_pmu:
+ * cts_config_set_all_analog_measure_type_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the Analog measurement type
  * has to be set. If this code is being run on a PMU,
@@ -1239,9 +1239,9 @@ cts_config_set_analog_measurement_type_of_pmu (CtsConfig *self,
  * Returns: %true if analog measurement type was set and %false otherwise.
  */
 bool
-cts_config_set_all_analog_measurement_type_of_pmu (CtsConfig *self,
-                                                   uint16_t   pmu_index,
-                                                   byte       type)
+cts_config_set_all_analog_measure_type_of_pmu (CtsConfig *self,
+                                               uint16_t   pmu_index,
+                                               byte       type)
 {
   CtsPmuConfig *config;
   uint16_t num_analogs;
@@ -1254,7 +1254,7 @@ cts_config_set_all_analog_measurement_type_of_pmu (CtsConfig *self,
 
   for (uint16_t i = 1; i <= num_analogs; i++)
     {
-      bool status = cts_config_set_analog_measurement_type_of_pmu (self,
+      bool status = cts_config_set_analog_measure_type_of_pmu (self,
                                                                    pmu_index,
                                                               i, type);
       if (!status)
@@ -1264,7 +1264,7 @@ cts_config_set_all_analog_measurement_type_of_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_set_all_analog_measurement_type_of_all_pmu:
+ * cts_config_set_all_analog_measure_type_of_all_pmu:
  * @self: A valid configuration
  * @type: The type of Analog value.
  *
@@ -1274,8 +1274,8 @@ cts_config_set_all_analog_measurement_type_of_pmu (CtsConfig *self,
  * Returns: %true if analog measurement type was set and %false otherwise.
  */
 bool
-cts_config_set_all_analog_measurement_type_of_all_pmu (CtsConfig *self,
-                                                       byte       type)
+cts_config_set_all_analog_measure_type_of_all_pmu (CtsConfig *self,
+                                                   byte       type)
 {
   uint16_t num_pmu;
 
@@ -1283,7 +1283,7 @@ cts_config_set_all_analog_measurement_type_of_all_pmu (CtsConfig *self,
 
   for (uint16_t i = 1; i <= num_pmu; i++)
     {
-      bool status = cts_config_set_all_analog_measurement_type_of_pmu (self, i,
+      bool status = cts_config_set_all_analog_measure_type_of_pmu (self, i,
                                                                   type);
       if (!status)
         return false;
@@ -1292,7 +1292,7 @@ cts_config_set_all_analog_measurement_type_of_all_pmu (CtsConfig *self,
 }
 
 /**
- * cts_config_get_analog_measurement_type_of_pmu:
+ * cts_config_get_analog_measure_type_of_pmu:
  * @self: A valid configuration
  * @pmu_index: The index of PMU of which the analog measurement type
  * has to be retrieved. If this code is being run on a PMU,
@@ -1304,9 +1304,9 @@ cts_config_set_all_analog_measurement_type_of_all_pmu (CtsConfig *self,
  * %VALUE_TYPE_INVALID is returned on error.
  */
 byte
-cts_config_get_analog_measurement_type_of_pmu (CtsConfig *self,
-                                               uint16_t   pmu_index,
-                                               uint16_t   analog_index)
+cts_config_get_analog_measure_type_of_pmu (CtsConfig *self,
+                                           uint16_t   pmu_index,
+                                           uint16_t   analog_index)
 {
   CtsPmuConfig *config;
   uint32_t data;
@@ -1334,10 +1334,10 @@ cts_config_get_analog_measurement_type_of_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_analog_conv_factor_of_pmu (CtsConfig *self,
-                                          uint16_t   pmu_index,
-                                          uint16_t   analog_index,
-                                          uint32_t   conv_factor)
+cts_config_set_analog_conv_of_pmu (CtsConfig *self,
+                                   uint16_t   pmu_index,
+                                   uint16_t   analog_index,
+                                   uint32_t   conv_factor)
 {
   CtsPmuConfig *config;
   uint32_t data;
@@ -1357,9 +1357,9 @@ cts_config_set_analog_conv_factor_of_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_all_analog_conv_factor_of_pmu (CtsConfig *self,
-                                              uint16_t   pmu_index,
-                                              uint32_t   conv_factor)
+cts_config_set_all_analog_conv_of_pmu (CtsConfig *self,
+                                       uint16_t   pmu_index,
+                                       uint32_t   conv_factor)
 {
   CtsPmuConfig *config;
   uint16_t num_analog;
@@ -1372,8 +1372,8 @@ cts_config_set_all_analog_conv_factor_of_pmu (CtsConfig *self,
 
   for (uint16_t i = 0; i < num_analog; i++)
     {
-      bool status = cts_config_set_analog_conv_factor_of_pmu (self, pmu_index,
-                                                              i, conv_factor);
+      bool status = cts_config_set_analog_conv_of_pmu (self, pmu_index,
+                                                       i, conv_factor);
       if (!status)
         return false;
     }
@@ -1381,8 +1381,8 @@ cts_config_set_all_analog_conv_factor_of_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_all_analog_conv_factor_of_all_pmu (CtsConfig *self,
-                                                  uint32_t   conv_factor)
+cts_config_set_all_analog_conv_of_all_pmu (CtsConfig *self,
+                                           uint32_t   conv_factor)
 {
   uint16_t num_pmu;
 
@@ -1390,8 +1390,8 @@ cts_config_set_all_analog_conv_factor_of_all_pmu (CtsConfig *self,
 
   for (uint16_t i = 0; i < num_pmu; i++)
     {
-      bool status = cts_config_set_all_analog_conv_factor_of_pmu (self, i,
-                                                                  conv_factor);
+      bool status = cts_config_set_all_analog_conv_of_pmu (self, i,
+                                                           conv_factor);
       if (!status)
         return false;
     }
@@ -1399,10 +1399,10 @@ cts_config_set_all_analog_conv_factor_of_all_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_status_word_masks_normal_state_of_pmu (CtsConfig *self,
-                                                      uint16_t   pmu_index,
-                                                      uint16_t   status_index,
-                                                      uint16_t   normal_state)
+cts_config_set_status_normal_masks_of_pmu (CtsConfig *self,
+                                           uint16_t   pmu_index,
+                                           uint16_t   status_index,
+                                           uint16_t   state)
 {
   CtsPmuConfig *config;
   uint32_t data;
@@ -1417,16 +1417,16 @@ cts_config_set_status_word_masks_normal_state_of_pmu (CtsConfig *self,
 
   data = *(config->status_word_masks + status_index - 1);
   /* Save to the first 2 bytes */
-  data = (data & 0x0000FFFF) | (normal_state & 0xFFFF0000);
+  data = (data & 0x0000FFFF) | (state & 0xFFFF0000);
   *(config->status_word_masks + status_index - 1) = data;
 
   return true;
 }
 
 bool
-cts_config_set_all_status_word_masks_normal_state_of_pmu (CtsConfig *self,
-                                                          uint16_t   pmu_index,
-                                                          uint16_t   normal_state)
+cts_config_set_all_status_normal_masks_of_pmu (CtsConfig *self,
+                                               uint16_t   pmu_index,
+                                               uint16_t   state)
 {
   CtsPmuConfig *config;
   uint16_t num_status;
@@ -1440,9 +1440,9 @@ cts_config_set_all_status_word_masks_normal_state_of_pmu (CtsConfig *self,
   for (uint16_t i = 0; i < num_status; i++)
     {
       bool status =
-        cts_config_set_status_word_masks_normal_state_of_pmu (self,
-                                                              pmu_index,
-                                                              i, normal_state);
+        cts_config_set_status_normal_masks_of_pmu (self,
+                                                   pmu_index,
+                                                   i, state);
       if (!status)
         return false;
     }
@@ -1450,8 +1450,8 @@ cts_config_set_all_status_word_masks_normal_state_of_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_all_status_word_masks_normal_state_of_all_pmu (CtsConfig *self,
-                                                              uint16_t   normal_state)
+cts_config_set_all_status_normal_masks_of_all_pmu (CtsConfig *self,
+                                                   uint16_t   state)
 {
   uint16_t num_pmu;
 
@@ -1460,8 +1460,8 @@ cts_config_set_all_status_word_masks_normal_state_of_all_pmu (CtsConfig *self,
   for (uint16_t i = 0; i < num_pmu; i++)
     {
       bool status =
-        cts_config_set_all_status_word_masks_normal_state_of_pmu (self, i,
-                                                                  normal_state);
+        cts_config_set_all_status_normal_masks_of_pmu (self, i,
+                                                       state);
       if (!status)
         return false;
     }
@@ -1469,10 +1469,10 @@ cts_config_set_all_status_word_masks_normal_state_of_all_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_status_word_masks_validity_of_pmu (CtsConfig *self,
-                                                 uint16_t   pmu_index,
-                                                  uint16_t   status_index,
-                                                  uint16_t   validity)
+cts_config_set_status_validity_masks_of_pmu (CtsConfig *self,
+                                             uint16_t   pmu_index,
+                                             uint16_t   status_index,
+                                             uint16_t   validity)
 {
   CtsPmuConfig *config;
   uint32_t data;
@@ -1494,9 +1494,9 @@ cts_config_set_status_word_masks_validity_of_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_all_status_word_masks_validity_of_pmu (CtsConfig *self,
-                                                      uint16_t   pmu_index,
-                                                      uint16_t   validity)
+cts_config_set_all_status_validity_masks_of_pmu (CtsConfig *self,
+                                                 uint16_t   pmu_index,
+                                                 uint16_t   validity)
 {
   CtsPmuConfig *config;
   uint16_t num_status;
@@ -1510,9 +1510,9 @@ cts_config_set_all_status_word_masks_validity_of_pmu (CtsConfig *self,
   for (uint16_t i = 0; i < num_status; i++)
     {
       bool status =
-        cts_config_set_status_word_masks_validity_of_pmu (self,
-                                                          pmu_index,
-                                                          i, validity);
+        cts_config_set_status_validity_masks_of_pmu (self,
+                                                     pmu_index,
+                                                     i, validity);
       if (!status)
         return false;
     }
@@ -1520,8 +1520,8 @@ cts_config_set_all_status_word_masks_validity_of_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_all_status_word_masks_validityof_all_pmu (CtsConfig *self,
-                                                         uint16_t   validity)
+cts_config_set_all_status_validity_masks_of_all_pmu (CtsConfig *self,
+                                                     uint16_t   validity)
 {
   uint16_t num_pmu;
 
@@ -1530,8 +1530,8 @@ cts_config_set_all_status_word_masks_validityof_all_pmu (CtsConfig *self,
   for (uint16_t i = 0; i < num_pmu; i++)
     {
       bool status =
-        cts_config_set_all_status_word_masks_validity_of_pmu (self, i,
-                                                              validity);
+        cts_config_set_all_status_validity_masks_of_pmu (self, i,
+                                                         validity);
       if (!status)
         return false;
     }
@@ -1539,19 +1539,19 @@ cts_config_set_all_status_word_masks_validityof_all_pmu (CtsConfig *self,
 }
 
 bool
-cts_config_set_nominal_frequency_of_pmu (CtsConfig *self,
-                                         uint16_t   pmu_index,
-                                         uint16_t   nominal_freq)
+cts_config_set_nominal_freq_of_pmu (CtsConfig *self,
+                                    uint16_t   pmu_index,
+                                    uint16_t   freq)
 {
   if (pmu_index > self->num_pmu)
     return false;
 
-  if (nominal_freq == 60)
-    nominal_freq = 0;
+  if (freq == 60)
+    freq = 0;
   else
-    nominal_freq = 1;
+    freq = 1;
 
-  (self->pmu_config + pmu_index - 1)->nominal_freq = nominal_freq;
+  (self->pmu_config + pmu_index - 1)->nominal_freq = freq;
   return true;
 }
 

@@ -97,23 +97,23 @@ void cts_config_set_phasor_complex_type_of_pmu (CtsConfig *self,
                                                 uint16_t   pmu_index,
                                                 bool       is_polar);
 
-uint16_t cts_config_get_number_of_phasors_of_pmu (CtsConfig *self,
-                                                  uint16_t   pmu_index);
-uint16_t cts_config_set_number_of_phasors_of_pmu (CtsConfig *self,
-                                                  uint16_t   pmu_index,
-                                                  uint16_t   count);
+uint16_t cts_config_get_num_of_phasors_of_pmu (CtsConfig *self,
+                                               uint16_t   pmu_index);
+uint16_t cts_config_set_num_of_phasors_of_pmu (CtsConfig *self,
+                                               uint16_t   pmu_index,
+                                               uint16_t   count);
 
-uint16_t cts_config_get_number_of_analog_vals_of_pmu (CtsConfig *self,
-                                                      uint16_t   pmu_index);
-uint16_t cts_config_set_number_of_analog_vals_of_pmu (CtsConfig *self,
-                                                      uint16_t   pmu_index,
-                                                      uint16_t   count);
+uint16_t cts_config_get_num_of_analogs_of_pmu (CtsConfig *self,
+                                               uint16_t   pmu_index);
+uint16_t cts_config_set_num_of_analogs_of_pmu (CtsConfig *self,
+                                               uint16_t   pmu_index,
+                                               uint16_t   count);
 
-uint16_t cts_config_get_number_of_status_words_of_pmu (CtsConfig *self,
-                                                       uint16_t   pmu_index);
-uint16_t cts_config_set_number_of_status_words_of_pmu (CtsConfig *self,
-                                                       uint16_t   pmu_index,
-                                                       uint16_t   count);
+uint16_t cts_config_get_num_of_status_of_pmu (CtsConfig *self,
+                                              uint16_t   pmu_index);
+uint16_t cts_config_set_num_of_status_of_pmu (CtsConfig *self,
+                                              uint16_t   pmu_index,
+                                              uint16_t   count);
 
 char **cts_config_get_channel_names_of_pmu (CtsConfig *self,
                                              uint16_t   pmu_index);
@@ -121,43 +121,43 @@ bool   cts_config_set_channel_names_of_pmu (CtsConfig *self,
                                             uint16_t   pmu_index,
                                             char     **channel_names);
 
-bool cts_config_set_phasor_measurement_type_of_pmu         (CtsConfig *self,
-                                                            uint16_t   pmu_index,
-                                                            uint16_t   phasor_index,
-                                                            byte       measurement_type);
-bool cts_config_set_all_phasor_measurement_type_of_pmu     (CtsConfig *self,
-                                                            uint16_t   pmu_index,
-                                                            byte       type);
-bool cts_config_set_all_phasor_measurement_type_of_all_pmu (CtsConfig *self,
-                                                            byte       type);
+bool cts_config_set_phasor_measure_type_of_pmu         (CtsConfig *self,
+                                                        uint16_t   pmu_index,
+                                                        uint16_t   phasor_index,
+                                                        byte       type);
+bool cts_config_set_all_phasor_measure_type_of_pmu     (CtsConfig *self,
+                                                        uint16_t   pmu_index,
+                                                        byte       type);
+bool cts_config_set_all_phasor_measure_type_of_all_pmu (CtsConfig *self,
+                                                        byte       type);
 
-byte cts_config_get_phasor_measurement_type_of_pmu (CtsConfig *self,
-                                                    uint16_t   pmu_index,
-                                                    uint16_t   phasor_index);
+byte cts_config_get_phasor_measure_type_of_pmu (CtsConfig *self,
+                                                uint16_t   pmu_index,
+                                                uint16_t   phasor_index);
 
-bool cts_config_set_phasor_conv_factor_of_pmu         (CtsConfig *self,
-                                                       uint16_t   pmu_index,
-                                                       uint16_t   phasor_index,
-                                                       uint32_t   conv_factor);
-bool cts_config_set_all_phasor_conv_factor_of_pmu     (CtsConfig *self,
-                                                       uint16_t   pmu_index,
-                                                       uint32_t   conv_factor);
-bool cts_config_set_all_phasor_conv_factor_of_all_pmu (CtsConfig *self,
-                                                       uint32_t   conv_factor);
+bool cts_config_set_phasor_conv_of_pmu         (CtsConfig *self,
+                                                uint16_t   pmu_index,
+                                                uint16_t   phasor_index,
+                                                uint32_t   conv_factor);
+bool cts_config_set_all_phasor_conv_of_pmu     (CtsConfig *self,
+                                                uint16_t   pmu_index,
+                                                uint32_t   conv_factor);
+bool cts_config_set_all_phasor_conv_of_all_pmu (CtsConfig *self,
+                                                uint32_t   conv_factor);
 
-bool cts_config_set_analog_measurement_type_of_pmu         (CtsConfig *self,
-                                                            uint16_t   pmu_index,
-                                                            uint16_t   analog_index,
-                                                            byte       type);
-bool cts_config_set_all_analog_measurement_type_of_pmu     (CtsConfig *self,
-                                                            uint16_t   pmu_index,
-                                                            byte       type);
-bool cts_config_set_all_analog_measurement_type_of_all_pmu (CtsConfig *self,
-                                                            byte       type);
+bool cts_config_set_analog_measure_type_of_pmu         (CtsConfig *self,
+                                                        uint16_t   pmu_index,
+                                                        uint16_t   analog_index,
+                                                        byte       type);
+bool cts_config_set_all_analog_measure_type_of_pmu     (CtsConfig *self,
+                                                        uint16_t   pmu_index,
+                                                        byte       type);
+bool cts_config_set_all_analog_measure_type_of_all_pmu (CtsConfig *self,
+                                                        byte       type);
 
-byte cts_config_get_analog_measurement_type_of_pmu (CtsConfig *self,
-                                                    uint16_t   pmu_index,
-                                                    uint16_t   analog_index);
+byte cts_config_get_analog_measure_type_of_pmu (CtsConfig *self,
+                                                uint16_t   pmu_index,
+                                                uint16_t   analog_index);
 
 uint32_t cts_config_get_phasor_conv_factor_from_data  (uint32_t multiplier,
                                                        byte     type);
@@ -166,40 +166,40 @@ uint32_t cts_config_get_analog_conv_factor_from_data  (uint32_t multiplier,
 uint32_t cts_config_get_digital_status_word_from_data (uint16_t upper,
                                                        uint16_t lower);
 
-bool cts_config_set_analog_conv_factor_of_pmu         (CtsConfig *self,
-                                                       uint16_t   pmu_index,
-                                                       uint16_t   analog_index,
-                                                       uint32_t   conv_factor);
-bool cts_config_set_all_analog_conv_factor_of_pmu     (CtsConfig *self,
-                                                       uint16_t   pmu_index,
-                                                       uint32_t   conv_factor);
-bool cts_config_set_all_analog_conv_factor_of_all_pmu (CtsConfig *self,
-                                                       uint32_t   conv_factor);
+bool cts_config_set_analog_conv_of_pmu         (CtsConfig *self,
+                                                uint16_t   pmu_index,
+                                                uint16_t   analog_index,
+                                                uint32_t   conv_factor);
+bool cts_config_set_all_analog_conv_of_pmu     (CtsConfig *self,
+                                                uint16_t   pmu_index,
+                                                uint32_t   conv_factor);
+bool cts_config_set_all_analog_conv_of_all_pmu (CtsConfig *self,
+                                                uint32_t   conv_factor);
 
 
-bool cts_config_set_status_word_masks_normal_state_of_pmu         (CtsConfig *self,
-                                                                   uint16_t   pmu_index,
-                                                                   uint16_t   status_index,
-                                                                   uint16_t   normal_state);
-bool cts_config_set_all_status_word_masks_normal_state_of_pmu     (CtsConfig *self,
-                                                                   uint16_t   pmu_index,
-                                                                   uint16_t   normal_state);
-bool cts_config_set_all_status_word_masks_normal_state_of_all_pmu (CtsConfig *self,
-                                                                   uint16_t   normal_state);
+bool cts_config_set_status_normal_masks_of_pmu         (CtsConfig *self,
+                                                        uint16_t   pmu_index,
+                                                        uint16_t   status_index,
+                                                        uint16_t   state);
+bool cts_config_set_all_status_normal_masks_of_pmu     (CtsConfig *self,
+                                                        uint16_t   pmu_index,
+                                                        uint16_t   state);
+bool cts_config_set_all_status_normal_masks_of_all_pmu (CtsConfig *self,
+                                                        uint16_t   state);
 
-bool cts_config_set_status_word_masks_validity_of_pmu        (CtsConfig *self,
-                                                              uint16_t   pmu_index,
-                                                              uint16_t   status_index,
-                                                              uint16_t   validity);
-bool cts_config_set_all_status_word_masks_validity_of_pmu    (CtsConfig *self,
-                                                              uint16_t   pmu_index,
-                                                              uint16_t   validity);
-bool cts_config_set_all_status_word_masks_validityof_all_pmu (CtsConfig *self,
-                                                              uint16_t   validity);
+bool cts_config_set_status_validity_masks_of_pmu         (CtsConfig *self,
+                                                          uint16_t   pmu_index,
+                                                          uint16_t   status_index,
+                                                          uint16_t   validity);
+bool cts_config_set_all_status_validity_masks_of_pmu     (CtsConfig *self,
+                                                          uint16_t   pmu_index,
+                                                          uint16_t   validity);
+bool cts_config_set_all_status_validity_masks_of_all_pmu (CtsConfig *self,
+                                                          uint16_t   validity);
 
-bool cts_config_set_nominal_frequency_of_pmu (CtsConfig *self,
-                                              uint16_t   pmu_index,
-                                              uint16_t   nominal_freq);
+bool cts_config_set_nominal_freq_of_pmu (CtsConfig *self,
+                                         uint16_t   pmu_index,
+                                         uint16_t   freq);
 
 bool cts_config_increment_change_count_of_pmu (CtsConfig *self,
                                                uint16_t   pmu_index);
