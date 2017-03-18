@@ -97,6 +97,11 @@ typedef struct _CtsConfig
   uint16_t id_code;
   uint16_t num_pmu;
 
+  uint16_t frame_size;
+
+  /* Rate of data transmissions */
+  int16_t data_rate;
+
   uint32_t time_base;
   uint32_t epoch_seconds;
   uint32_t frac_of_second;
@@ -104,8 +109,6 @@ typedef struct _CtsConfig
   /* One per PMU */
   CtsPmuConfig *pmu_config;
 
-  /* Rate of data transmissions */
-  int16_t data_rate;
 } CtsConfig;
 
 CtsConfig *config_default_one = NULL;
@@ -1753,4 +1756,16 @@ cts_config_get_raw_data (CtsConfig *self)
   data = populate_raw_data (self);
 
   return data;
+}
+
+void
+cts_config_update_frame_size (CtsConfig *self)
+{
+  self->frame_size = calc_total_size (self);
+}
+
+uint16_t
+cts_config_get_frame_size (CtsConfig *self)
+{
+  return self->frame_size;
 }
