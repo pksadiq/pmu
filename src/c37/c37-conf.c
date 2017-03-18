@@ -1338,7 +1338,7 @@ cts_conf_set_all_analog_conv_of_pmu (CtsConf  *self,
   config = self->pmu_config + pmu_index - 1;
   num_analog = config->num_analog_values;
 
-  for (uint16_t i = 0; i < num_analog; i++)
+  for (uint16_t i = 1; i <= num_analog; i++)
     {
       bool status = cts_conf_set_analog_conv_of_pmu (self, pmu_index,
                                                      i, conv_factor);
@@ -1356,7 +1356,7 @@ cts_conf_set_all_analog_conv_of_all_pmu (CtsConf  *self,
 
   num_pmu = self->num_pmu;
 
-  for (uint16_t i = 0; i < num_pmu; i++)
+  for (uint16_t i = 1; i <= num_pmu; i++)
     {
       bool status = cts_conf_set_all_analog_conv_of_pmu (self, i,
                                                          conv_factor);
@@ -1405,7 +1405,7 @@ cts_conf_set_all_status_normal_masks_of_pmu (CtsConf  *self,
   config = self->pmu_config + pmu_index - 1;
   num_status = config->num_status_words;
 
-  for (uint16_t i = 0; i < num_status; i++)
+  for (uint16_t i = 1; i <= num_status; i++)
     {
       bool status =
         cts_conf_set_status_normal_masks_of_pmu (self,
@@ -1425,7 +1425,7 @@ cts_conf_set_all_status_normal_masks_of_all_pmu (CtsConf  *self,
 
   num_pmu = self->num_pmu;
 
-  for (uint16_t i = 0; i < num_pmu; i++)
+  for (uint16_t i = 1; i <= num_pmu; i++)
     {
       bool status =
         cts_conf_set_all_status_normal_masks_of_pmu (self, i,
@@ -1475,7 +1475,7 @@ cts_conf_set_all_status_validity_masks_of_pmu (CtsConf  *self,
   config = self->pmu_config + pmu_index - 1;
   num_status = config->num_status_words;
 
-  for (uint16_t i = 0; i < num_status; i++)
+  for (uint16_t i = 1; i <= num_status; i++)
     {
       bool status =
         cts_conf_set_status_validity_masks_of_pmu (self,
@@ -1495,7 +1495,7 @@ cts_conf_set_all_status_validity_masks_of_all_pmu (CtsConf  *self,
 
   num_pmu = self->num_pmu;
 
-  for (uint16_t i = 0; i < num_pmu; i++)
+  for (uint16_t i = 1; i <= num_pmu; i++)
     {
       bool status =
         cts_conf_set_all_status_validity_masks_of_pmu (self, i,
