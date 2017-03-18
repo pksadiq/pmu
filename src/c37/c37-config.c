@@ -266,7 +266,7 @@ cts_config_set_time_base (CtsConfig *self,
  *
  * Returns: A signed 16 bit integer
  */
-uint16_t
+int16_t
 cts_config_get_data_rate (CtsConfig *self)
 {
   return self->data_rate;

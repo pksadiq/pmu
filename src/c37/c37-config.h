@@ -54,7 +54,7 @@ uint32_t   cts_config_get_time_base (CtsConfig  *self);
 void       cts_config_set_time_base (CtsConfig  *self,
                                      uint32_t    time_base);
 
-uint16_t cts_config_get_data_rate (CtsConfig *self);
+int16_t  cts_config_get_data_rate (CtsConfig *self);
 void     cts_config_set_data_rate (CtsConfig *self,
                                    int16_t    data_rate);
 
