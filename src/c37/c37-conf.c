@@ -1385,7 +1385,7 @@ cts_conf_set_status_normal_masks_of_pmu (CtsConf  *self,
 
   data = *(config->status_word_masks + status_index - 1);
   /* Save to the first 2 bytes */
-  data = (data & 0x0000FFFF) | (state & 0xFFFF0000);
+  data = (data & 0x0000FFFF) | (state << 16);
   *(config->status_word_masks + status_index - 1) = data;
 
   return true;
