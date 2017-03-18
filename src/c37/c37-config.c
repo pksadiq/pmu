@@ -269,6 +269,18 @@ cts_config_update_time (CtsConfig *self)
   self->frac_of_second = cts_common_get_fraction_of_seconds (self->time_base);
 }
 
+uint32_t
+cts_config_get_time_in_seconds (CtsConfig *self)
+{
+  return self->epoch_seconds;
+}
+
+uint32_t
+cts_config_get_fraction_of_second (CtsConfig *self)
+{
+  return self->frac_of_second;
+}
+
 /**
  * cts_config_get_data_rate:
  * @self: A valid configuration
