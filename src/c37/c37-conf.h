@@ -159,13 +159,6 @@ byte cts_conf_get_analog_measure_type_of_pmu (CtsConf  *self,
                                               uint16_t  pmu_index,
                                               uint16_t  analog_index);
 
-uint32_t cts_conf_get_phasor_conv_factor_from_data  (uint32_t multiplier,
-                                                     byte     type);
-uint32_t cts_conf_get_analog_conv_factor_from_data  (uint32_t multiplier,
-                                                     byte     type);
-uint32_t cts_conf_get_digital_status_word_from_data (uint16_t upper,
-                                                     uint16_t lower);
-
 bool cts_conf_set_analog_conv_of_pmu         (CtsConf  *self,
                                               uint16_t  pmu_index,
                                               uint16_t  analog_index,

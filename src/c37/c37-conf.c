@@ -1152,42 +1152,6 @@ cts_conf_set_all_phasor_conv_of_all_pmu (CtsConf  *self,
   return true;
 }
 
-uint32_t
-cts_conf_get_phasor_conv_factor_from_data (uint32_t multiplier,
-                                           byte     type)
-{
-  uint32_t data = multiplier;
-
-  if (type == VALUE_TYPE_CURRENT)
-    SET_BIT(data, 24);
-  else
-    CLEAR_BIT(data, 24);
-
-  return data;
-}
-
-uint32_t
-cts_conf_get_analog_conv_factor_from_data (uint32_t multiplier,
-                                           byte     type)
-{
-  uint32_t data = type;
-  data <<= 24;
-  data |= multiplier;
-
-  return data;
-}
-
-uint32_t
-cts_conf_get_digital_status_word_from_data (uint16_t upper,
-                                            uint16_t lower)
-{
-  uint32_t data = upper;
-  data <<= 16;
-  data |= lower;
-
-  return data;
-}
-
 /**
  * cts_conf_set_analog_measure_type_of_pmu:
  * @self: A valid configuration
