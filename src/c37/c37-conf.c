@@ -1583,17 +1583,40 @@ cts_conf_get_default_config_two (void)
 }
 
 static size_t
-get_per_pmu_total_size (CtsPmuConf *pmu_config)
+get_per_pmu_total_size (CtsConf    *self,
+                        CtsPmuConf *pmu_config,
+                        uint16_t    pmu_index)
 {
   size_t pmu_size;
+  byte size;
 
-  pmu_size = 16 * (pmu_config->num_phasors
-                   + pmu_config->num_analog_values
-                   + 16 * pmu_config->num_status_words);
+  pmu_size = 16 * (pmu_config->num_phasors +
+                   pmu_config->num_analog_values +
+                   16 * pmu_config->num_status_words);
 
-  pmu_size += 4 * (pmu_config->num_phasors
-                   + pmu_config->num_analog_values
-                   + pmu_config->num_status_words);
+
+  if (cts_conf_get_freq_data_type_of_pmu (self, pmu_index) == VALUE_TYPE_FLOAT)
+    size = 4;
+  else
+    size = 2;
+
+  pmu_size += size * pmu_config->num_status_words;
+
+
+  if (cts_conf_get_analog_data_type_of_pmu (self, pmu_index) == VALUE_TYPE_FLOAT)
+    size = 4;
+  else
+    size = 2;
+
+  pmu_size += size * pmu_config->num_analog_values;
+
+
+  if (cts_conf_get_phasor_data_type_of_pmu (self, pmu_index) == VALUE_TYPE_FLOAT)
+    size = 4;
+  else
+    size = 2;
+
+  pmu_size += size * pmu_config->num_phasors;
 
   return pmu_size + CONFIG_COMMON_SIZE_PER_PMU;
 }
@@ -1607,7 +1630,9 @@ calc_total_size (CtsConf *self)
   num_pmu = self->num_pmu;
 
   for (uint16_t i = 0; i < num_pmu; i++)
-    total_pmu_size += get_per_pmu_total_size (self->pmu_config + i);
+    total_pmu_size += get_per_pmu_total_size (self,
+                                              self->pmu_config + i,
+                                              i + 1);
 
   return total_pmu_size + CONFIG_COMMON_SIZE;
 }
