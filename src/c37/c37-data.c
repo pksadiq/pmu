@@ -74,6 +74,9 @@ typedef struct _CtsPmuData
 
 typedef struct _CtsData
 {
+  uint16_t frame_size;
+  uint16_t id_code;
+
   uint32_t epoch_seconds;
   uint32_t frac_of_second;
 
@@ -228,6 +231,16 @@ cts_data_populate_from_raw_data (CtsData  *self,
 
   if (!is_data_only)
     {
+      /* Frame size */
+      memcpy (byte2, *data, 2);
+      self->epoch_seconds = ntohl (*byte2);
+      *data += 2;
+
+      /* ID code */
+      memcpy (byte2, *data, 2);
+      self->epoch_seconds = ntohl (*byte2);
+      *data += 2;
+
       /* time (in seconds since epoch) */
       memcpy (byte4, *data, 4);
       self->epoch_seconds = ntohl (*byte4);
