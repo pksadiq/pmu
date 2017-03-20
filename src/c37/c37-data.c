@@ -50,16 +50,16 @@ typedef struct _CtsPmuData
   uint16_t (*phasor_int)[2];
 
   /* The same as above, but if values are floats */
-  uint32_t (*phasor_float)[2]; /* Pointer to an array of size 2 */
+  float (*phasor_float)[2]; /* Pointer to an array of size 2 */
 
   union {
     uint16_t int_val;
-    uint32_t float_val;
+    float    float_val;
   } freq_deviation;
 
   union {
     uint16_t int_val;
-    uint32_t float_val;
+    float    float_val;
   } rocof;
 
   uint16_t num_analogs;
@@ -67,9 +67,9 @@ typedef struct _CtsPmuData
 
   /* Use either of one. Never both */
   uint16_t *analog_int;
-  uint32_t *analog_float;
+  float    *analog_float;
 
-  uint16_t *digital_data;
+  uint16_t *status_word;
 } CtsPmuData;
 
 typedef struct _CtsData
@@ -106,6 +106,99 @@ byte
 cts_pmu_data_get_phasor_type (CtsPmuData *pmu_data)
 {
   return pmu_data->phasor_type;
+}
+
+bool
+cts_data_get_phasor_value_of_pmu (CtsData  *self,
+                                  uint16_t  pmu_index,
+                                  uint16_t  phasor_index,
+                                  void     *phasor_value)
+{
+  CtsPmuData *pmu_data;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  pmu_data = self->pmu_data + pmu_index - 1;
+
+  if (phasor_index > pmu_data->num_phasors)
+    return false;
+
+  if (pmu_data->phasor_type == VALUE_TYPE_FLOAT)
+    {
+      float *value = phasor_value;
+
+      value[0] = (*(pmu_data->phasor_float + phasor_index - 1)) [0];
+      value[1] = (*(pmu_data->phasor_float + phasor_index - 1)) [1];
+
+      return true;
+    }
+  else if (pmu_data->phasor_type == VALUE_TYPE_INT)
+    {
+      uint16_t *value = phasor_value;
+
+      value[0] = (*(pmu_data->phasor_float + phasor_index - 1)) [0];
+      value[1] = (*(pmu_data->phasor_float + phasor_index - 1)) [1];
+
+      return true;
+    }
+  return false;
+
+}
+
+bool
+cts_data_get_analog_value_of_pmu (CtsData  *self,
+                                  uint16_t  pmu_index,
+                                  uint16_t  analog_index,
+                                  void     *analog_value)
+{
+    CtsPmuData *pmu_data;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  pmu_data = self->pmu_data + pmu_index - 1;
+
+  if (analog_index > pmu_data->num_analogs)
+    return false;
+
+  if (pmu_data->analog_type == VALUE_TYPE_FLOAT)
+    {
+      float *value = analog_value;
+
+      *value = *(pmu_data->analog_float + analog_index - 1);
+
+      return true;
+    }
+  else if (pmu_data->analog_type == VALUE_TYPE_INT)
+    {
+      uint16_t *value = analog_value;
+
+      *value = *(pmu_data->analog_int + analog_index - 1);
+      return true;
+    }
+  return false;
+}
+
+bool
+cts_data_get_status_word_of_pmu (CtsData  *self,
+                                 uint16_t  pmu_index,
+                                 uint16_t  status_word_index,
+                                 uint16_t *status_word)
+{
+  CtsPmuData *pmu_data;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  pmu_data = self->pmu_data + pmu_index - 1;
+
+  if (status_word_index > pmu_data->num_status_words)
+    return false;
+
+  *status_word = *(pmu_data->status_word + status_word_index - 1);
+
+  return true;
 }
 
 static uint16_t
@@ -215,7 +308,7 @@ clear_all_data (CtsPmuData *pmu_data)
   pmu_data->rocof.int_val = 0;
   pmu_data->analog_int = NULL;
   pmu_data->analog_float = NULL;
-  pmu_data->digital_data = NULL;
+  pmu_data->status_word = NULL;
   pmu_data->num_analogs = 0;
   pmu_data->num_phasors = 0;
   pmu_data->num_status_words = 0;
@@ -248,10 +341,10 @@ allocate_data_memory_for_pmu (CtsPmuData *pmu_data,
     return false;
 
 
-  pmu_data->digital_data = malloc (sizeof *pmu_data->digital_data *
-                                   pmu_data->num_status_words);
+  pmu_data->status_word = malloc (sizeof *pmu_data->status_word *
+                                  pmu_data->num_status_words);
 
-  if (pmu_data->digital_data == NULL)
+  if (pmu_data->status_word == NULL)
     return false;
 
   return true;
@@ -360,8 +453,8 @@ cts_data_populate_from_raw_data (CtsData  *self,
         }
 
       /* Phasors */
-      count = cts_conf_get_num_of_phasors_of_pmu (self->config,
-                                                  i + 1);
+      count = pmu_data->num_phasors;
+
       if (pmu_data->phasor_type == VALUE_TYPE_INT)
         {
           for (uint16_t i = 0; i < count; i++)
@@ -381,18 +474,21 @@ cts_data_populate_from_raw_data (CtsData  *self,
         {
           for (uint16_t i = 0; i < count; i++)
             {
+              /* Real or Magnitude */
               memcpy(byte4, *data, 4);
               *(pmu_data->phasor_float + i) [0] = ntohs (*byte4);
               *data += 4;
 
+              /* Imaginary or Angle */
               memcpy(byte4, *data, 4);
               *(pmu_data->phasor_float + i) [1] = ntohs (*byte4);
               *data += 4;
             }
         }
 
-      count = cts_conf_get_num_of_analogs_of_pmu (self->config,
-                                                    i + 1);
+      /* Analog values */
+      count = pmu_data->num_analogs;
+
       if (pmu_data->analog_type == VALUE_TYPE_INT)
         {
           for (uint16_t i = 0; i < count; i++)
@@ -412,6 +508,7 @@ cts_data_populate_from_raw_data (CtsData  *self,
             }
         }
 
+      /* Frequency Deviation */
       if (pmu_data->freq_type == VALUE_TYPE_INT)
         {
           memcpy(byte2, *data, 2);
@@ -425,6 +522,7 @@ cts_data_populate_from_raw_data (CtsData  *self,
           *data += 4;
         }
 
+      /* ROCOF */
       if (pmu_data->freq_type == VALUE_TYPE_INT)
         {
           memcpy(byte2, *data, 2);
@@ -438,12 +536,12 @@ cts_data_populate_from_raw_data (CtsData  *self,
           *data += 4;
         }
 
-      count = cts_conf_get_num_of_status_of_pmu (self->config,
-                                                 i + 1);
+      /* Digital Status words */
+      count = pmu_data->num_status_words;
       for (uint16_t i = 0; i < count; i++)
         {
           memcpy(byte2, *data, 2);
-          *(pmu_data->digital_data + i) = ntohs(*byte2);
+          *(pmu_data->status_word + i) = ntohs(*byte2);
           *data += 2;
         }
     }
