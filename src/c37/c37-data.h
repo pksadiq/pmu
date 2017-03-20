@@ -27,3 +27,6 @@ typedef struct _CtsPmuData PmuData;
 CtsData *cts_data_get_default (void);
 bool     cts_data_set_config  (CtsData *self,
                                CtsConf *config);
+
+void     cts_data_update_frame_size (CtsData *self);
+uint16_t cts_data_get_frame_size    (CtsData *self);
