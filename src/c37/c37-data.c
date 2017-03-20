@@ -109,6 +109,70 @@ cts_pmu_data_get_phasor_type (CtsPmuData *pmu_data)
 }
 
 bool
+cts_data_get_freq_deviation_of_pmu (CtsData  *self,
+                                    uint16_t  pmu_index,
+                                    void     *freq_deviation)
+{
+  CtsPmuData *pmu_data;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  pmu_data = self->pmu_data + pmu_index - 1;
+
+  if (pmu_data->freq_type == VALUE_TYPE_FLOAT)
+    {
+      float *value = freq_deviation;
+
+      *value = pmu_data->freq_deviation.float_val;
+
+      return true;
+    }
+  else if (pmu_data->freq_type == VALUE_TYPE_INT)
+    {
+      uint16_t *value = freq_deviation;
+
+      *value = pmu_data->freq_deviation.int_val;
+
+      return true;
+    }
+
+  return false;
+}
+
+bool
+cts_data_get_rocof_of_pmu (CtsData  *self,
+                           uint16_t  pmu_index,
+                           void     *rocof)
+{
+  CtsPmuData *pmu_data;
+
+  if (pmu_index > self->num_pmu)
+    return false;
+
+  pmu_data = self->pmu_data + pmu_index - 1;
+
+  if (pmu_data->freq_type == VALUE_TYPE_FLOAT)
+    {
+      float *value = rocof;
+
+      *value = pmu_data->rocof.float_val;
+
+      return true;
+    }
+  else if (pmu_data->freq_type == VALUE_TYPE_INT)
+    {
+      uint16_t *value = rocof;
+
+      *value = pmu_data->rocof.int_val;
+
+      return true;
+    }
+
+  return false;
+}
+
+bool
 cts_data_get_phasor_value_of_pmu (CtsData  *self,
                                   uint16_t  pmu_index,
                                   uint16_t  phasor_index,
