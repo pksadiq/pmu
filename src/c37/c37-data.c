@@ -28,16 +28,10 @@
 #define DATA_COMMON_SIZE 16
 
 /*
- * This will be common for each PMU data with freq and ROCOF as floats
- * STAT (2) + FREQ (4) + ROCOF (4)
+ * This will be common for each PMU data
+ * STAT (2)
  */
-#define DATA_COMMON_SIZE_PER_PMU_FLOAT_FREQ 10
-
-/*
- * This will be common for each PMU data with freq and ROCOF as integers
- * STAT (2) + FREQ (2) + ROCOF (2)
- */
-#define DATA_COMMON_SIZE_PER_PMU_INT_FREQ 6
+#define DATA_COMMON_SIZE_PER_PMU 2
 
 typedef struct _CtsPmuData
 {
@@ -47,6 +41,8 @@ typedef struct _CtsPmuData
   byte analog_type;
   // XXX: is it worth saving 3 bytes on 32 bit here some way? */
   byte phasor_type;
+
+  uint16_t num_phasors;
 
   /* Use Only either of the one */
   /* One for real and other for imaginary */
@@ -64,6 +60,9 @@ typedef struct _CtsPmuData
     uint16_t int_val;
     uint32_t float_val;
   } rocof;
+
+  uint16_t num_analogs;
+  uint16_t num_status_words;
 
   /* Use either of one. Never both */
   uint16_t *analog_int;
@@ -89,6 +88,92 @@ typedef struct _CtsData
 } CtsData;
 
 CtsData *default_data = NULL;
+
+byte
+cts_pmu_data_get_freq_type (CtsPmuData *pmu_data)
+{
+  return pmu_data->freq_type;
+}
+
+byte
+cts_pmu_data_get_analog_type (CtsPmuData *pmu_data)
+{
+  return pmu_data->analog_type;
+}
+
+byte
+cts_pmu_data_get_phasor_type (CtsPmuData *pmu_data)
+{
+  return pmu_data->phasor_type;
+}
+
+static uint16_t
+get_per_pmu_total_size (CtsData    *self,
+                        CtsPmuData *pmu_data,
+                        uint16_t    pmu_index)
+{
+  uint16_t pmu_size;
+  byte size;
+
+  pmu_size = DATA_COMMON_SIZE_PER_PMU;
+
+  if (cts_pmu_data_get_freq_type (pmu_data) == VALUE_TYPE_FLOAT)
+    size = 4;
+  else
+    size = 2;
+
+  /* Frequency and ROCOF */
+  pmu_size += pmu_size + size * 2;
+
+
+  if (cts_pmu_data_get_analog_type (pmu_data) == VALUE_TYPE_FLOAT)
+    size = 4;
+  else
+    size = 2;
+
+  pmu_size += pmu_size + size * pmu_data->num_analogs;
+
+
+  if (cts_pmu_data_get_phasor_type(pmu_data) == VALUE_TYPE_FLOAT)
+    size = 4;
+  else
+    size = 2;
+
+  pmu_size += pmu_size + size * pmu_data->num_phasors;
+
+  /* Digital Status words */
+  pmu_size += pmu_size + 2 * pmu_data->num_status_words;
+
+  return pmu_size;
+}
+
+static uint16_t
+calc_total_size (CtsData *self)
+{
+  uint16_t num_pmu;
+  size_t total_pmu_size = 0;
+
+  num_pmu = self->num_pmu;
+
+  for (uint16_t i = 0; i < num_pmu; i++)
+    total_pmu_size += get_per_pmu_total_size (self,
+                                              self->pmu_data + i,
+                                              i + 1);
+
+  return total_pmu_size + DATA_COMMON_SIZE;
+}
+
+void
+cts_data_update_frame_size (CtsData *self)
+{
+  self->frame_size = calc_total_size (self);
+}
+
+uint16_t
+cts_data_get_frame_size (CtsData *self)
+{
+  return self->frame_size;
+}
 
 static CtsData *
 cts_data_new (void)
@@ -129,6 +214,9 @@ clear_all_data (CtsPmuData *pmu_data)
   pmu_data->analog_int = NULL;
   pmu_data->analog_float = NULL;
   pmu_data->digital_data = NULL;
+  pmu_data->num_analogs = 0;
+  pmu_data->num_phasors = 0;
+  pmu_data->num_status_words = 0;
 }
 
 static bool
@@ -136,35 +224,30 @@ allocate_data_memory_for_pmu (CtsPmuData *pmu_data,
                               CtsConf    *config,
                               uint16_t    pmu_index)
 {
-  uint16_t count;
-  byte type;
-
-  type = cts_conf_get_phasor_data_type_of_pmu (config, pmu_index);
-  count = cts_conf_get_num_of_phasors_of_pmu (config, pmu_index);
-
-  if (type == VALUE_TYPE_FLOAT)
-    pmu_data->phasor_float = malloc (sizeof *pmu_data->phasor_float * count);
-  else if (type == VALUE_TYPE_INT)
-    pmu_data->phasor_int = malloc (sizeof *pmu_data->phasor_int * count);
+  if (pmu_data->phasor_type == VALUE_TYPE_FLOAT)
+    pmu_data->phasor_float = malloc (sizeof *pmu_data->phasor_float *
+                                     pmu_data->num_phasors);
+  else if (pmu_data->phasor_type == VALUE_TYPE_INT)
+    pmu_data->phasor_int = malloc (sizeof *pmu_data->phasor_int *
+                                   pmu_data->num_phasors);
 
   if (pmu_data->phasor_float == NULL && pmu_data->phasor_int == NULL)
     return false;
 
-  type = cts_conf_get_analog_data_type_of_pmu (config, pmu_index);
-  count = cts_conf_get_num_of_analogs_of_pmu (config, pmu_index);
 
-  if (type == VALUE_TYPE_FLOAT)
-    pmu_data->analog_float = malloc (sizeof *pmu_data->analog_float * count);
-  else if (type == VALUE_TYPE_INT)
-    pmu_data->analog_int = malloc (sizeof *pmu_data->analog_int * count);
+  if (pmu_data->analog_type == VALUE_TYPE_FLOAT)
+    pmu_data->analog_float = malloc (sizeof *pmu_data->analog_float *
+                                     pmu_data->num_analogs);
+  else if (pmu_data->analog_type == VALUE_TYPE_INT)
+    pmu_data->analog_int = malloc (sizeof *pmu_data->analog_int *
+                                   pmu_data->num_analogs);
 
   if (pmu_data->analog_float == NULL && pmu_data->analog_int == NULL)
     return false;
 
 
-  count = cts_conf_get_num_of_status_of_pmu (config, pmu_index);
-
-  pmu_data->digital_data = malloc (sizeof *pmu_data->digital_data * count);
+  pmu_data->digital_data = malloc (sizeof *pmu_data->digital_data *
+                                   pmu_data->num_status_words);
 
   if (pmu_data->digital_data == NULL)
     return false;
@@ -185,6 +268,15 @@ set_config_of_pmu (CtsPmuData *pmu_data,
 
   pmu_data->freq_type = cts_conf_get_freq_data_type_of_pmu (config,
                                                             pmu_index);
+
+  pmu_data->num_analogs = cts_conf_get_num_of_analogs_of_pmu (config,
+                                                              pmu_index);
+
+  pmu_data->num_phasors = cts_conf_get_num_of_phasors_of_pmu (config,
+                                                              pmu_index);
+
+  pmu_data->num_status_words = cts_conf_get_num_of_status_of_pmu (config,
+                                                                  pmu_index);
 }
 
 bool
