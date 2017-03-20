@@ -17,6 +17,7 @@
  */
 
 #include "c37-data.h"
+#include "stdio.h"
 
 #define SYNC_DATA 0xAA
 
@@ -123,7 +124,7 @@ get_per_pmu_total_size (CtsData    *self,
     size = 2;
 
   /* Frequency and ROCOF */
-  pmu_size += pmu_size + size * 2;
+  pmu_size += size * 2;
 
 
   if (cts_pmu_data_get_analog_type (pmu_data) == VALUE_TYPE_FLOAT)
@@ -131,7 +132,7 @@ get_per_pmu_total_size (CtsData    *self,
   else
     size = 2;
 
-  pmu_size += pmu_size + size * pmu_data->num_analogs;
+  pmu_size += size * pmu_data->num_analogs;
 
 
   if (cts_pmu_data_get_phasor_type(pmu_data) == VALUE_TYPE_FLOAT)
@@ -139,10 +140,10 @@ get_per_pmu_total_size (CtsData    *self,
   else
     size = 2;
 
-  pmu_size += pmu_size + size * pmu_data->num_phasors;
+  pmu_size += size * pmu_data->num_phasors;
 
   /* Digital Status words */
-  pmu_size += pmu_size + 2 * pmu_data->num_status_words;
+  pmu_size += 2 * pmu_data->num_status_words;
 
   return pmu_size;
 }
@@ -167,6 +168,7 @@ void
 cts_data_update_frame_size (CtsData *self)
 {
   self->frame_size = calc_total_size (self);
+  printf ("Total size: %d\n", self->frame_size);
 }
 
 uint16_t
@@ -292,6 +294,7 @@ cts_data_set_config (CtsData *self,
   if (self->pmu_data == NULL)
     return false;
 
+  self->num_pmu = num_pmu;
   self->config = config;
 
   for (uint16_t i = 0; i < num_pmu; i++)
