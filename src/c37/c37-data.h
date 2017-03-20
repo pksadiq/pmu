@@ -20,3 +20,10 @@
 
 #include "c37-common.h"
 #include "c37-conf.h"
+
+typedef struct _CtsData CtsData;
+typedef struct _CtsPmuData PmuData;
+
+CtsData *cts_data_get_default (void);
+bool     cts_data_set_config  (CtsData *self,
+                               CtsConf *config);
