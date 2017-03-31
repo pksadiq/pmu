@@ -20,9 +20,11 @@
 #include "pmu-app.h"
 #include "pmu-window.h"
 
+#include <fcntl.h>
+#include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <linux/spi/spidev.h>
 
 #include "pmu-spi.h"
 
@@ -135,12 +137,15 @@ pmu_spi_setup_device (PmuWindow *window)
 {
   int spi_fd;
 
-  spi_fd = open ("/dev/null", O_RDWR);
+  spi_fd = open ("/dev/nul", O_RDWR);
 
   if (spi_fd == -1)
     {
+      g_idle_add((GSourceFunc) pmu_window_spi_failed_cb, window);
       return FALSE;
     }
+
+  default_spi->spi_fd = spi_fd;
 
   return TRUE;
 }

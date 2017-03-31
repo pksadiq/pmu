@@ -21,6 +21,7 @@
 #include "pmu-list.h"
 #include "pmu-details.h"
 #include "pmu-server.h"
+#include "pmu-spi.h"
 
 #include "pmu-window.h"
 
@@ -218,6 +219,18 @@ pmu_window_server_stopped_cb (PmuWindow *self)
 
   gtk_widget_hide (self->stop_button);
   gtk_widget_show (self->start_button);
+
+  return G_SOURCE_REMOVE;
+}
+
+gboolean
+pmu_window_spi_failed_cb (PmuWindow *self)
+{
+  gtk_label_set_label (GTK_LABEL (self->info_label), "Starting SPI failed");
+
+  revealer_timeout (self);
+  gtk_revealer_set_reveal_child (GTK_REVEALER (self->revealer), TRUE);
+  self->revealer_timeout_id = g_timeout_add_seconds (5, revealer_timeout, self);
 
   return G_SOURCE_REMOVE;
 }
