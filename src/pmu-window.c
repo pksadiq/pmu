@@ -319,6 +319,7 @@ pmu_window_init (PmuWindow *self)
   g_free (subtitle);
 
   pmu_server_start_thread (self);
+  pmu_spi_start_thread (self);
 }
 
 PmuWindow *

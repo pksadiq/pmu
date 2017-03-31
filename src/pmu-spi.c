@@ -20,6 +20,10 @@
 #include "pmu-app.h"
 #include "pmu-window.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include "pmu-spi.h"
 
 #define DATA_SIZE 64 /* Bytes */
@@ -29,6 +33,10 @@ struct _PmuSpi
   GObject parent_instance;
 
   GMainContext   *context;
+
+  int spi_fd;
+
+  guint update_time; /* in milliseconds */
 };
 
 GThread *spi_thread  = NULL;
@@ -92,7 +100,10 @@ pmu_spi_get_default (void)
 GMainContext *
 pmu_spi_get_default_context (void)
 {
-  return default_spi->context;
+  if (default_spi)
+    return default_spi->context;
+
+  return NULL;
 }
 
 static void
@@ -101,7 +112,10 @@ start_spi_cb (PmuSpi   *self,
 {
   g_autoptr(GError) error = NULL;
 
-  g_usleep (1000 * 1000 * 10);
+  while (1)
+    {
+      
+    }
 }
 
 static void
@@ -109,14 +123,35 @@ stop_spi_cb (PmuSpi   *self,
              gpointer  user_data)
 {
   g_autoptr(GError) error = NULL;
+
+  if (spi_data)
+    g_queue_free_full (spi_data, (GDestroyNotify)g_bytes_unref);
+
+  default_spi->update_time = 1000;
+}
+
+static gboolean
+pmu_spi_setup_device (PmuWindow *window)
+{
+  int spi_fd;
+
+  spi_fd = open ("/dev/null", O_RDWR);
+
+  if (spi_fd == -1)
+    {
+      return FALSE;
+    }
+
+  return TRUE;
 }
 
 static void
-pmu_spi_new (gpointer user_data)
+pmu_spi_new (PmuWindow *window)
 {
   g_autoptr(GError) error = NULL;
   g_autoptr(GMainContext) spi_context = NULL;
   g_autoptr(GMainLoop) spi_loop = NULL;
+  gboolean status;
 
   spi_context = g_main_context_new ();
   spi_loop = g_main_loop_new(spi_context, FALSE);
@@ -125,20 +160,30 @@ pmu_spi_new (gpointer user_data)
 
   default_spi = g_object_new (PMU_TYPE_SPI, NULL);
   default_spi->context = spi_context;
+  default_spi->update_time = 5;
+
+  status = pmu_spi_setup_device (window);
+  if (!status)
+    goto out;
 
   g_signal_connect (default_spi, "start-spi",
-                    G_CALLBACK (start_spi_cb), user_data);
+                    G_CALLBACK (start_spi_cb), window);
 
   g_signal_connect (default_spi, "stop-spi",
-                    G_CALLBACK (stop_spi_cb), user_data);
+                    G_CALLBACK (stop_spi_cb), window);
 
   g_main_loop_run(spi_loop);
 
+ out:
+  g_object_unref (default_spi);
+  default_spi = NULL;
   g_main_context_pop_thread_default (spi_context);
+  g_main_loop_quit (spi_loop);
+  spi_thread = NULL;
 }
 
 void
-pmu_spi_start_thread (gpointer user_data)
+pmu_spi_start_thread (PmuWindow *window)
 {
   g_autoptr(GError) error = NULL;
 
@@ -146,7 +191,7 @@ pmu_spi_start_thread (gpointer user_data)
     {
       spi_thread = g_thread_try_new ("spi",
                                      (GThreadFunc)pmu_spi_new,
-                                     user_data,
+                                     window,
                                      &error);
       if (error != NULL)
         g_warning ("Cannot create spi thread. Error: %s", error->message);
@@ -168,7 +213,8 @@ pmu_spi_start (gpointer user_data)
 gboolean
 pmu_spi_stop (gpointer user_data)
 {
-  g_signal_emit_by_name (default_spi, "stop-spi");
+  if (default_spi)
+    g_signal_emit_by_name (default_spi, "stop-spi");
 
   return G_SOURCE_REMOVE;
 }

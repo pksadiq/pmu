@@ -184,7 +184,6 @@ pmu_app_class_init (PmuAppClass *klass)
 static void
 pmu_app_init (PmuApp *self)
 {
-  pmu_spi_start_thread (NULL);
 }
 
 PmuApp *

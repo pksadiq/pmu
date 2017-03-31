@@ -28,7 +28,7 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (PmuSpi, pmu_spi, PMU, SPI, GObject)
 
-void          pmu_spi_start_thread        (gpointer user_data);
+void          pmu_spi_start_thread        (PmuWindow *window);
 PmuSpi    *pmu_spi_get_default         (void);
 GMainContext *pmu_spi_get_default_context (void);
 gboolean      pmu_spi_start               (gpointer user_data);
