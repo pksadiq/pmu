@@ -14,6 +14,8 @@ pmu_SOURCES = \
 	pmu-details.c 		\
 	pmu-server.h 		\
 	pmu-server.c 		\
+	pmu-spi.h 		\
+	pmu-spi.c 		\
 	pmu-list.h 		\
 	pmu-list.c 		\
 	c37/c37-common.h 		\

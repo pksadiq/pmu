@@ -19,6 +19,7 @@
 #include "c37/c37.h"
 #include "pmu-app.h"
 #include "pmu-window.h"
+#include "pmu-spi.h"
 
 #include "pmu-server.h"
 
@@ -364,6 +365,7 @@ start_server_cb (PmuServer *self,
                  PmuWindow *window)
 {
   g_autoptr(GError) error = NULL;
+  GMainContext *context = NULL;
 
   if (self->service == NULL)
     {
@@ -385,6 +387,10 @@ start_server_cb (PmuServer *self,
                         NULL);
     }
 
+  context = pmu_spi_get_default_context ();
+  if (context)
+      g_main_context_invoke (context, (GSourceFunc) pmu_spi_start, NULL);
+
   g_signal_emit_by_name (default_server, "server-started");
 }
 
@@ -393,6 +399,7 @@ stop_server_cb (PmuServer *self,
                 PmuWindow *window)
 {
   g_autoptr(GError) error = NULL;
+  GMainContext *context = NULL;
 
   if (self->service)
     {
@@ -400,6 +407,10 @@ stop_server_cb (PmuServer *self,
       g_object_unref (self->service);
       self->service = NULL;
     }
+
+  context = pmu_spi_get_default_context ();
+  if (context)
+    g_main_context_invoke (context, (GSourceFunc) pmu_spi_stop, NULL);
 
   g_signal_emit_by_name (default_server, "server-stopped");
 }

@@ -20,6 +20,7 @@
 #include "pmu-setup-window.h"
 #include "pmu-details.h"
 #include "pmu-server.h"
+#include "pmu-spi.h"
 #include "pmu-config.h"
 #include "c37/c37.h"
 
@@ -183,6 +184,7 @@ pmu_app_class_init (PmuAppClass *klass)
 static void
 pmu_app_init (PmuApp *self)
 {
+  pmu_spi_start_thread (NULL);
 }
 
 PmuApp *
