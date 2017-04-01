@@ -108,6 +108,25 @@ pmu_spi_get_default_context (void)
   return NULL;
 }
 
+guint
+pmu_spi_default_get_update_time (void)
+{
+  if (default_spi)
+    return default_spi->update_time;
+
+  return 0;
+}
+
+gboolean
+pmu_spi_default_set_update_time (guint update_time)
+{
+  if (default_spi == NULL)
+    return FALSE;
+
+  default_spi->update_time = update_time;
+  return TRUE;
+}
+
 static void
 start_spi_cb (PmuSpi   *self,
               gpointer  user_data)
