@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "pmu-window.h"
+#include "pmu-server.h"
 #include "pmu-details.h"
 
 #include "pmu-list.h"
@@ -58,11 +60,44 @@ pmu_list_class_init (PmuListClass *klass)
 }
 
 static void
+pmu_list_update_details (gpointer  user_data,
+                         PmuList  *self)
+{
+  GtkTreeIter iter;
+  g_autofree gchar *admin_ip = NULL;
+
+  admin_ip = g_strdup (pmu_details_get_admin_ip ());
+  if (admin_ip == NULL)
+    return;
+
+  gtk_tree_model_get_iter_first (GTK_TREE_MODEL (self->pmu_details_store), &iter);
+
+  if (pmu_server_is_running ())
+    gtk_list_store_set (self->pmu_details_store, &iter, 1, admin_ip, -1);
+  else
+    gtk_list_store_set (self->pmu_details_store, &iter, 1, "", -1);
+}
+
+static gboolean
+pmu_list_setup_details (gpointer user_data)
+{
+  g_signal_connect (pmu_server_get_default (),
+                    "server-started",
+                    G_CALLBACK (pmu_list_update_details),
+                    (PmuList *) user_data);
+
+  g_signal_connect (pmu_server_get_default (),
+                    "server-stopped",
+                    G_CALLBACK (pmu_list_update_details),
+                    (PmuList *) user_data);
+
+  return G_SOURCE_REMOVE;
+}
+
+static void
 pmu_list_init (PmuList *self)
 {
   GtkTreeSelection *selection;
-  GtkTreeIter iter;
-  g_autofree gchar *admin_ip = NULL;
 
   gtk_widget_init_template (GTK_WIDGET (self));
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW (self->tree_view_details));
@@ -71,12 +106,10 @@ pmu_list_init (PmuList *self)
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW (self->tree_view_data));
   gtk_tree_selection_set_mode (selection, GTK_SELECTION_NONE);
 
-  admin_ip = g_strdup (pmu_details_get_admin_ip ());
-  if (admin_ip != NULL)
-    {
-      gtk_tree_model_get_iter_first (GTK_TREE_MODEL (self->pmu_details_store), &iter);
-      gtk_list_store_set (self->pmu_details_store, &iter, 1, admin_ip, -1);
-    }
+  // XXX: Hack to delay until pmu server instance is created
+  g_timeout_add_seconds (1,
+                         pmu_list_setup_details,
+                         self);
 }
 
 PmuList *

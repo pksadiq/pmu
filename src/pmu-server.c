@@ -32,6 +32,8 @@ struct _PmuServer
 
   char *admin_ip;
   int port;
+
+  gboolean server_running;
 };
 
 typedef struct TcpRequest {
@@ -346,6 +348,15 @@ pmu_server_get_default_context (void)
   return default_server->context;
 }
 
+gboolean
+pmu_server_is_running (void)
+{
+  if (default_server)
+    return default_server->server_running;
+
+  return FALSE;
+}
+
 static void
 server_started_cb (PmuServer *self,
                    PmuWindow *window)
@@ -391,6 +402,7 @@ start_server_cb (PmuServer *self,
   if (context)
       g_main_context_invoke (context, (GSourceFunc) pmu_spi_start, NULL);
 
+  default_server->server_running = TRUE;
   g_signal_emit_by_name (default_server, "server-started");
 }
 
@@ -412,6 +424,7 @@ stop_server_cb (PmuServer *self,
   if (context)
     g_main_context_invoke (context, (GSourceFunc) pmu_spi_stop, NULL);
 
+  default_server->server_running = FALSE;
   g_signal_emit_by_name (default_server, "server-stopped");
 }
 

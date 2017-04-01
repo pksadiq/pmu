@@ -34,5 +34,6 @@ PmuServer    *pmu_server_get_default         (void);
 GMainContext *pmu_server_get_default_context (void);
 gboolean      pmu_server_start               (PmuWindow *window);
 gboolean      pmu_server_stop                (gpointer user_data);
+gboolean      pmu_server_is_running          (void);
 
 G_END_DECLS
