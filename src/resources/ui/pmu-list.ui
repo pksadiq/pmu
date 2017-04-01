@@ -10,18 +10,12 @@
 
     <data>
       <row>
-        <col id="0">IP Address</col>
-      </row>
-      <row>
-        <col id="0">Port</col>
-      </row>
-      <!-- <row>
-           <col id="0">Protocol</col>
-           <col id="1">TCP</col>
-           </row>
-         -->
-      <row>
         <col id="0">Admin IP</col>
+      </row>
+
+      <row>
+        <col id="0">Protocol</col>
+        <col id="1">TCP</col>
       </row>
 
     </data>
