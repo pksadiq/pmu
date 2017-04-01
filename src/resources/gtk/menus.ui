@@ -15,6 +15,30 @@
   </menu>
 
   <menu id="win-menu">
+
+    <section>
+      <submenu>
+        <attribute name="label" translatable="yes">_Update Every</attribute>
+        <section>
+          <item>
+            <attribute name="label" translatable="yes" context="Update Every">1 second</attribute>
+            <attribute name="action">win.update-time</attribute>
+            <attribute name="target" type="i">1</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes" context="Update Every">3 seconds</attribute>
+            <attribute name="action">win.update-time</attribute>
+            <attribute name="target" type="i">3</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes" context="Update Every">5 seconds</attribute>
+            <attribute name="action">win.update-time</attribute>
+            <attribute name="target" type="i">5</attribute>
+          </item>
+        </section>
+      </submenu>
+    </section>
+
     <section>
       <item>
         <attribute name="label" translatable="yes">_Settings</attribute>
@@ -25,11 +49,13 @@
         <attribute name="action">win.sync-ntp</attribute>
       </item>
     </section>
+
     <section>
       <item>
         <attribute name="label" translatable="yes">_About</attribute>
         <attribute name="action">app.about</attribute>
       </item>
     </section>
+
   </menu>
 </interface>
