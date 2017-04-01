@@ -43,6 +43,8 @@ struct _PmuSpi
 
 GThread *spi_thread  = NULL;
 PmuSpi  *default_spi = NULL;
+gchar    buffer[2];
+struct spi_ioc_transfer xfer;
 
 G_DEFINE_TYPE (PmuSpi, pmu_spi, G_TYPE_OBJECT)
 
@@ -128,8 +130,7 @@ pmu_spi_default_set_update_time (guint update_time)
 }
 
 static void
-start_spi_cb (PmuSpi   *self,
-              gpointer  user_data)
+pmu_spi_run (void)
 {
   g_autoptr(GError) error = NULL;
 
@@ -137,6 +138,12 @@ start_spi_cb (PmuSpi   *self,
     {
       
     }
+}
+
+static void
+start_spi_cb (PmuSpi   *self,
+              gpointer  user_data)
+{
 }
 
 static void
