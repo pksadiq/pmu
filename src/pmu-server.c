@@ -345,7 +345,10 @@ pmu_server_get_default (void)
 GMainContext *
 pmu_server_get_default_context (void)
 {
-  return default_server->context;
+  if (default_server)
+    return default_server->context;
+
+  return NULL;
 }
 
 gboolean
