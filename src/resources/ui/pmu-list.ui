@@ -2,7 +2,7 @@
 <interface domain="pmu">
   <!-- interface-requires gtk 3.0 -->
 
-  <object class="GtkListStore" id="pmu_details_list_store">
+  <object class="GtkListStore" id="pmu_details_store">
     <columns>
       <column type="gchararray"/>
       <column type="gchararray"/>
@@ -20,7 +20,7 @@
 
     </data>
   </object>
-  <object class="GtkListStore" id="pmu_data_list_store">
+  <object class="GtkListStore" id="pmu_data_store">
     <columns>
     <column type="gchararray"/>
     <column type="gchararray"/>
@@ -123,7 +123,7 @@
                     <child>
                       <object class="GtkTreeView" id="tree_view_data">
                         <property name="visible">True</property>
-                        <property name="model">pmu_data_list_store</property>
+                        <property name="model">pmu_data_store</property>
                         <property name="width-request">445</property>
                         <property name="headers-visible">False</property>
                         <property name="halign">center</property>
@@ -226,7 +226,7 @@
                     <child>
                       <object class="GtkTreeView" id="tree_view_details">
                         <property name="visible">True</property>
-                        <property name="model">pmu_details_list_store</property>
+                        <property name="model">pmu_details_store</property>
                         <property name="width-request">445</property>
                         <property name="headers-visible">False</property>
                         <property name="halign">center</property>

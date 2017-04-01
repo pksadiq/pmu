@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "pmu-details.h"
+
 #include "pmu-list.h"
 
 
@@ -25,6 +27,9 @@ struct _PmuList
 
   GtkWidget *tree_view_data;
   GtkWidget *tree_view_details;
+
+  GtkListStore *pmu_data_store;
+  GtkListStore *pmu_details_store;
 };
 
 
@@ -48,12 +53,16 @@ pmu_list_class_init (PmuListClass *klass)
 
   gtk_widget_class_bind_template_child (widget_class, PmuList, tree_view_data);
   gtk_widget_class_bind_template_child (widget_class, PmuList, tree_view_details);
+  gtk_widget_class_bind_template_child (widget_class, PmuList, pmu_details_store);
+  gtk_widget_class_bind_template_child (widget_class, PmuList, pmu_data_store);
 }
 
 static void
 pmu_list_init (PmuList *self)
 {
   GtkTreeSelection *selection;
+  GtkTreeIter iter;
+  g_autofree gchar *admin_ip = NULL;
 
   gtk_widget_init_template (GTK_WIDGET (self));
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW (self->tree_view_details));
@@ -61,6 +70,13 @@ pmu_list_init (PmuList *self)
 
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW (self->tree_view_data));
   gtk_tree_selection_set_mode (selection, GTK_SELECTION_NONE);
+
+  admin_ip = g_strdup (pmu_details_get_admin_ip ());
+  if (admin_ip != NULL)
+    {
+      gtk_tree_model_get_iter_first (GTK_TREE_MODEL (self->pmu_details_store), &iter);
+      gtk_list_store_set (self->pmu_details_store, &iter, 1, admin_ip, -1);
+    }
 }
 
 PmuList *
