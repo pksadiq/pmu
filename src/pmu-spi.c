@@ -37,6 +37,8 @@ struct _PmuSpi
   GMainContext   *context;
 
   int spi_fd;
+  int bits_per_word;
+  int speed;
 
   guint update_time; /* in milliseconds */
 };
@@ -162,11 +164,47 @@ static gboolean
 pmu_spi_setup_device (PmuWindow *window)
 {
   int spi_fd;
+  int ret;
 
   spi_fd = open ("/dev/nul", O_RDWR);
 
   if (spi_fd == -1)
     {
+      g_warning ("Opening SPI device failed\n");
+      g_idle_add((GSourceFunc) pmu_window_spi_failed_cb, window);
+      return FALSE;
+    }
+
+  ret = ioctl(spi_fd, SPI_IOC_WR_BITS_PER_WORD, &(default_spi->bits_per_word));
+  if (ret == -1)
+    {
+      g_warning ("Setting %d bits per word for write failed\n",  default_spi->bits_per_word);
+      g_idle_add((GSourceFunc) pmu_window_spi_failed_cb, window);
+      return FALSE;
+    }
+
+
+  ret = ioctl(spi_fd, SPI_IOC_RD_BITS_PER_WORD, &(default_spi->bits_per_word));
+  if (ret == -1)
+    {
+      g_warning ("Setting %d bits per word for read failed\n",  default_spi->bits_per_word);
+      g_idle_add((GSourceFunc) pmu_window_spi_failed_cb, window);
+      return FALSE;
+    }
+
+  ret = ioctl(spi_fd, SPI_IOC_WR_MAX_SPEED_HZ, &(default_spi->speed));
+  if (ret == -1)
+    {
+      g_warning ("Setting max write speed (%d Hz) failed\n",  default_spi->speed);
+      g_idle_add((GSourceFunc) pmu_window_spi_failed_cb, window);
+      return FALSE;
+    }
+
+
+  ret = ioctl(spi_fd, SPI_IOC_RD_MAX_SPEED_HZ, &(default_spi->speed));
+  if (ret == -1)
+    {
+      g_warning ("Setting max read speed (%d Hz) failed\n",  default_spi->speed);
       g_idle_add((GSourceFunc) pmu_window_spi_failed_cb, window);
       return FALSE;
     }
