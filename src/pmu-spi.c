@@ -166,7 +166,7 @@ pmu_spi_setup_device (PmuWindow *window)
   int spi_fd;
   int ret;
 
-  spi_fd = open ("/dev/nul", O_RDWR);
+  spi_fd = open ("/dev/spidev0.0", O_RDWR);
 
   if (spi_fd == -1)
     {
