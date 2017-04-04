@@ -231,6 +231,9 @@ pmu_spi_new (PmuWindow *window)
   default_spi->context = spi_context;
   default_spi->update_time = 5;
 
+  default_spi->bits_per_word = 16;
+  default_spi->speed = 5 * 1000 * 1000; /* Speed in Hz */
+
   status = pmu_spi_setup_device (window);
   if (!status)
     goto out;
