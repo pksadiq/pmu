@@ -45,7 +45,7 @@ struct _PmuSpi
 
 GThread *spi_thread  = NULL;
 PmuSpi  *default_spi = NULL;
-gchar    buffer[2];
+guchar    buffer[2];
 struct spi_ioc_transfer xfer;
 
 G_DEFINE_TYPE (PmuSpi, pmu_spi, G_TYPE_OBJECT)
