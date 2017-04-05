@@ -28,8 +28,7 @@
 
 #include "pmu-spi.h"
 
-#define DATA_SIZE 64 /* Bytes */
-#define BYTE_IN_WORD 1
+#define DATA_SIZE 6 /* Bytes */
 
 struct _PmuSpi
 {
@@ -49,7 +48,8 @@ GThread *spi_thread  = NULL;
 PmuSpi  *default_spi = NULL;
 guchar    buffer[2];
 
-uint8_t tx[DATA_SIZE / BYTE_IN_WORD + 1];
+uint8_t tx[DATA_SIZE + 1];
+uint8_t rx[DATA_SIZE + 1];
 
 G_DEFINE_TYPE (PmuSpi, pmu_spi, G_TYPE_OBJECT)
 
@@ -138,16 +138,14 @@ static void
 pmu_spi_run (void)
 {
   int ret;
-  uint8_t tx_head[] = {
-                       0xFF
-  };
 
-  uint8_t rx_head[1] = {0, };
+  memset (tx, 0xFA, 3);  /* 3 byte Debug test data */
+
   struct spi_ioc_transfer tr =
     {
-     .tx_buf = (__u64)tx_head,
-     .rx_buf = (__u64)rx_head,
-     .len = 1,
+     .tx_buf = (unsigned long)tx,
+     .rx_buf = (unsigned long)rx,
+     .len = 3,
      .delay_usecs = 0,
      .speed_hz = default_spi->speed,
      .bits_per_word = default_spi->bits_per_word,
@@ -155,8 +153,18 @@ pmu_spi_run (void)
 
 
   ret = ioctl(default_spi->spi_fd, SPI_IOC_MESSAGE(1), &tr);
-  for (int i = 0; i < 1; i++)
-    g_print ("%0X\n", rx_head[i]);
+  for (int i = 0; i < 3; i++)
+    g_print ("%0X\n", rx[i]);
+
+  memset (tx, 0xFF, DATA_SIZE);
+  memset (rx, 0x00, 3);         /* Clear debug data */
+  tr.len = DATA_SIZE + 1;
+
+  g_usleep (100);
+  ret = ioctl(default_spi->spi_fd, SPI_IOC_MESSAGE(1), &tr);
+  for (int i = 0; i < DATA_SIZE + 1; i++)
+    g_print ("%0X\n", rx[i]);
+
 }
 
 static void
@@ -265,7 +273,7 @@ pmu_spi_new (PmuWindow *window)
   default_spi->update_time = 5;
 
   default_spi->bits_per_word = 8;
-  default_spi->speed = 1 * 1000 * 1000; /* Speed in Hz */
+  default_spi->speed = 100 * 1000; /* Speed in Hz */
 
   status = pmu_spi_setup_device (window);
   if (!status)
