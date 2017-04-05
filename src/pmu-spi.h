@@ -33,5 +33,6 @@ PmuSpi    *pmu_spi_get_default         (void);
 GMainContext *pmu_spi_get_default_context (void);
 gboolean      pmu_spi_start               (gpointer user_data);
 gboolean      pmu_spi_stop                (gpointer user_data);
+GQueue       *pmu_spi_get_data            (void);
 
 G_END_DECLS
