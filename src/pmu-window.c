@@ -56,12 +56,34 @@ static void sync_ntp_time_cb  (GSimpleAction       *action,
 static void show_setup_window (GSimpleAction       *action,
                                GVariant            *param,
                                gpointer             user_data);
+static void update_time_cb    (GSimpleAction       *action,
+                               GVariant            *param,
+                               gpointer             user_data);
+static void time_change_state (GSimpleAction       *action,
+                               GVariant            *param,
+                               gpointer             user_data);
 
 
 static const GActionEntry win_entries[] = {
   { "sync-ntp",  sync_ntp_time_cb  },
   { "settings",  show_setup_window },
+  { "update-time", update_time_cb, "i", "1", time_change_state},
 };
+
+static void
+time_change_state (GSimpleAction *action,
+                   GVariant      *param,
+                   gpointer       user_data)
+{
+}
+
+static void
+update_time_cb (GSimpleAction *action,
+                GVariant      *param,
+                gpointer       user_data)
+{
+  g_simple_action_set_state (action, param);
+}
 
 static gboolean
 revealer_timeout (gpointer user_data)
