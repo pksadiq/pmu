@@ -59,23 +59,13 @@ static void show_setup_window (GSimpleAction       *action,
 static void update_time_cb    (GSimpleAction       *action,
                                GVariant            *param,
                                gpointer             user_data);
-static void time_change_state (GSimpleAction       *action,
-                               GVariant            *param,
-                               gpointer             user_data);
 
 
 static const GActionEntry win_entries[] = {
   { "sync-ntp",  sync_ntp_time_cb  },
   { "settings",  show_setup_window },
-  { "update-time", update_time_cb, "i", "1", time_change_state},
+  { "update-time", update_time_cb, "i", "1"},
 };
-
-static void
-time_change_state (GSimpleAction *action,
-                   GVariant      *param,
-                   gpointer       user_data)
-{
-}
 
 static void
 update_time_cb (GSimpleAction *action,
