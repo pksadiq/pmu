@@ -29,6 +29,7 @@
 #include "pmu-spi.h"
 
 #define DATA_SIZE 64 /* Bytes */
+#define BYTE_IN_WORD 1
 
 struct _PmuSpi
 {
@@ -37,8 +38,9 @@ struct _PmuSpi
   GMainContext   *context;
 
   int spi_fd;
-  int bits_per_word;
-  int speed;
+  uint8_t mode;
+  uint8_t bits_per_word;
+  uint32_t speed;
 
   guint update_time; /* in milliseconds */
 };
@@ -46,7 +48,8 @@ struct _PmuSpi
 GThread *spi_thread  = NULL;
 PmuSpi  *default_spi = NULL;
 guchar    buffer[2];
-struct spi_ioc_transfer xfer;
+
+uint8_t tx[DATA_SIZE / BYTE_IN_WORD + 1];
 
 G_DEFINE_TYPE (PmuSpi, pmu_spi, G_TYPE_OBJECT)
 
@@ -134,12 +137,26 @@ pmu_spi_default_set_update_time (guint update_time)
 static void
 pmu_spi_run (void)
 {
-  g_autoptr(GError) error = NULL;
+  int ret;
+  uint8_t tx_head[] = {
+                       0xFF
+  };
 
-  while (1)
+  uint8_t rx_head[1] = {0, };
+  struct spi_ioc_transfer tr =
     {
-      
-    }
+     .tx_buf = (__u64)tx_head,
+     .rx_buf = (__u64)rx_head,
+     .len = 1,
+     .delay_usecs = 0,
+     .speed_hz = default_spi->speed,
+     .bits_per_word = default_spi->bits_per_word,
+    };
+
+
+  ret = ioctl(default_spi->spi_fd, SPI_IOC_MESSAGE(1), &tr);
+  for (int i = 0; i < 1; i++)
+    g_print ("%0X\n", rx_head[i]);
 }
 
 static void
@@ -209,6 +226,22 @@ pmu_spi_setup_device (PmuWindow *window)
       return FALSE;
     }
 
+  ret = ioctl(spi_fd, SPI_IOC_RD_MODE, &(default_spi->mode));
+  if (ret == -1)
+    {
+      g_warning ("Setting max read mode %u failed\n", default_spi->mode);
+      g_idle_add((GSourceFunc) pmu_window_spi_failed_cb, window);
+      return FALSE;
+    }
+
+  ret = ioctl(spi_fd, SPI_IOC_WR_MODE, &(default_spi->mode));
+  if (ret == -1)
+    {
+      g_warning ("Setting max write mode %u failed\n", default_spi->mode);
+      g_idle_add((GSourceFunc) pmu_window_spi_failed_cb, window);
+      return FALSE;
+    }
+
   default_spi->spi_fd = spi_fd;
 
   return TRUE;
@@ -231,12 +264,14 @@ pmu_spi_new (PmuWindow *window)
   default_spi->context = spi_context;
   default_spi->update_time = 5;
 
-  default_spi->bits_per_word = 16;
-  default_spi->speed = 5 * 1000 * 1000; /* Speed in Hz */
+  default_spi->bits_per_word = 8;
+  default_spi->speed = 1 * 1000 * 1000; /* Speed in Hz */
 
   status = pmu_spi_setup_device (window);
   if (!status)
     goto out;
+
+  pmu_spi_run ();
 
   g_signal_connect (default_spi, "start-spi",
                     G_CALLBACK (start_spi_cb), window);
