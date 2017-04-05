@@ -32,10 +32,54 @@ struct _PmuList
 
   GtkListStore *pmu_data_store;
   GtkListStore *pmu_details_store;
+
+  guint update_time;
 };
 
 
 G_DEFINE_TYPE (PmuList, pmu_list, GTK_TYPE_GRID)
+
+enum {
+  PROP_0,
+  PROP_UPDATE_TIME,
+  N_PROPS
+};
+
+static void
+pmu_list_get_property (GObject    *object,
+                       guint       prop_id,
+                       GValue     *value,
+                       GParamSpec *pspec)
+{
+  PmuList *self = PMU_LIST (object);
+
+  switch (prop_id)
+    {
+    case PROP_UPDATE_TIME:
+      g_value_set_uint (value, self->update_time);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    }
+}
+
+static void
+pmu_list_set_property (GObject      *object,
+                       guint         prop_id,
+                       const GValue *value,
+                       GParamSpec   *pspec)
+{
+  PmuList *self = PMU_LIST (object);
+
+  switch (prop_id)
+    {
+    case PROP_UPDATE_TIME:
+      self->update_time = g_value_get_uint (value);
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+    }
+}
 
 static void
 pmu_list_finalize (GObject *object)
@@ -48,8 +92,17 @@ pmu_list_class_init (PmuListClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+  GParamSpec *pspec;
 
   object_class->finalize = pmu_list_finalize;
+
+  object_class->get_property = pmu_list_get_property;
+  object_class->set_property = pmu_list_set_property;
+
+  pspec = g_param_spec_uint ("update-time", NULL, NULL,
+                             1000, 10000, 1000,
+                             G_PARAM_READWRITE);
+  g_object_class_install_property (object_class, PROP_UPDATE_TIME, pspec);
 
   gtk_widget_class_set_template_from_resource (widget_class, "/org/sadiqpk/pmu/ui/pmu-list.ui");
 
