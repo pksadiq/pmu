@@ -148,6 +148,13 @@ pmu_list_setup_details (gpointer user_data)
 }
 
 static void
+update_time_cb (PmuList  *self,
+                gpointer  user_data)
+{
+  g_print ("changed here\n");
+}
+
+static void
 pmu_list_init (PmuList *self)
 {
   GtkTreeSelection *selection;
@@ -163,12 +170,15 @@ pmu_list_init (PmuList *self)
   g_timeout_add_seconds (1,
                          pmu_list_setup_details,
                          self);
+
+  g_signal_connect (self, "notify::update-time", G_CALLBACK (update_time_cb), NULL);
 }
 
 PmuList *
 pmu_list_new (void)
 {
   return g_object_new (PMU_TYPE_LIST,
+                       "update-time", 1000,
                        NULL);
 }
 

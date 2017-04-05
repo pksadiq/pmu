@@ -63,7 +63,7 @@ enum {
 
 static guint signals[N_SIGNALS] = { 0, };
 
-GQueue *spi_data;
+GQueue *spi_data = NULL;
 
 G_LOCK_DEFINE (spi_data);
 
@@ -71,6 +71,15 @@ static void
 pmu_spi_finalize (GObject *object)
 {
   G_OBJECT_CLASS (pmu_spi_parent_class)->finalize (object);
+}
+
+GQueue *
+pmu_spi_get_data (void)
+{
+  if (spi_data == NULL)
+    spi_data = g_queue_new ();
+
+  return spi_data;
 }
 
 static void
@@ -96,7 +105,8 @@ pmu_spi_class_init (PmuSpiClass *klass)
                   G_TYPE_NONE,
                   0);
 
-  spi_data = g_queue_new ();
+  if (spi_data == NULL)
+    spi_data = g_queue_new ();
 }
 
 static void

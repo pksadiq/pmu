@@ -37,6 +37,8 @@ struct _PmuWindow
   GtkWidget *info_label;
   GtkWidget *revealer;
 
+  PmuList *pmu_list;
+
   guint revealer_timeout_id;
 };
 
@@ -72,6 +74,18 @@ update_time_cb (GSimpleAction *action,
                 GVariant      *param,
                 gpointer       user_data)
 {
+  PmuWindow *window = PMU_WINDOW (user_data);
+  GObject *pmu_list;
+  guint time, old_time;
+
+  pmu_list = G_OBJECT (window->pmu_list);
+
+  time = g_variant_get_int32 (param) * 1000;
+  g_object_get (pmu_list, "update-time", &old_time, NULL);
+
+  if (time != old_time)
+    g_object_set (pmu_list, "update-time", time, NULL);
+
   g_simple_action_set_state (action, param);
 }
 
@@ -296,6 +310,7 @@ pmu_window_class_init (PmuWindowClass *klass)
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, stop_button);
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, info_label);
   gtk_widget_class_bind_template_child (widget_class, PmuWindow, revealer);
+  gtk_widget_class_bind_template_child (widget_class, PmuWindow, pmu_list);
 
   gtk_widget_class_bind_template_callback (widget_class, start_button_clicked_cb);
   gtk_widget_class_bind_template_callback (widget_class, stop_button_clicked_cb);
