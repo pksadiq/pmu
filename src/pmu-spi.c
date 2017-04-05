@@ -139,32 +139,50 @@ pmu_spi_run (void)
 {
   int ret;
 
-  memset (tx, 0xFA, 3);  /* 3 byte Debug test data */
-
-  struct spi_ioc_transfer tr =
+  while (1)
     {
-     .tx_buf = (unsigned long)tx,
-     .rx_buf = (unsigned long)rx,
-     .len = 3,
-     .delay_usecs = 0,
-     .speed_hz = default_spi->speed,
-     .bits_per_word = default_spi->bits_per_word,
-    };
+      memset (tx, 0xFD, 3);  /* 3 byte Debug test data */
+
+      struct spi_ioc_transfer tr =
+        {
+         .tx_buf = (unsigned long)tx,
+         .rx_buf = (unsigned long)rx,
+         .len = 3,
+         .delay_usecs = 0,
+         .speed_hz = default_spi->speed,
+         .bits_per_word = default_spi->bits_per_word,
+        };
 
 
-  ret = ioctl(default_spi->spi_fd, SPI_IOC_MESSAGE(1), &tr);
-  for (int i = 0; i < 3; i++)
-    g_print ("%0X\n", rx[i]);
+      ret = ioctl(default_spi->spi_fd, SPI_IOC_MESSAGE(1), &tr);
+      for (int i = 0; i < 3; i++)
+        g_print ("%0X\n", rx[i]);
 
-  memset (tx, 0xFF, DATA_SIZE);
-  memset (rx, 0x00, 3);         /* Clear debug data */
-  tr.len = DATA_SIZE + 1;
+      g_usleep (10);
 
-  g_usleep (100);
-  ret = ioctl(default_spi->spi_fd, SPI_IOC_MESSAGE(1), &tr);
-  for (int i = 0; i < DATA_SIZE + 1; i++)
-    g_print ("%0X\n", rx[i]);
+      if (rx[1] == 0xFF && rx[2] == 0xFF)
+        {
+          memset (tx, 0xFE, DATA_SIZE + 1);
+          memset (rx, 0x00, 3);         /* Clear debug data */
 
+          struct spi_ioc_transfer tr =
+            {
+             .tx_buf = (unsigned long)tx,
+             .rx_buf = (unsigned long)rx,
+             .len = DATA_SIZE + 1,
+             .delay_usecs = 0,
+             .speed_hz = default_spi->speed,
+             .bits_per_word = default_spi->bits_per_word,
+            };
+
+          ret = ioctl(default_spi->spi_fd, SPI_IOC_MESSAGE(1), &tr);
+          for (int i = 0; i < DATA_SIZE + 1; i++)
+            g_print ("%0X\n", rx[i]);
+
+          g_usleep (4000);
+        }
+      g_usleep (100);
+    } // while loop
 }
 
 static void
