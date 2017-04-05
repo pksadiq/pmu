@@ -43,41 +43,41 @@
         <col id="3">B</col>
       </row>
 
-      <row>
-        <col id="0">Current</col>
-        <col id="1">R</col>
-        <col id="2">Y</col>
-        <col id="3">B</col>
-      </row>
+      <!-- <row>
+           <col id="0">Current</col>
+           <col id="1">R</col>
+           <col id="2">Y</col>
+           <col id="3">B</col>
+           </row>
 
-      <row>
-        <col id="0">Current Angle</col>
-        <col id="1">R</col>
-        <col id="2">Y</col>
-        <col id="3">B</col>
-      </row>
+           <row>
+           <col id="0">Current Angle</col>
+           <col id="1">R</col>
+           <col id="2">Y</col>
+           <col id="3">B</col>
+           </row>
 
-      <row>
-        <col id="0">P</col>
-        <col id="1">R</col>
-        <col id="2">Y</col>
-        <col id="3">B</col>
-      </row>
+           <row>
+           <col id="0">P</col>
+           <col id="1">R</col>
+           <col id="2">Y</col>
+           <col id="3">B</col>
+           </row>
 
-      <row>
-        <col id="0">Q</col>
-        <col id="1">R</col>
-        <col id="2">Y</col>
-        <col id="3">B</col>
-      </row>
+           <row>
+           <col id="0">Q</col>
+           <col id="1">R</col>
+           <col id="2">Y</col>
+           <col id="3">B</col>
+           </row>
 
-      <row>
-        <col id="0">S</col>
-        <col id="1">R</col>
-        <col id="2">Y</col>
-        <col id="3">B</col>
-      </row>
-
+           <row>
+           <col id="0">S</col>
+           <col id="1">R</col>
+           <col id="2">Y</col>
+           <col id="3">B</col>
+           </row>
+         -->
     </data>
   </object>
 
