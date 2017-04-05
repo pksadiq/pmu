@@ -65,6 +65,8 @@ static guint signals[N_SIGNALS] = { 0, };
 
 GQueue *spi_data;
 
+G_LOCK_DEFINE (spi_data);
+
 static void
 pmu_spi_finalize (GObject *object)
 {
@@ -93,6 +95,8 @@ pmu_spi_class_init (PmuSpiClass *klass)
                   0, NULL, NULL, NULL,
                   G_TYPE_NONE,
                   0);
+
+  spi_data = g_queue_new ();
 }
 
 static void
@@ -155,8 +159,6 @@ pmu_spi_run (void)
 
 
       ret = ioctl(default_spi->spi_fd, SPI_IOC_MESSAGE(1), &tr);
-      for (int i = 0; i < 3; i++)
-        g_print ("%0X\n", rx[i]);
 
       g_usleep (10);
 
@@ -176,12 +178,18 @@ pmu_spi_run (void)
             };
 
           ret = ioctl(default_spi->spi_fd, SPI_IOC_MESSAGE(1), &tr);
-          for (int i = 0; i < DATA_SIZE + 1; i++)
-            g_print ("%0X\n", rx[i]);
 
           g_usleep (4000);
         }
       g_usleep (100);
+
+      GBytes *data = g_bytes_new (rx + 1, DATA_SIZE);
+      G_LOCK (spi_data);
+      g_queue_push_tail (spi_data, data);
+      G_UNLOCK (spi_data);
+      g_print ("queue size: %d\n", g_queue_get_length (spi_data));
+
+
     } // while loop
 }
 
