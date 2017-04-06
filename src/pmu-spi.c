@@ -82,6 +82,24 @@ pmu_spi_get_data (void)
   return spi_data;
 }
 
+GBytes *
+pmu_spi_data_get_tail (void)
+{
+  if (spi_data)
+    return g_bytes_ref (g_queue_peak_tail (spi_data));
+
+  return NULL;
+}
+
+GBytes *
+pmu_spi_data_pop_head (void)
+{
+  if (spi_data)
+    return g_queue_pop_head (spi_data);
+
+  return NULL;
+}
+
 static void
 pmu_spi_class_init (PmuSpiClass *klass)
 {
