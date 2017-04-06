@@ -21,19 +21,6 @@
 
 #define SYNC_DATA 0xAA
 
-/*
- * This will be common to every data
- * SYNC(2) + frame size (2) + id code (2) + epoch time (4) +
- * fraction of second (4) + check (2)
- */
-#define DATA_COMMON_SIZE 16
-
-/*
- * This will be common for each PMU data
- * STAT (2)
- */
-#define DATA_COMMON_SIZE_PER_PMU 2
-
 typedef struct _CtsPmuData
 {
   uint16_t stat;
