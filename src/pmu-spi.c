@@ -86,7 +86,7 @@ GBytes *
 pmu_spi_data_get_tail (void)
 {
   if (spi_data)
-    return g_bytes_ref (g_queue_peak_tail (spi_data));
+    return g_bytes_ref (g_queue_peek_tail (spi_data));
 
   return NULL;
 }
