@@ -33,7 +33,8 @@ struct _PmuList
   GtkListStore *pmu_data_store;
   GtkListStore *pmu_details_store;
 
-  guint update_time;
+  guint update_time;       /* in seconds */
+  guint update_timeout_id;
 };
 
 
@@ -100,7 +101,7 @@ pmu_list_class_init (PmuListClass *klass)
   object_class->set_property = pmu_list_set_property;
 
   pspec = g_param_spec_uint ("update-time", NULL, NULL,
-                             1000, 10000, 1000,
+                             1, 100, 1,
                              G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_UPDATE_TIME, pspec);
 
@@ -147,10 +148,26 @@ pmu_list_setup_details (gpointer user_data)
   return G_SOURCE_REMOVE;
 }
 
+static gboolean
+update_list (gpointer user_data)
+{
+  PmuList *list = PMU_LIST (user_data);
+
+  g_print ("List updated\n");
+  return G_SOURCE_CONTINUE;
+}
+
 static void
 update_time_cb (PmuList  *self,
                 gpointer  user_data)
 {
+  if (self->update_timeout_id)
+    {
+      g_source_remove (self->update_timeout_id);
+      self->update_timeout_id = 0;
+    }
+
+  self->update_timeout_id = g_timeout_add_seconds (self->update_time, update_list, self);
   g_print ("changed here\n");
 }
 
@@ -171,14 +188,16 @@ pmu_list_init (PmuList *self)
                          pmu_list_setup_details,
                          self);
 
+  self->update_timeout_id = 0;
   g_signal_connect (self, "notify::update-time", G_CALLBACK (update_time_cb), NULL);
+  g_object_set (G_OBJECT (self), "update-time", 3, NULL);
 }
 
 PmuList *
 pmu_list_new (void)
 {
   return g_object_new (PMU_TYPE_LIST,
-                       "update-time", 1000,
+                       "update-time", 1,
                        NULL);
 }
 
