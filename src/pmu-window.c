@@ -66,7 +66,7 @@ static void update_time_cb    (GSimpleAction       *action,
 static const GActionEntry win_entries[] = {
   { "sync-ntp",  sync_ntp_time_cb  },
   { "settings",  show_setup_window },
-  { "update-time", update_time_cb, "i", "1"},
+  { "update-time", update_time_cb, "i", "3"},
 };
 
 static void
@@ -80,7 +80,7 @@ update_time_cb (GSimpleAction *action,
 
   pmu_list = G_OBJECT (window->pmu_list);
 
-  time = g_variant_get_int32 (param) * 1000;
+  time = g_variant_get_int32 (param);
   g_object_get (pmu_list, "update-time", &old_time, NULL);
 
   if (time != old_time)
