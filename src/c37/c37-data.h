@@ -21,6 +21,21 @@
 #include "c37-common.h"
 #include "c37-conf.h"
 
+/*
+ * This will be common to every data
+ * SYNC(2) + frame size (2) + id code (2) + epoch time (4) +
+ * fraction of second (4) + check (2)
+ */
+#define DATA_COMMON_SIZE 16
+
+/*
+ * This will be common for each PMU data
+ * STAT (2)
+ */
+#define DATA_COMMON_SIZE_PER_PMU 2
+
+#define DATA_FRAME_COMMON_SIZE (DATA_COMMON_SIZE + DATA_COMMON_SIZE_PER_PMU)
+
 typedef struct _CtsData CtsData;
 typedef struct _CtsPmuData PmuData;
 
