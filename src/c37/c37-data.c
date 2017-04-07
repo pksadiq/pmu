@@ -203,7 +203,7 @@ cts_data_get_analog_value_of_pmu (CtsData  *self,
                                   uint16_t  analog_index,
                                   void     *analog_value)
 {
-    CtsPmuData *pmu_data;
+  CtsPmuData *pmu_data;
 
   if (pmu_index > self->num_pmu)
     return false;
@@ -279,7 +279,7 @@ get_per_pmu_total_size (CtsData    *self,
   pmu_size += size * pmu_data->num_analogs;
 
 
-  if (cts_pmu_data_get_phasor_type(pmu_data) == VALUE_TYPE_FLOAT)
+  if (cts_pmu_data_get_phasor_type (pmu_data) == VALUE_TYPE_FLOAT)
     size = 8;
   else
     size = 4;
@@ -537,12 +537,12 @@ cts_data_populate_from_raw_data (CtsData     *self,
           for (uint16_t i = 0; i < count; i++)
             {
               /* Real or Magnitude */
-              memcpy(byte2, *data, 2);
+              memcpy (byte2, *data, 2);
               *(pmu_data->phasor_int + i) [0] = ntohs (*byte2);
               *data += 2;
 
               /* Imaginary or Angle */
-              memcpy(byte2, *data, 2);
+              memcpy (byte2, *data, 2);
               *(pmu_data->phasor_int + i) [1] = ntohs (*byte2);
               *data += 2;
             }
@@ -552,12 +552,12 @@ cts_data_populate_from_raw_data (CtsData     *self,
           for (uint16_t i = 0; i < count; i++)
             {
               /* Real or Magnitude */
-              memcpy(byte4, *data, 4);
+              memcpy (byte4, *data, 4);
               *(pmu_data->phasor_float + i) [0] = ntohl (*byte4);
               *data += 4;
 
               /* Imaginary or Angle */
-              memcpy(byte4, *data, 4);
+              memcpy (byte4, *data, 4);
               *(pmu_data->phasor_float + i) [1] = ntohl (*byte4);
               *data += 4;
             }
@@ -570,7 +570,7 @@ cts_data_populate_from_raw_data (CtsData     *self,
         {
           for (uint16_t i = 0; i < count; i++)
             {
-              memcpy(byte2, *data, 2);
+              memcpy (byte2, *data, 2);
               *(pmu_data->analog_int + i) = ntohs (*byte2);
               *data += 2;
             }
@@ -579,7 +579,7 @@ cts_data_populate_from_raw_data (CtsData     *self,
         {
           for (uint16_t i = 0; i < count; i++)
             {
-              memcpy(byte4, *data, 4);
+              memcpy (byte4, *data, 4);
               *(pmu_data->analog_float + i) = ntohl (*byte4);
               *data += 4;
             }
@@ -588,13 +588,13 @@ cts_data_populate_from_raw_data (CtsData     *self,
       /* Frequency Deviation */
       if (pmu_data->freq_type == VALUE_TYPE_INT)
         {
-          memcpy(byte2, *data, 2);
+          memcpy (byte2, *data, 2);
           pmu_data->freq_deviation.int_val = ntohs (*byte2);
           *data += 2;
         }
       else if (pmu_data->freq_type == VALUE_TYPE_FLOAT)
         {
-          memcpy(byte4, *data, 4);
+          memcpy (byte4, *data, 4);
           pmu_data->freq_deviation.float_val = ntohl (*byte4);
           *data += 4;
         }
@@ -602,13 +602,13 @@ cts_data_populate_from_raw_data (CtsData     *self,
       /* ROCOF */
       if (pmu_data->freq_type == VALUE_TYPE_INT)
         {
-          memcpy(byte2, *data, 2);
+          memcpy (byte2, *data, 2);
           pmu_data->rocof.int_val = ntohl (*byte2);
           *data += 2;
         }
       else if (pmu_data->freq_type == VALUE_TYPE_FLOAT)
         {
-          memcpy(byte4, *data, 4);
+          memcpy (byte4, *data, 4);
           pmu_data->rocof.float_val = ntohl (*byte4);
           *data += 4;
         }
@@ -617,8 +617,8 @@ cts_data_populate_from_raw_data (CtsData     *self,
       count = pmu_data->num_status_words;
       for (uint16_t i = 0; i < count; i++)
         {
-          memcpy(byte2, *data, 2);
-          *(pmu_data->status_word + i) = ntohs(*byte2);
+          memcpy (byte2, *data, 2);
+          *(pmu_data->status_word + i) = ntohs (*byte2);
           *data += 2;
         }
     }
