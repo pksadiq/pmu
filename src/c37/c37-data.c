@@ -17,6 +17,7 @@
  */
 
 #include "c37-data.h"
+#include "assert.h"
 #include "stdio.h"
 
 #define SYNC_DATA 0xAA
@@ -603,7 +604,7 @@ cts_data_populate_from_raw_data (CtsData     *self,
       if (pmu_data->freq_type == VALUE_TYPE_INT)
         {
           memcpy (byte2, *data, 2);
-          pmu_data->rocof.int_val = ntohl (*byte2);
+          pmu_data->rocof.int_val = ntohs (*byte2);
           *data += 2;
         }
       else if (pmu_data->freq_type == VALUE_TYPE_FLOAT)
