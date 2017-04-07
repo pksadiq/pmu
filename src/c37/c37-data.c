@@ -293,12 +293,26 @@ get_per_pmu_total_size (CtsData    *self,
 }
 
 uint8_t
-cts_data_get_size_of_pmu (CtsData  *self,
-                          uint16_t  pmu_index)
+cts_data_get_data_size_of_pmu (CtsData  *self,
+                               uint16_t  pmu_index)
 {
   uint8_t data_size;
 
   data_size = get_per_pmu_total_size (self, self->pmu_data + pmu_index - 1,
+                                      pmu_index);
+
+  return data_size + DATA_COMMON_SIZE;
+}
+
+uint8_t
+cts_pmu_data_get_default_data_size (uint16_t pmu_index)
+{
+  CtsData *cts_data;
+  uint8_t data_size;
+
+  cts_data = cts_data_get_default ();
+  data_size = get_per_pmu_total_size (cts_data,
+                                      cts_data->pmu_data + pmu_index - 1,
                                       pmu_index);
 
   return data_size + DATA_COMMON_SIZE;
