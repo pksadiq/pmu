@@ -498,12 +498,12 @@ cts_data_populate_from_raw_data (CtsData     *self,
     {
       /* Frame size */
       memcpy (byte2, *data, 2);
-      self->frame_size = ntohl (*byte2);
+      self->frame_size = ntohs (*byte2);
       *data += 2;
 
       /* ID code */
       memcpy (byte2, *data, 2);
-      self->id_code = ntohl (*byte2);
+      self->id_code = ntohs (*byte2);
       *data += 2;
 
       /* time (in seconds since epoch) */
@@ -553,12 +553,12 @@ cts_data_populate_from_raw_data (CtsData     *self,
             {
               /* Real or Magnitude */
               memcpy(byte4, *data, 4);
-              *(pmu_data->phasor_float + i) [0] = ntohs (*byte4);
+              *(pmu_data->phasor_float + i) [0] = ntohl (*byte4);
               *data += 4;
 
               /* Imaginary or Angle */
               memcpy(byte4, *data, 4);
-              *(pmu_data->phasor_float + i) [1] = ntohs (*byte4);
+              *(pmu_data->phasor_float + i) [1] = ntohl (*byte4);
               *data += 4;
             }
         }
@@ -595,7 +595,7 @@ cts_data_populate_from_raw_data (CtsData     *self,
       else if (pmu_data->freq_type == VALUE_TYPE_FLOAT)
         {
           memcpy(byte4, *data, 4);
-          pmu_data->freq_deviation.float_val = ntohl (*byte2);
+          pmu_data->freq_deviation.float_val = ntohl (*byte4);
           *data += 4;
         }
 
@@ -609,7 +609,7 @@ cts_data_populate_from_raw_data (CtsData     *self,
       else if (pmu_data->freq_type == VALUE_TYPE_FLOAT)
         {
           memcpy(byte4, *data, 4);
-          pmu_data->rocof.float_val = ntohl (*byte2);
+          pmu_data->rocof.float_val = ntohl (*byte4);
           *data += 4;
         }
 
