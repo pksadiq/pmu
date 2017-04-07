@@ -269,19 +269,18 @@ pmu_details_configure_pmu (PmuDetails *details)
 static PmuDetails *
 pmu_details_new (void)
 {
-  PmuDetails *details;
-
-  details = g_object_new (PMU_TYPE_DETAILS,
+  default_details = g_object_new (PMU_TYPE_DETAILS,
                           NULL);
-  pmu_details_configure_pmu (details);
-  return details;
+  if (default_details)
+    pmu_details_configure_pmu (default_details);
+  return default_details;
 }
 
 PmuDetails *
 pmu_details_get_default (void)
 {
   if (default_details == NULL)
-    default_details = pmu_details_new ();
+    pmu_details_new ();
 
   return default_details;
 }
