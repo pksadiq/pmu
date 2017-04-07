@@ -127,14 +127,14 @@ pmu_app_activate (GApplication *app)
   gtk_window_present (GTK_WINDOW (window));
 }
 
-static void
-pmu_app_update_pmu_config (PmuApp    *self,
-                           CtsConf *config)
-{
-  cts_conf_set_num_of_pmu (config, 1);
-  cts_conf_set_station_name_of_pmu (config, 1, "Good", 4);
-  guchar *b = cts_conf_get_raw_data (config);
-}
+/* static void */
+/* pmu_app_update_pmu_config (PmuApp    *self, */
+/*                            CtsConf *config) */
+/* { */
+/*   cts_conf_set_num_of_pmu (config, 1); */
+/*   cts_conf_set_station_name_of_pmu (config, 1, "Good", 4); */
+/*   guchar *b = cts_conf_get_raw_data (config); */
+/* } */
 
 static void
 pmu_app_startup (GApplication *app)
@@ -154,7 +154,7 @@ pmu_app_startup (GApplication *app)
   self->pmu_config_one = cts_conf_get_default_config_one ();
   self->pmu_config_two = cts_conf_get_default_config_two ();
 
-  pmu_app_update_pmu_config (self, self->pmu_config_one);
+  /* pmu_app_update_pmu_config (self, self->pmu_config_one); */
 
   G_APPLICATION_CLASS (pmu_app_parent_class)->startup (app);
 
