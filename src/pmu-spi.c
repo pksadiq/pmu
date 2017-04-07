@@ -28,7 +28,6 @@
 
 #include "pmu-spi.h"
 
-#define DATA_SIZE 6 /* Bytes */
 
 struct _PmuSpi
 {
@@ -48,8 +47,9 @@ GThread *spi_thread  = NULL;
 PmuSpi  *default_spi = NULL;
 guchar    buffer[2];
 
-uint8_t tx[DATA_SIZE + 1];
-uint8_t rx[DATA_SIZE + 1];
+uint8_t *tx;
+uint8_t *rx;
+uint8_t  data_size;
 
 G_DEFINE_TYPE (PmuSpi, pmu_spi, G_TYPE_OBJECT)
 
@@ -107,6 +107,8 @@ pmu_spi_class_init (PmuSpiClass *klass)
 
   object_class->finalize = pmu_spi_finalize;
 
+  g_type_ensure (PMU_TYPE_APP);
+
   signals [START_SPI] =
     g_signal_new ("start-spi",
                   G_TYPE_FROM_CLASS (klass),
@@ -125,6 +127,9 @@ pmu_spi_class_init (PmuSpiClass *klass)
 
   if (spi_data == NULL)
     spi_data = g_queue_new ();
+
+  /* if (tx == NULL) */
+  /*   tx = malloc () */
 }
 
 static void
@@ -192,14 +197,14 @@ pmu_spi_run (void)
 
       if (rx[1] == 0xFF && rx[2] == 0xFF)
         {
-          memset (tx, 0xFE, DATA_SIZE + 1);
+          memset (tx, 0xFE, data_size + 1);
           memset (rx, 0x00, 3);         /* Clear debug data */
 
           struct spi_ioc_transfer tr =
             {
              .tx_buf = (unsigned long)tx,
              .rx_buf = (unsigned long)rx,
-             .len = DATA_SIZE + 1,
+             .len = data_size + 1,
              .delay_usecs = 0,
              .speed_hz = default_spi->speed,
              .bits_per_word = default_spi->bits_per_word,
@@ -211,7 +216,7 @@ pmu_spi_run (void)
         }
       g_usleep (100);
 
-      GBytes *data = g_bytes_new (rx + 1, DATA_SIZE);
+      GBytes *data = g_bytes_new (rx + 1, data_size);
       G_LOCK (spi_data);
       g_queue_push_tail (spi_data, data);
       G_UNLOCK (spi_data);

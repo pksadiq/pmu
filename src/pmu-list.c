@@ -18,6 +18,7 @@
 
 #include "pmu-window.h"
 #include "pmu-server.h"
+#include "pmu-spi.h"
 #include "pmu-details.h"
 
 #include "pmu-list.h"
@@ -151,7 +152,8 @@ pmu_list_setup_details (gpointer user_data)
 static gboolean
 update_list (gpointer user_data)
 {
-  PmuList *list = PMU_LIST (user_data);
+  PmuList *list  = PMU_LIST (user_data);
+  GQueue  *queue = pmu_spi_get_data ();
 
   g_print ("List updated\n");
   return G_SOURCE_CONTINUE;
