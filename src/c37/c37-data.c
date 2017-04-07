@@ -483,9 +483,9 @@ cts_data_set_config (CtsData *self,
 }
 
 void
-cts_data_populate_from_raw_data (CtsData  *self,
-                                 byte    **data,
-                                 bool      is_data_only)
+cts_data_populate_from_raw_data (CtsData     *self,
+                                 const byte **data,
+                                 bool         is_data_only)
 {
   uint16_t count;
   uint16_t *byte2;
@@ -498,12 +498,12 @@ cts_data_populate_from_raw_data (CtsData  *self,
     {
       /* Frame size */
       memcpy (byte2, *data, 2);
-      self->epoch_seconds = ntohl (*byte2);
+      self->frame_size = ntohl (*byte2);
       *data += 2;
 
       /* ID code */
       memcpy (byte2, *data, 2);
-      self->epoch_seconds = ntohl (*byte2);
+      self->id_code = ntohl (*byte2);
       *data += 2;
 
       /* time (in seconds since epoch) */
