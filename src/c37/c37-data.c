@@ -280,9 +280,9 @@ get_per_pmu_total_size (CtsData    *self,
 
 
   if (cts_pmu_data_get_phasor_type(pmu_data) == VALUE_TYPE_FLOAT)
-    size = 4;
+    size = 8;
   else
-    size = 2;
+    size = 4;
 
   pmu_size += size * pmu_data->num_phasors;
 
