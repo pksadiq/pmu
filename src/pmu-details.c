@@ -270,7 +270,7 @@ static PmuDetails *
 pmu_details_new (void)
 {
   default_details = g_object_new (PMU_TYPE_DETAILS,
-                          NULL);
+                                  NULL);
   if (default_details)
     pmu_details_configure_pmu (default_details);
   return default_details;
