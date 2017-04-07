@@ -237,6 +237,7 @@ pmu_details_get_is_first_run (void)
 void
 pmu_details_configure_pmu (PmuDetails *details)
 {
+  CtsData *data;
   CtsConf *config1 = cts_conf_get_default_config_one ();
 
   cts_conf_set_id_code (config1, pmu_details_get_pmu_id ());
@@ -264,6 +265,9 @@ pmu_details_configure_pmu (PmuDetails *details)
   cts_conf_set_all_phasor_conv_of_pmu (config1, 1, 10000);
 
   cts_conf_update_time (config1);
+
+  data = cts_data_get_default ();
+  cts_data_set_config (data, config1);
 }
 
 static PmuDetails *
