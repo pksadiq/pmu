@@ -47,9 +47,9 @@ GThread *spi_thread  = NULL;
 PmuSpi  *default_spi = NULL;
 guchar    buffer[2];
 
-uint8_t *tx;
-uint8_t *rx;
-uint8_t  data_size;
+uint8_t  *tx;
+uint8_t  *rx;
+uint16_t  data_size;
 
 G_DEFINE_TYPE (PmuSpi, pmu_spi, G_TYPE_OBJECT)
 
