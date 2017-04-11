@@ -545,12 +545,12 @@ cts_data_populate_from_raw_data (CtsData     *self,
             {
               /* Real or Magnitude */
               memcpy (byte2, *data, 2);
-              *(pmu_data->phasor_int + i) [0] = ntohs (*byte2);
+              (*(pmu_data->phasor_int + i)) [0] = ntohs (*byte2);
               *data += 2;
 
               /* Imaginary or Angle */
               memcpy (byte2, *data, 2);
-              *(pmu_data->phasor_int + i) [1] = ntohs (*byte2);
+              (*(pmu_data->phasor_int + i)) [1] = ntohs (*byte2);
               *data += 2;
             }
         }
@@ -560,12 +560,12 @@ cts_data_populate_from_raw_data (CtsData     *self,
             {
               /* Real or Magnitude */
               memcpy (byte4, *data, 4);
-              *(pmu_data->phasor_float + i) [0] = ntohl (*byte4);
+              (*(pmu_data->phasor_float + i)) [0] = ntohl (*byte4);
               *data += 4;
 
               /* Imaginary or Angle */
               memcpy (byte4, *data, 4);
-              *(pmu_data->phasor_float + i) [1] = ntohl (*byte4);
+              (*(pmu_data->phasor_float + i)) [1] = ntohl (*byte4);
               *data += 4;
             }
         }
