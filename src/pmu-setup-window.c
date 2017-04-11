@@ -111,6 +111,8 @@ entry_text_changed_cb (GObject    *gobject,
 
   if (g_hostname_is_ip_address (gtk_entry_get_text (GTK_ENTRY (window->admin_ip_entry))))
     gtk_widget_set_sensitive (window->save_button, TRUE);
+  else
+    gtk_widget_set_sensitive (window->save_button, FALSE);
 }
 
 static void
