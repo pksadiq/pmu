@@ -54,6 +54,16 @@ void cts_data_populate_from_raw_data (CtsData     *self,
                                       const byte **data,
                                       bool         is_data_only);
 
-bool cts_data_get_rocof_of_pmu (CtsData  *self,
-                                uint16_t  pmu_index,
-                                void     *rocof);
+bool cts_data_get_rocof_of_pmu        (CtsData  *self,
+                                       uint16_t  pmu_index,
+                                       void     *rocof);
+bool cts_data_get_phasor_value_of_pmu (CtsData  *self,
+                                       uint16_t  pmu_index,
+                                       uint16_t  phasor_index,
+                                       void     *phasor_value);
+bool cts_data_get_analog_value_of_pmu (CtsData  *self,
+                                       uint16_t  pmu_index,
+                                       uint16_t  analog_index,
+                                       void     *analog_value);
+
+CtsConf *cts_data_get_conf (CtsData *self);
