@@ -347,8 +347,10 @@ pmu_spi_new (PmuWindow *window)
   /* Debug */
   if (!status)
     {
-      guchar test[] = { 0x23, 0x34, 0x45, 0x56, 0x67, 0x78};
-      GBytes *data = g_bytes_new (test, 6);
+      for (int i = 0; i < data_size; i++)
+        rx[i] = i % 255;
+      printf ("%d data size", data_size);
+      GBytes *data = g_bytes_new (rx + 1, data_size);
       G_LOCK (spi_data);
       g_queue_push_tail (spi_data, data);
       G_UNLOCK (spi_data);
