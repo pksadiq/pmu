@@ -46,9 +46,9 @@ bool     cts_data_set_config  (CtsData *self,
 void     cts_data_update_frame_size (CtsData *self);
 uint16_t cts_data_get_frame_size    (CtsData *self);
 
-uint8_t cts_data_get_data_size_of_pmu      (CtsData  *self,
-                                            uint16_t  pmu_index);
-uint8_t cts_pmu_data_get_default_data_size (uint16_t pmu_index);
+uint16_t cts_data_get_data_size_of_pmu      (CtsData  *self,
+                                             uint16_t  pmu_index);
+uint16_t cts_pmu_data_get_default_data_size (uint16_t pmu_index);
 
 void cts_data_populate_from_raw_data (CtsData     *self,
                                       const byte **data,
