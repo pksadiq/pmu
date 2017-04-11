@@ -130,6 +130,9 @@ pmu_spi_class_init (PmuSpiClass *klass)
 
   data_size = cts_pmu_data_get_default_data_size (1);
 
+  if (spi_data == NULL)
+    spi_data = g_queue_new ();
+
   if (tx == NULL)
     tx = malloc (data_size + 1);
 
@@ -344,7 +347,6 @@ pmu_spi_new (PmuWindow *window)
   /* Debug */
   if (!status)
     {
-      spi_data = g_queue_new ();
       guchar test[] = { 0x23, 0x34, 0x45, 0x56, 0x67, 0x78};
       GBytes *data = g_bytes_new (test, 6);
       G_LOCK (spi_data);
