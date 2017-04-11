@@ -189,8 +189,8 @@ cts_data_get_phasor_value_of_pmu (CtsData  *self,
     {
       uint16_t *value = phasor_value;
 
-      value[0] = (*(pmu_data->phasor_float + phasor_index - 1)) [0];
-      value[1] = (*(pmu_data->phasor_float + phasor_index - 1)) [1];
+      value[0] = (*(pmu_data->phasor_int + phasor_index - 1)) [0];
+      value[1] = (*(pmu_data->phasor_int + phasor_index - 1)) [1];
 
       return true;
     }
@@ -481,6 +481,12 @@ cts_data_set_config (CtsData *self,
     }
 
   return true;
+}
+
+CtsConf *
+cts_data_get_conf (CtsData *self)
+{
+  return self->config;
 }
 
 void
