@@ -128,8 +128,13 @@ pmu_spi_class_init (PmuSpiClass *klass)
   if (spi_data == NULL)
     spi_data = g_queue_new ();
 
-  /* if (tx == NULL) */
-  /*   tx = malloc () */
+  data_size = cts_pmu_data_get_default_data_size (1);
+
+  if (tx == NULL)
+    tx = malloc (data_size + 1);
+
+  if (rx == NULL)
+    rx = malloc (data_size + 1);
 }
 
 static void
