@@ -317,6 +317,7 @@ data_incoming_cb (GSocketService    *service,
   if (size < REQUEST_HEADER_SIZE)
     return TRUE;
 
+  /* Only commands has to be handled on PMU */
   if (cts_common_get_type (data) != CTS_TYPE_COMMAND)
     return TRUE;
 
