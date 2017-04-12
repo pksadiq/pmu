@@ -20,6 +20,7 @@
 #include "pmu-app.h"
 #include "pmu-window.h"
 #include "pmu-spi.h"
+#include "pmu-details.h"
 
 #include "pmu-server.h"
 
@@ -78,6 +79,8 @@ pmu_server_class_init (PmuServerClass *klass)
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
   object_class->finalize = pmu_server_finalize;
+
+  g_type_ensure (PMU_TYPE_DETAILS);
 
   signals [SERVER_STARTED] =
     g_signal_new ("server-started",
@@ -381,6 +384,8 @@ start_server_cb (PmuServer *self,
   g_autoptr(GError) error = NULL;
   GMainContext *context = NULL;
 
+  default_server->port = pmu_details_get_port_number ();
+
   if (self->service == NULL)
     {
       self->service = g_socket_service_new ();
@@ -445,7 +450,7 @@ pmu_server_new (PmuWindow *window)
 
   default_server = g_object_new (PMU_TYPE_SERVER, NULL);
   default_server->service = NULL;
-  default_server->port = 4000;
+  default_server->port = pmu_details_get_port_number ();
   default_server->context = server_context;
 
   g_signal_connect (default_server, "start-server",
