@@ -180,10 +180,8 @@ complete_data_read (GInputStream *stream,
   gsize size;
 
   /* To read SYNC and FRAME size bytes from header */
-  size = REQUEST_HEADER_SIZE;
   header_data = g_bytes_get_data (request->header, &size);
-  size = request->data_length;
-  real_size = size;
+  real_size = request->data_length;
 
   bytes = g_input_stream_read_bytes_finish (stream, result, &error);
 
@@ -207,7 +205,7 @@ complete_data_read (GInputStream *stream,
 
   g_print ("Size:%d CRC: %X\n", g_bytes_get_size (bytes), cts_common_calc_crc (data, real_size - 2, header_data));
 
-  if (g_bytes_get_size (bytes) != (real_size - REQUEST_HEADER_SIZE) ||
+  if (size != (real_size - REQUEST_HEADER_SIZE) ||
       !cts_common_check_crc (data, real_size - 2, header_data, real_size - REQUEST_HEADER_SIZE - 2))
     {
       g_print ("CRC check failed\n");
@@ -269,7 +267,7 @@ complete_data_read (GInputStream *stream,
 
   g_bytes_unref (bytes);
 
-  if (size <= REQUEST_HEADER_SIZE)
+  if (size < COMMAND_MINIMUM_FRAME_SIZE)
     {
       g_print ("size is <= 4 bytes\n");
       goto out;
@@ -324,7 +322,7 @@ data_incoming_cb (GSocketService    *service,
   /* Jump the 2 SYNC bytes */
   data_length = cts_common_get_size (data, 2);
 
-  if (data_length <= REQUEST_HEADER_SIZE)
+  if (data_length < COMMAND_MINIMUM_FRAME_SIZE)
     return TRUE;
 
   request = g_new0 (TcpRequest, 1);
