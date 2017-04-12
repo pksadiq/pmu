@@ -298,7 +298,7 @@ data_incoming_cb (GSocketService    *service,
   GInputStream *in;
   const guint8 *data;
   TcpRequest *request;
-  gsize size = REQUEST_HEADER_SIZE;
+  gsize size;
 
   in = g_io_stream_get_input_stream (G_IO_STREAM (connection));
   bytes = g_input_stream_read_bytes(in, REQUEST_HEADER_SIZE, NULL, &error);
@@ -309,13 +309,14 @@ data_incoming_cb (GSocketService    *service,
       return TRUE;
     }
 
+  data = g_bytes_get_data (bytes, &size);
+
   /* If 4 bytes of data not present, this request isn't interesting
    * for us.
    */
-  if (g_bytes_get_size (bytes) < REQUEST_HEADER_SIZE)
+  if (size < REQUEST_HEADER_SIZE)
     return TRUE;
 
-  data = g_bytes_get_data (bytes, &size);
   if (cts_common_get_type (data) != CTS_TYPE_COMMAND)
     return TRUE;
 
