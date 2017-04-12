@@ -20,6 +20,11 @@
 
 #include "c37-common.h"
 
+/* SYNC(2) + frame size(2) + id code (2) + soc (4) + frac sec (4) +
+ * command (2) + crc check (2)
+ */
+#define COMMAND_MINIMUM_FRAME_SIZE 18
+
 enum CtsCommand {
   CTS_COMMAND_INVALID,
   CTS_COMMAND_DATA_OFF       = 0x01,
