@@ -171,6 +171,11 @@ pmu_server_respond (TcpRequest   *request,
                     const guchar *data,
                     gint          command)
 {
+  guchar *response;
+  gsize byte_size;
+  gint frame_size;
+  GOutputStream *out;
+
   switch (command)
     {
     case CTS_COMMAND_DATA_OFF:
@@ -179,12 +184,18 @@ pmu_server_respond (TcpRequest   *request,
     case CTS_COMMAND_SEND_CONFIG1:
       break;
     case CTS_COMMAND_SEND_CONFIG2:
-      g_print ("Command requested\n");
+      response = cts_conf_get_raw_data (cts_conf_get_default_config_one ());
     case CTS_COMMAND_SEND_CONFIG3:
     case CTS_COMMAND_EXTENDED_FRAME:
     case CTS_COMMAND_USER:
       break;
     }
+
+  out = g_io_stream_get_output_stream (G_IO_STREAM (request->socket_connection));
+  frame_size = cts_common_get_size (response, 2);
+  g_output_stream_write_all (out, response,
+                             cts_common_get_size (response, 2),
+                             &byte_size, NULL, NULL);
 }
 
 static void
