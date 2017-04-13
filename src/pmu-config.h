@@ -25,7 +25,6 @@ char *channel_names[] = {
   "VA              ",
   "VB              ",
   "VC              ",
-  "I1              ",
 
   /* 3 Analog values */
   "ANALOG1         ",
