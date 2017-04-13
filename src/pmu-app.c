@@ -21,7 +21,6 @@
 #include "pmu-details.h"
 #include "pmu-server.h"
 #include "pmu-spi.h"
-#include "pmu-config.h"
 #include "c37/c37.h"
 
 #include "pmu-app.h"
