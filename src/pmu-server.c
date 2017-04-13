@@ -166,6 +166,27 @@ tcp_request_free (TcpRequest *request)
   g_free (request);
 }
 
+void
+pmu_server_respond (TcpRequest   *request,
+                    const guchar *data,
+                    gint          command)
+{
+  switch (command)
+    {
+    case CTS_COMMAND_DATA_OFF:
+    case CTS_COMMAND_DATA_ON:
+    case CTS_COMMAND_SEND_HDR:
+    case CTS_COMMAND_SEND_CONFIG1:
+      break;
+    case CTS_COMMAND_SEND_CONFIG2:
+      g_print ("Command requested\n");
+    case CTS_COMMAND_SEND_CONFIG3:
+    case CTS_COMMAND_EXTENDED_FRAME:
+    case CTS_COMMAND_USER:
+      break;
+    }
+}
+
 static void
 complete_data_read (GInputStream *stream,
                     GAsyncResult *result,
@@ -178,6 +199,7 @@ complete_data_read (GInputStream *stream,
   const guint8 *header_data;
   gsize real_size;
   gsize size;
+  gint command;
 
   /* To read SYNC and FRAME size bytes from header */
   header_data = g_bytes_get_data (request->header, &size);
@@ -213,27 +235,15 @@ complete_data_read (GInputStream *stream,
       goto out;
     }
 
-  /* rewind crc and command bytes, assuming no extendend requests */
-  switch (cts_command_get_type (data, real_size - REQUEST_HEADER_SIZE - 4))
+  command = cts_command_get_type (data, real_size - REQUEST_HEADER_SIZE - 4);
+  if (command == CTS_COMMAND_INVALID)
     {
-    case CTS_COMMAND_DATA_OFF:
-      g_signal_emit_by_name (default_server, "data-stop-requested");
-      break;
-    case CTS_COMMAND_DATA_ON:
-      g_signal_emit_by_name (default_server, "data-start-requested");
-      break;
-    case CTS_COMMAND_SEND_HDR:
-      g_signal_emit_by_name (default_server, "header-requested");
-      break;
-    case CTS_COMMAND_SEND_CONFIG1:
-      g_signal_emit_by_name (default_server, "config1-requested");
-      break;
-    case CTS_COMMAND_SEND_CONFIG2:
-      g_signal_emit_by_name (default_server, "config2-requested");
-      break;
-    default:
-      break;
+      g_print ("Invalid request\n");
+      g_bytes_unref (bytes);
+      goto out;
     }
+
+  pmu_server_respond (request, data, command);
 
   g_bytes_unref (bytes);
 
