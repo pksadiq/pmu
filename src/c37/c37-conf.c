@@ -1670,7 +1670,7 @@ populate_raw_data_of_conf_part2 (CtsConf  *config,
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
 
-  *byte2 = htons (cts_common_calc_crc(data, frame_size - 1, NULL));
+  *byte2 = htons (cts_common_calc_crc(data, frame_size - 2, NULL));
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
 
