@@ -17,6 +17,7 @@
  */
 
 #include "c37/c37.h"
+#include "pmu-config.h"
 
 #include "pmu-details.h"
 
@@ -251,7 +252,7 @@ pmu_details_configure_pmu (PmuDetails *details)
 
   cts_conf_set_num_of_phasors_of_pmu (config1, 1, 3);
   cts_conf_set_num_of_analogs_of_pmu (config1, 1, 3);
-  cts_conf_set_num_of_status_of_pmu (config1, 1, 3);
+  cts_conf_set_num_of_status_of_pmu (config1, 1, 1);
 
   cts_conf_set_freq_data_type_of_pmu (config1, 1, VALUE_TYPE_INT);
 
@@ -264,6 +265,7 @@ pmu_details_configure_pmu (PmuDetails *details)
   cts_conf_set_all_phasor_measure_type_of_pmu (config1, 1, VALUE_TYPE_VOLTAGE);
   cts_conf_set_all_phasor_conv_of_pmu (config1, 1, 10000);
 
+  cts_conf_set_channel_names_of_pmu (config1, 1, channel_names);
   cts_conf_update_time (config1);
 
   data = cts_data_get_default ();
