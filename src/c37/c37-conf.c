@@ -1636,8 +1636,7 @@ populate_raw_data_of_conf_part1 (CtsConf  *config,
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
 
-  *byte4 = htonl (0x448527F0U);
-  /* *byte4 = htonl (pmu_common_get_time_seconds()); */
+  *byte4 = htonl (cts_common_get_time_seconds());
   memcpy (*pptr, byte4, 4);
   *pptr += 4;
 
