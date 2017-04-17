@@ -158,10 +158,10 @@ cts_common_get_fraction_of_second (uint32_t time_base)
   /*  This is a C11 function */
   timespec_get(&ts, TIME_UTC);
 
-  /* Only μs accuracy required at most */
-  time = ts.tv_nsec * (time_base / (pow (10, 2) * 1.0));
+  time = ts.tv_nsec / (100 * time_base / pow (10, 7));
 
-  return time;
+  /* Return the last 24 bits only */
+  return time & 0x00FFFFFF;
 }
 
 int
