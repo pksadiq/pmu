@@ -242,7 +242,7 @@ pmu_details_configure_pmu (PmuDetails *details)
   CtsConf *config1 = cts_conf_get_default_config_one ();
 
   cts_conf_set_id_code (config1, pmu_details_get_pmu_id ());
-  cts_conf_set_time_base (config1, 1000);
+  cts_conf_set_time_base (config1, 100000);
   cts_conf_set_data_rate (config1, 1000);
   cts_conf_set_num_of_pmu (config1, 1);
   cts_conf_set_station_name_of_pmu (config1, 1,
@@ -270,6 +270,8 @@ pmu_details_configure_pmu (PmuDetails *details)
 
   data = cts_data_get_default ();
   cts_data_set_config (data, config1);
+
+  cts_conf_get_raw_data (cts_conf_get_default_config_one ());
 }
 
 static PmuDetails *
