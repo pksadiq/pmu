@@ -204,7 +204,8 @@ cts_common_get_fraction_of_second (uint32_t time_base)
 
 /**
  * cts_common_get_type:
- * @data: IEEE C37.118.2-2011 formatted frame.
+ * @data: IEEE C37.118.2-2011 formatted frame. @data
+ * should be pointing to first SYNC byte.
  *
  * Returns the SYNC type of the frame. The data is assumed
  * to have network byte order (Big Endian order).
