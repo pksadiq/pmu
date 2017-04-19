@@ -201,6 +201,69 @@ pmu_server_respond (TcpRequest   *request,
                              &byte_size, NULL, NULL);
 }
 
+static void complete_data_read (GInputStream *stream,
+                                GAsyncResult *result,
+                                TcpRequest   *request);
+
+static void
+complete_data_read_next (GInputStream *stream,
+                         GAsyncResult *result,
+                         TcpRequest   *request)
+{
+  GBytes *bytes;
+  const guint8 *data;
+  GInputStream *in;
+  g_autoptr(GError) error = NULL;
+  gsize size;
+
+  bytes = g_input_stream_read_bytes_finish (stream, result, &error);
+
+  if (error != NULL)
+    {
+      g_warning ("%s", error->message);
+      goto end;
+    }
+
+  /* If 4 bytes of data not present, this request isn't interesting
+   * for us.
+   */
+  if (g_bytes_get_size (bytes) < REQUEST_HEADER_SIZE)
+    {
+      g_print ("Size less than 4 bytes\n");
+      g_bytes_unref (bytes);
+      goto end;
+    }
+
+  data = g_bytes_get_data (bytes, &size);
+  if (cts_common_get_type (data) != CTS_TYPE_COMMAND)
+    {
+      g_print ("Not a command\n");
+      g_bytes_unref (bytes);
+      goto end;
+    }
+
+  /* Jump the 2 SYNC bytes */
+  size = cts_common_get_size (data, 2);
+
+  g_bytes_unref (bytes);
+
+  if (size < COMMAND_MINIMUM_FRAME_SIZE)
+    {
+      g_print ("size is <= 4 bytes\n");
+      goto end;
+    }
+
+  request->data_length = size;
+
+  in = g_io_stream_get_input_stream (G_IO_STREAM (request->socket_connection));
+  g_input_stream_read_bytes_async (in, size - REQUEST_HEADER_SIZE, G_PRIORITY_DEFAULT, NULL,
+                                   (GAsyncReadyCallback)complete_data_read,
+                                   request);
+
+ end:
+  tcp_request_free (request);
+}
+
 static void
 complete_data_read (GInputStream *stream,
                     GAsyncResult *result,
@@ -262,45 +325,8 @@ complete_data_read (GInputStream *stream,
   g_bytes_unref (bytes);
 
   in = g_io_stream_get_input_stream (G_IO_STREAM (request->socket_connection));
-  bytes = g_input_stream_read_bytes(in, REQUEST_HEADER_SIZE, NULL, &error);
-
-  if (error != NULL)
-    {
-      g_warning ("%s", error->message);
-      goto out;
-    }
-
-  /* If 4 bytes of data not present, this request isn't interesting
-   * for us.
-   */
-  if (g_bytes_get_size (bytes) < REQUEST_HEADER_SIZE)
-    {
-      g_print ("Size less than 4 bytes\n");
-      g_bytes_unref (bytes);
-      goto out;
-    }
-  data = g_bytes_get_data (bytes, &size);
-  if (cts_common_get_type (data) != CTS_TYPE_COMMAND)
-    {
-      g_print ("Not a command\n");
-      g_bytes_unref (bytes);
-      goto out;
-    }
-  /* Jump the 2 SYNC bytes */
-  size = cts_common_get_size (data, 2);
-
-  g_bytes_unref (bytes);
-
-  if (size < COMMAND_MINIMUM_FRAME_SIZE)
-    {
-      g_print ("size is <= 4 bytes\n");
-      goto out;
-    }
-
-  request->data_length = size;
-
-  g_input_stream_read_bytes_async (in, size - REQUEST_HEADER_SIZE, G_PRIORITY_DEFAULT, NULL,
-                                   (GAsyncReadyCallback)complete_data_read,
+  g_input_stream_read_bytes_async (in, REQUEST_HEADER_SIZE, G_PRIORITY_DEFAULT, NULL,
+                                   (GAsyncReadyCallback)complete_data_read_next,
                                    request);
   return;
 
