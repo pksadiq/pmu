@@ -156,20 +156,20 @@ cts_common_get_size (const byte *data, uint16_t offset)
 }
 
 /**
- * cts_common_get_time_seconds:
+ * cts_common_get_time:
  *
  * Returns the seconds since epoch (1970 January 1) in UTC.
  *
  * Returns: a 32 bit unsigned integer.
  */
 uint32_t
-cts_common_get_time_seconds (void)
+cts_common_get_time (void)
 {
   return time (NULL);
 }
 
 /**
- * cts_common_get_fraction_of_second:
+ * cts_common_get_frac_of_second:
  * @time_base: The precision of fraction of second
  *
  * Calculate the fraction of second to the precision of @time_base.
@@ -188,7 +188,7 @@ cts_common_get_time_seconds (void)
  * Returns: a 32 bit unsigned integer.
  */
 uint32_t
-cts_common_get_fraction_of_second (uint32_t time_base)
+cts_common_get_frac_of_second (uint32_t time_base)
 {
   struct timespec ts;
   uint32_t time;
@@ -241,7 +241,7 @@ cts_common_get_type (const byte *data)
 void
 cts_common_set_time (uint32_t *time)
 {
-  *time = cts_common_get_time_seconds ();
+  *time = cts_common_get_time ();
 }
 
 void
@@ -252,7 +252,7 @@ cts_common_set_frac_of_second (uint32_t *frac_of_second,
   uint32_t new_frac_of_second;
 
   data = *frac_of_second;
-  new_frac_of_second = cts_common_get_fraction_of_second (time_base);
+  new_frac_of_second = cts_common_get_frac_of_second (time_base);
   data = (data & 0xFF000000) | (new_frac_of_second & 0x00FFFFFF);
   *frac_of_second = data;
 }

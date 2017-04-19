@@ -49,9 +49,9 @@ enum CtsType{
 unsigned short
 cts_common_calc_crc (const byte *data, size_t data_length, const byte *header);
 uint32_t
-cts_common_get_time_seconds (void);
+cts_common_get_time (void);
 uint32_t
-cts_common_get_fraction_of_second (uint32_t time_base);
+cts_common_get_frac_of_second (uint32_t time_base);
 int
 cts_common_get_type (const byte *data);
 uint16_t

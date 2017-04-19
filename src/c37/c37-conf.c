@@ -1636,13 +1636,11 @@ populate_raw_data_of_conf_part1 (CtsConf  *config,
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
 
-  *byte4 = htonl (cts_common_get_time_seconds());
+  *byte4 = htonl (cts_common_get_time ());
   memcpy (*pptr, byte4, 4);
   *pptr += 4;
 
-  /* TODO: configure Leap seconds and quality */
-  *byte4 = htonl (0X56071098);
-  /* *byte4 = htonl (pmu_common_get_fraction_of_seconds()); */
+  *byte4 = htonl (cts_common_get_frac_of_second (config->time_base));
   memcpy (*pptr, byte4, 4);
   *pptr += 4;
 
