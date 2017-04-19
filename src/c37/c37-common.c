@@ -113,8 +113,6 @@ cts_common_get_crc (const byte *data, uint16_t offset)
  *
  * For example, the @data_length of the smallest COMMAND frame will be 16.
  *
- * This function is based on the sample code in IEEE Std C37.118.2-2011.
- *
  * Returns: %TRUE if CRC matches. Else, return %FALSE.
  */
 bool
