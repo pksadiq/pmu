@@ -126,6 +126,20 @@ cts_common_check_crc (const byte *data, size_t data_length, const byte *header, 
   return old_crc == new_crc;
 }
 
+/**
+ * cts_common_get_size:
+ * @data: pointer to data for which size has to be retrieved.
+ * @offset: offset such that data[offset] will point to the first
+ * byte of size. If data contains SYNC bytes, offset will be 2.
+ *
+ * Retrieve the data size, That is, the size of complete IEEE C37.118.2-2011
+ * formatted frame (From SYNC to last byte of CRC).
+ *
+ * The size is supposed be stored in data as 2 bytes in network order
+ * (Big Endian).
+ *
+ * Returns: a 16 bit unsigned integer.
+ */
 uint16_t
 cts_common_get_size (const byte *data, uint16_t offset)
 {
@@ -143,12 +157,38 @@ cts_common_get_size (const byte *data, uint16_t offset)
   return length;
 }
 
+/**
+ * cts_common_get_time_seconds:
+ *
+ * Returns the seconds since epoch (1970 January 1) in UTC.
+ *
+ * Returns: a 32 bit unsigned integer.
+ */
 uint32_t
 cts_common_get_time_seconds (void)
 {
   return time (NULL);
 }
 
+/**
+ * cts_common_get_fraction_of_second:
+ * @time_base: The precision of fraction of second
+ *
+ * Calculate the fraction of second to the precision of @time_base.
+ * @time_base should be selected based on the precision you wish
+ * to set for the frame.
+ *
+ * For example, if you are conveying that the time will be accurate
+ * to the order of a microsecond, you can select @time_base as 10^6.
+ *
+ * The @value returned will be such that @value/@time_base is always
+ * less than 1.
+ *
+ * cts_common_get_time_seconds() + @value will give the precise time
+ * since epoch.
+ *
+ * Returns: a 32 bit unsigned integer.
+ */
 uint32_t
 cts_common_get_fraction_of_second (uint32_t time_base)
 {
@@ -164,6 +204,21 @@ cts_common_get_fraction_of_second (uint32_t time_base)
   return time & 0x00FFFFFF;
 }
 
+/**
+ * cts_common_get_type:
+ * @data: IEEE C37.118.2-2011 formatted frame.
+ *
+ * Returns the SYNC type of the frame. The data is assumed
+ * to have network byte order (Big Endian order).
+ *
+ * One of the following is returned: #CTS_TYPE_DATA, #CTS_TYPE_HEADER,
+ * #CTS_TYPE_CONFIG1, #CTS_TYPE_CONFIG2, #CTS_TYPE_CONFIG3
+ * #CTS_TYPE_COMMAND.
+ *
+ * If SYNC is invalid #CTS_TYPE_INVALID is returned.
+ *
+ * Returns: an integer.
+ */
 int
 cts_common_get_type (const byte *data)
 {
