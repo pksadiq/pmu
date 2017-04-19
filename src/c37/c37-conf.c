@@ -1617,14 +1617,15 @@ calc_total_size (CtsConf *self)
 }
 
 static void
-populate_raw_data_of_conf_part1 (CtsConf  *config,
-                                 size_t    frame_size,
-                                 byte    **pptr)
+populate_raw_data_of_conf_part1 (CtsConf   *config,
+                                 size_t     frame_size,
+                                 byte     **pptr,
+                                 uint16_t   config_sync)
 {
   uint16_t *byte2 = malloc (sizeof (*byte2));
   uint32_t *byte4 = malloc (sizeof (*byte4));
 
-  *byte2 = htons (SYNC_CONFIG_TWO);
+  *byte2 = htons (config_sync);
   memcpy (*pptr, byte2, 2);
   *pptr += 2;
 
@@ -1763,7 +1764,8 @@ populate_raw_data_of_pmu_part2 (CtsPmuConf  *config,
 }
 
 static byte *
-populate_raw_data (CtsConf *self)
+populate_raw_data (CtsConf  *self,
+                   uint16_t  config_sync)
 {
   CtsPmuConf *config;
   size_t len;
@@ -1780,7 +1782,7 @@ populate_raw_data (CtsConf *self)
   copy = data;
   num_pmu = self->num_pmu;
 
-  populate_raw_data_of_conf_part1 (self, len, &copy);
+  populate_raw_data_of_conf_part1 (self, len, &copy, config_sync);
 
   for (uint16_t i = 0; i < num_pmu; i++)
     {
@@ -1798,21 +1800,26 @@ populate_raw_data (CtsConf *self)
 /**
  * cts_conf_get_raw_data:
  * @self: A valid configuration
+ * @config_sync: should be #SYNC_CONFIG_ONE or #SYNC_CONFIG_TWO
  *
  * Returns the data populated from #CtsConf that can be directly
  * transfered over network.
+ *
+ * @config_sync is provided so that config1 can be used as config2
+ * or the opposite.
  *
  * Returns: (nullable) (transfer full): return pointer to #byte in
  * Big Endian (network) order. free with free() when no longer needed.
  */
 byte *
-cts_conf_get_raw_data (CtsConf *self)
+cts_conf_get_raw_data (CtsConf  *self,
+                       uint16_t  config_sync)
 {
   byte *data;
   if (self == NULL)
     return NULL;
 
-  data = populate_raw_data (self);
+  data = populate_raw_data (self, config_sync);
 
   return data;
 }

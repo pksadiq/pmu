@@ -181,10 +181,13 @@ pmu_server_respond (TcpRequest   *request,
     case CTS_COMMAND_DATA_OFF:
     case CTS_COMMAND_DATA_ON:
     case CTS_COMMAND_SEND_HDR:
+      break;
     case CTS_COMMAND_SEND_CONFIG1:
+      response = cts_conf_get_raw_data (cts_conf_get_default_config_one (), SYNC_CONFIG_ONE);
       break;
     case CTS_COMMAND_SEND_CONFIG2:
-      response = cts_conf_get_raw_data (cts_conf_get_default_config_one ());
+      response = cts_conf_get_raw_data (cts_conf_get_default_config_one (), SYNC_CONFIG_TWO);
+      break;
     case CTS_COMMAND_SEND_CONFIG3:
     case CTS_COMMAND_EXTENDED_FRAME:
     case CTS_COMMAND_USER:

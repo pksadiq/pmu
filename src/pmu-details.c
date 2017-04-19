@@ -271,7 +271,7 @@ pmu_details_configure_pmu (PmuDetails *details)
   data = cts_data_get_default ();
   cts_data_set_config (data, config1);
 
-  cts_conf_get_raw_data (cts_conf_get_default_config_one ());
+  cts_conf_get_raw_data (cts_conf_get_default_config_one (), SYNC_CONFIG_TWO);
 }
 
 static PmuDetails *

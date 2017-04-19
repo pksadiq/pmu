@@ -202,7 +202,8 @@ bool cts_conf_set_change_count_of_pmu       (CtsConf  *self,
 void     cts_conf_update_frame_size (CtsConf *self);
 uint16_t cts_conf_get_frame_size    (CtsConf *self);
 
-byte      *cts_conf_get_raw_data           (CtsConf *self);
+byte      *cts_conf_get_raw_data           (CtsConf  *self,
+                                            uint16_t  config_sync);
 void       cts_conf_free                   (CtsConf *self);
 CtsConf  *cts_conf_get_default_config_one  (void);
 CtsConf  *cts_conf_get_default_config_two  (void);
