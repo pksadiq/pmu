@@ -365,14 +365,17 @@ pmu_spi_new (PmuWindow *window)
   /* Debug */
   if (!status)
     {
-      for (int i = 0; i < data_size; i++)
-        rx[i] = i % 255;
-      printf ("%d data size", data_size);
-      GBytes *data = g_bytes_new (rx + 1, data_size);
-      G_LOCK (spi_data);
-      g_queue_push_tail (spi_data, data);
-      G_UNLOCK (spi_data);
-      g_print ("%d queue size\n", g_queue_get_length (spi_data));
+      for (int j = 0; j < 10; j++)
+        {
+          for (int i = 0; i < data_size; i++)
+            rx[i] = i % 255;
+          printf ("%d data size", data_size);
+          GBytes *data = g_bytes_new (rx + 1, data_size);
+          G_LOCK (spi_data);
+          g_queue_push_tail (spi_data, data);
+          G_UNLOCK (spi_data);
+          g_print ("%d queue size\n", g_queue_get_length (spi_data));
+        }
     }
   /* Debug end */
 
