@@ -187,13 +187,14 @@ pmu_spi_run (void)
   while (1)
     {
       memset (tx, 0xFD, 3);  /* 3 byte Debug test data */
+      memset (rx, 0x00, 3);
 
       struct spi_ioc_transfer tr =
         {
          .tx_buf = (unsigned long)tx,
          .rx_buf = (unsigned long)rx,
          .len = 3,
-         .delay_usecs = 0,
+         .delay_usecs = 1,
          .speed_hz = default_spi->speed,
          .bits_per_word = default_spi->bits_per_word,
         };
@@ -205,6 +206,7 @@ pmu_spi_run (void)
 
       if (rx[1] == 0xFF && rx[2] == 0xFF)
         {
+          GBytes *data;
           memset (tx, 0xFE, data_size + 1);
           memset (rx, 0x00, 3);         /* Clear debug data */
 
@@ -213,23 +215,27 @@ pmu_spi_run (void)
              .tx_buf = (unsigned long)tx,
              .rx_buf = (unsigned long)rx,
              .len = data_size + 1,
-             .delay_usecs = 0,
+             .delay_usecs = 1,
              .speed_hz = default_spi->speed,
              .bits_per_word = default_spi->bits_per_word,
             };
 
           ret = ioctl(default_spi->spi_fd, SPI_IOC_MESSAGE(1), &tr);
 
-          g_usleep (4000);
+          data = g_bytes_new (rx + 1, data_size);
+
+          G_LOCK (spi_data);
+          if (spi_data == NULL)
+            spi_data = g_queue_new ();
+          g_queue_push_tail (spi_data, data);
+          G_UNLOCK (spi_data);
+
+          g_usleep (default_spi->update_time * 1000);
         }
-      g_usleep (100);
+      else
+        g_usleep (100);
 
-      GBytes *data = g_bytes_new (rx + 1, data_size);
-      G_LOCK (spi_data);
-      g_queue_push_tail (spi_data, data);
-      G_UNLOCK (spi_data);
       g_print ("queue size: %d\n", g_queue_get_length (spi_data));
-
 
     } // while loop
 }
@@ -238,18 +244,30 @@ static void
 start_spi_cb (PmuSpi   *self,
               gpointer  user_data)
 {
+  if (spi_data)
+    {
+      G_LOCK (spi_data);
+      g_queue_free_full (spi_data, (GDestroyNotify)g_bytes_unref);
+      spi_data = NULL;
+      G_UNLOCK (spi_data);
+    }
+
+  default_spi->update_time = 4;
 }
 
 static void
 stop_spi_cb (PmuSpi   *self,
              gpointer  user_data)
 {
-  g_autoptr(GError) error = NULL;
-
   if (spi_data)
-    g_queue_free_full (spi_data, (GDestroyNotify)g_bytes_unref);
+    {
+      G_LOCK (spi_dakta);
+      g_queue_free_full (spi_data, (GDestroyNotify)g_bytes_unref);
+      spi_data = NULL;
+      G_UNLOCK (spi_data);
+    }
 
-  default_spi->update_time = 1000;
+  default_spi->update_time = 500;
 }
 
 static gboolean
