@@ -75,6 +75,24 @@ cts_common_calc_crc (const byte *data, size_t data_length, const byte *header)
   return crc;
 }
 
+void
+cts_common_set_crc (byte     *data,
+                    byte     *header)
+{
+  uint16_t crc;
+  uint16_t data_length;
+
+  if (header != NULL)
+    data_length = cts_common_get_size(header, 2);
+  else
+    data_length = cts_common_get_size (data, 2);
+
+  crc = cts_common_calc_crc (data, data_length, header);
+  crc = htonl (crc);
+
+  memcpy (data + data_length + 1, &crc, 2);
+}
+
 /**
  * cts_common_get_crc:
  * @data: pointer to received data for which crc has to be extracted.
