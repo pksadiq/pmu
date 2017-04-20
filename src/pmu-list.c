@@ -164,14 +164,17 @@ update_list (gpointer user_data)
 
   bytes = pmu_spi_data_get_tail ();
   data = g_bytes_get_data (bytes, &size);
+
   cts_data = cts_data_get_default ();
   cts_conf = cts_data_get_conf (cts_data);
 
   cts_data_populate_from_raw_data (cts_data, &data, FALSE);
+
   g_bytes_unref (bytes);
 
   gtk_tree_model_get_iter_first (GTK_TREE_MODEL (list->pmu_data_store), &iter);
   iter_next = iter;
+
   gtk_tree_model_iter_next (GTK_TREE_MODEL (list->pmu_data_store), &iter_next);
 
   for (int i = cts_conf_get_num_of_phasors_of_pmu (cts_conf, 1); i > 0; i--)
@@ -179,6 +182,7 @@ update_list (gpointer user_data)
       gchar *value_string;
 
       cts_data_get_phasor_value_of_pmu (cts_data, 1, i, value);
+
       value_string = g_strdup_printf ("%d", value[0]);
       gtk_list_store_set (list->pmu_data_store, &iter, i, value_string, -1);
       g_free (value_string);
