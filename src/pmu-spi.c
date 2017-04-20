@@ -225,7 +225,11 @@ pmu_spi_run (void)
           struct spi_ioc_transfer tr =
             {
              .tx_buf = (unsigned long)tx,
-             .rx_buf = (unsigned long)rx,
+             /*
+              * 2 bytes CRC is not to be skipped for rx. But 2 byte
+              * has to be skipped so total: data_common_size - 2 + 2
+              */
+             .rx_buf = (unsigned long)rx + DATA_COMMON_SIZE,
              .len = data_size + 1,
              .delay_usecs = 1,
              .speed_hz = default_spi->speed,
@@ -234,6 +238,7 @@ pmu_spi_run (void)
 
           ret = ioctl(default_spi->spi_fd, SPI_IOC_MESSAGE(1), &tr);
 
+          cts_data_update_raw_data (cts_data_get_default (), rx + 1);
           data = g_bytes_new (rx + 1, data_size);
 
           G_LOCK (spi_data);
