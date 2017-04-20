@@ -1587,7 +1587,7 @@ get_per_pmu_total_size (CtsConf    *self,
                         CtsPmuConf *pmu_config,
                         uint16_t    pmu_index)
 {
-  size_t pmu_size;
+  uint16_t pmu_size;
 
   pmu_size = 16 * (pmu_config->num_phasors +
                    pmu_config->num_analog_values +
@@ -1600,11 +1600,11 @@ get_per_pmu_total_size (CtsConf    *self,
   return pmu_size + CONFIG_COMMON_SIZE_PER_PMU;
 }
 
-static size_t
-calc_total_size (CtsConf *self)
+uint16_t
+cts_conf_calc_total_size (CtsConf *self)
 {
   uint16_t num_pmu;
-  size_t total_pmu_size = 0;
+  uint16_t total_pmu_size = 0;
 
   num_pmu = self->num_pmu;
 
@@ -1768,12 +1768,12 @@ populate_raw_data (CtsConf  *self,
                    uint16_t  config_sync)
 {
   CtsPmuConf *config;
-  size_t len;
   byte *data;
   byte *copy;
+  uint16_t len;
   uint16_t num_pmu;
 
-  len = calc_total_size (self);
+  len = cts_conf_calc_total_size (self);
   data = malloc (len);
 
   if (data == NULL)
@@ -1841,7 +1841,7 @@ cts_conf_get_raw_data (CtsConf  *self,
 void
 cts_conf_update_frame_size (CtsConf *self)
 {
-  self->frame_size = calc_total_size (self);
+  self->frame_size = cts_conf_calc_total_size (self);
 }
 
 uint16_t

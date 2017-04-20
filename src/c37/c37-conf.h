@@ -204,6 +204,9 @@ uint16_t cts_conf_get_frame_size    (CtsConf *self);
 
 byte      *cts_conf_get_raw_data           (CtsConf  *self,
                                             uint16_t  config_sync);
+
+uint16_t cts_conf_calc_total_size (CtsConf *self);
+
 void       cts_conf_free                   (CtsConf *self);
 CtsConf  *cts_conf_get_default_config_one  (void);
 CtsConf  *cts_conf_get_default_config_two  (void);
