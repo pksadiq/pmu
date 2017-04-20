@@ -46,6 +46,7 @@ typedef struct TcpRequest {
   guint cancellable_id;
 } TcpRequest;
 
+TcpRequest *tcp_request = NULL;
 GThread *server_thread = NULL;
 PmuServer *default_server = NULL;
 static PmuSpi *default_spi = NULL;
@@ -85,6 +86,7 @@ pmu_server_class_init (PmuServerClass *klass)
   object_class->finalize = pmu_server_finalize;
 
   g_type_ensure (PMU_TYPE_DETAILS);
+  tcp_request = g_new0 (TcpRequest, 1);
 
   signals [SERVER_STARTED] =
     g_signal_new ("server-started",
@@ -122,7 +124,7 @@ pmu_server_class_init (PmuServerClass *klass)
                   G_SIGNAL_RUN_LAST,
                   0, NULL, NULL, NULL,
                   G_TYPE_NONE,
-                  1, G_TYPE_POINTER);
+                  0);
 
   signals [DATA_STOP_REQUESTED] =
     g_signal_new ("data-stop-requested",
@@ -163,21 +165,21 @@ pmu_server_init (PmuServer *self)
 }
 
 static void
-tcp_request_free (TcpRequest *request)
+tcp_request_free (void)
 {
-  g_object_unref (request->socket_connection);
-  g_object_unref (request->cancellable);
-  g_bytes_unref (request->header);
-  g_free (request);
+  g_clear_object (&tcp_request->socket_connection);
+  g_clear_object (&tcp_request->cancellable);
+
+  g_bytes_unref (tcp_request->header);
 }
 
 static gboolean
-cancel_request (TcpRequest *request)
+cancel_request (gpointer user_data)
 {
-  if (request != NULL)
+  if (tcp_request != NULL)
     {
-      g_cancellable_cancel (request->cancellable);
-      request->cancellable_id = 0;
+      g_cancellable_cancel (tcp_request->cancellable);
+      tcp_request->cancellable_id = 0;
     }
 
   return G_SOURCE_REMOVE;
@@ -185,16 +187,14 @@ cancel_request (TcpRequest *request)
 
 static void
 handle_data_request (PmuServer *self,
-                     gpointer   user_data,
-                     TcpRequest *request)
+                     gpointer   user_data)
 {
   g_print ("data handler\n");
   // nothing
 }
 
 void
-pmu_server_respond (TcpRequest   *request,
-                    const guchar *data,
+pmu_server_respond (const guchar *data,
                     gint          command)
 {
   guchar *response = NULL;
@@ -220,7 +220,7 @@ pmu_server_respond (TcpRequest   *request,
         {
           default_server->cancellable = g_cancellable_new ();
           g_signal_emit_by_name (default_spi, "start-spi");
-          g_signal_emit_by_name (default_server, "data-start-requested", request);
+          g_signal_emit_by_name (default_server, "data-start-requested");
         }
       break;
 
@@ -238,7 +238,7 @@ pmu_server_respond (TcpRequest   *request,
       break;
     }
 
-  out = g_io_stream_get_output_stream (G_IO_STREAM (request->socket_connection));
+  out = g_io_stream_get_output_stream (G_IO_STREAM (tcp_request->socket_connection));
   frame_size = cts_common_get_size (response, 2);
   g_output_stream_write_all (out, response,
                              cts_common_get_size (response, 2),
@@ -247,12 +247,12 @@ pmu_server_respond (TcpRequest   *request,
 
 static void complete_data_read (GInputStream *stream,
                                 GAsyncResult *result,
-                                TcpRequest   *request);
+                                gpointer      user_data);
 
 static void
 complete_data_read_next (GInputStream *stream,
                          GAsyncResult *result,
-                         TcpRequest   *request)
+                         gpointer      user_data)
 {
   GBytes *bytes;
   const guint8 *data;
@@ -297,21 +297,21 @@ complete_data_read_next (GInputStream *stream,
       goto end;
     }
 
-  request->data_length = size;
+  tcp_request->data_length = size;
 
-  in = g_io_stream_get_input_stream (G_IO_STREAM (request->socket_connection));
+  in = g_io_stream_get_input_stream (G_IO_STREAM (tcp_request->socket_connection));
   g_input_stream_read_bytes_async (in, size - REQUEST_HEADER_SIZE, G_PRIORITY_DEFAULT, NULL,
                                    (GAsyncReadyCallback)complete_data_read,
-                                   request);
+                                   NULL);
 
  end:
-  tcp_request_free (request);
+  tcp_request_free ();
 }
 
 static void
 complete_data_read (GInputStream *stream,
                     GAsyncResult *result,
-                    TcpRequest   *request)
+                    gpointer      user_data)
 {
   GBytes *bytes = NULL;
   g_autoptr(GError) error = NULL;
@@ -322,15 +322,15 @@ complete_data_read (GInputStream *stream,
   gsize size;
   gint command;
 
-  if (request->cancellable_id)
+  if (tcp_request->cancellable_id)
     {
-      g_source_remove (request->cancellable_id);
-      request->cancellable_id = 0;
+      g_source_remove (tcp_request->cancellable_id);
+      tcp_request->cancellable_id = 0;
     }
 
   /* To read SYNC and FRAME size bytes from header */
-  header_data = g_bytes_get_data (request->header, &size);
-  real_size = request->data_length;
+  header_data = g_bytes_get_data (tcp_request->header, &size);
+  real_size = tcp_request->data_length;
 
   bytes = g_input_stream_read_bytes_finish (stream, result, &error);
 
@@ -370,19 +370,19 @@ complete_data_read (GInputStream *stream,
       goto out;
     }
 
-  pmu_server_respond (request, data, command);
+  pmu_server_respond (data, command);
 
   g_bytes_unref (bytes);
 
-  in = g_io_stream_get_input_stream (G_IO_STREAM (request->socket_connection));
+  in = g_io_stream_get_input_stream (G_IO_STREAM (tcp_request->socket_connection));
   g_input_stream_read_bytes_async (in, REQUEST_HEADER_SIZE, G_PRIORITY_DEFAULT, NULL,
                                    (GAsyncReadyCallback)complete_data_read_next,
-                                   request);
+                                   NULL);
   return;
 
  out:
   g_print ("Never here\n");
-  tcp_request_free (request);
+  tcp_request_free ();
 }
 
 static gboolean
@@ -395,7 +395,6 @@ data_incoming_cb (GSocketService    *service,
   guint16 data_length;
   GInputStream *in;
   const guint8 *data;
-  TcpRequest *request;
   gsize size;
 
   in = g_io_stream_get_input_stream (G_IO_STREAM (connection));
@@ -425,20 +424,18 @@ data_incoming_cb (GSocketService    *service,
   if (data_length < COMMAND_MINIMUM_FRAME_SIZE)
     return TRUE;
 
-  request = g_new0 (TcpRequest, 1);
-  request->socket_connection = g_object_ref (connection);
-  request->header = bytes;
-  request->data_length = data_length;
-  request->cancellable = g_cancellable_new ();
-  request->cancellable_id = g_timeout_add_seconds (10,
-                                                   (GSourceFunc)cancel_request,
-                                                   request);
+  tcp_request->socket_connection = g_object_ref (connection);
+  tcp_request->header = bytes;
+  tcp_request->data_length = data_length;
+  tcp_request->cancellable = g_cancellable_new ();
+  tcp_request->cancellable_id =
+    g_timeout_add_seconds (10, (GSourceFunc)cancel_request, NULL);
 
   g_input_stream_read_bytes_async (in, data_length - REQUEST_HEADER_SIZE,
                                    G_PRIORITY_DEFAULT,
-                                   request->cancellable,
+                                   tcp_request->cancellable,
                                    (GAsyncReadyCallback)complete_data_read,
-                                   request);
+                                   NULL);
   /* g_bytes_unref (bytes); */
 
   /* if (cts_common_get_type (data) == CTS_TYPE_COMMAND) */
