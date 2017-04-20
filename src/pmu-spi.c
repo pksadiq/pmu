@@ -228,6 +228,14 @@ pmu_spi_run (void)
           if (spi_data == NULL)
             spi_data = g_queue_new ();
           g_queue_push_tail (spi_data, data);
+
+          if (default_spi->update_time >= 500 &&
+              g_queue_get_length (spi_data) > 1)
+            {
+              data = g_queue_pop_head (spi_data);
+              g_byte_unref (data);
+            }
+
           G_UNLOCK (spi_data);
 
           g_usleep (default_spi->update_time * 1000);
