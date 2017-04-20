@@ -311,7 +311,9 @@ complete_data_read_next (GInputStream *stream,
   tcp_request->data_length = size;
 
   in = g_io_stream_get_input_stream (G_IO_STREAM (tcp_request->socket_connection));
-  g_input_stream_read_bytes_async (in, size - REQUEST_HEADER_SIZE, G_PRIORITY_DEFAULT, NULL,
+  g_input_stream_read_bytes_async (in, size - REQUEST_HEADER_SIZE,
+                                   G_PRIORITY_DEFAULT,
+                                   tcp_request->cancellable,
                                    (GAsyncReadyCallback)complete_data_read,
                                    NULL);
 
@@ -386,7 +388,9 @@ complete_data_read (GInputStream *stream,
   g_bytes_unref (bytes);
 
   in = g_io_stream_get_input_stream (G_IO_STREAM (tcp_request->socket_connection));
-  g_input_stream_read_bytes_async (in, REQUEST_HEADER_SIZE, G_PRIORITY_DEFAULT, NULL,
+  g_input_stream_read_bytes_async (in, REQUEST_HEADER_SIZE,
+                                   G_PRIORITY_DEFAULT,
+                                   tcp_request->cancellable,
                                    (GAsyncReadyCallback)complete_data_read_next,
                                    NULL);
   return;
