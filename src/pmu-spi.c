@@ -100,10 +100,16 @@ pmu_spi_data_get_tail (void)
 GBytes *
 pmu_spi_data_pop_head (void)
 {
-  if (spi_data)
-    return g_queue_pop_head (spi_data);
+  GBytes *bytes = NULL;
 
-  return NULL;
+  G_LOCK (spi_data);
+
+  if (spi_data)
+    bytes = g_queue_pop_head (spi_data);
+
+  G_UNLOCK (spi_data);
+
+  return spi_data;
 }
 
 static void
