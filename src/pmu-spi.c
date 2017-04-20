@@ -233,10 +233,11 @@ pmu_spi_run (void)
               g_queue_get_length (spi_data) > 1)
             {
               data = g_queue_pop_head (spi_data);
-              g_bytes_unref (data);
             }
 
           G_UNLOCK (spi_data);
+
+          g_bytes_unref (data);
 
           g_usleep (default_spi->update_time * 1000);
         }
