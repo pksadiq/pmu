@@ -382,8 +382,10 @@ pmu_spi_new (PmuWindow *window)
     {
       for (int j = 0; j < 10; j++)
         {
-          for (int i = 0; i < data_size; i++)
-            rx[i] = i % 255;
+          static guint k;
+          for (int i = 0; i < data_size; i++, k++)
+            rx[i] = k % 255;
+
           printf ("%d data size", data_size);
           GBytes *data = g_bytes_new (rx + 1, data_size);
           G_LOCK (spi_data);
