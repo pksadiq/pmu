@@ -30,6 +30,7 @@ struct _PmuServer
 
   GSocketService *service;
   GMainContext   *context;
+  GCancellable   *cancellable;
 
   char *admin_ip;
   int port;
@@ -45,6 +46,7 @@ typedef struct TcpRequest {
 
 GThread *server_thread = NULL;
 PmuServer *default_server = NULL;
+static PmuSpi *default_spi = NULL;
 
 G_DEFINE_TYPE (PmuServer, pmu_server, G_TYPE_OBJECT)
 
@@ -118,7 +120,7 @@ pmu_server_class_init (PmuServerClass *klass)
                   G_SIGNAL_RUN_LAST,
                   0, NULL, NULL, NULL,
                   G_TYPE_NONE,
-                  0);
+                  1, G_TYPE_POINTER);
 
   signals [DATA_STOP_REQUESTED] =
     g_signal_new ("data-stop-requested",
@@ -166,20 +168,47 @@ tcp_request_free (TcpRequest *request)
   g_free (request);
 }
 
+static void
+handle_data_request (PmuServer *self,
+                     gpointer   user_data,
+                     TcpRequest *request)
+{
+  g_print ("data handler\n");
+  // nothing
+}
+
 void
 pmu_server_respond (TcpRequest   *request,
                     const guchar *data,
                     gint          command)
 {
-  guchar *response;
+  guchar *response = NULL;
   gsize byte_size;
   gint frame_size;
   GOutputStream *out;
 
+  default_spi = pmu_spi_get_default ();
+
   switch (command)
     {
     case CTS_COMMAND_DATA_OFF:
+      if (!g_cancellable_is_cancelled (default_server->cancellable))
+        {
+          g_signal_emit_by_name (default_spi, "stop-spi");
+          g_cancellable_cancel (default_server->cancellable);
+          g_clear_object (&default_server->cancellable);
+        }
+      break;
+
     case CTS_COMMAND_DATA_ON:
+      if (default_server->cancellable == NULL)
+        {
+          default_server->cancellable = g_cancellable_new ();
+          g_signal_emit_by_name (default_spi, "start-spi");
+          g_signal_emit_by_name (default_server, "data-start-requested", request);
+        }
+      break;
+
     case CTS_COMMAND_SEND_HDR:
       break;
     case CTS_COMMAND_SEND_CONFIG1:
@@ -514,6 +543,9 @@ pmu_server_new (PmuWindow *window)
 
   g_signal_connect (default_server, "server-stopped",
                     G_CALLBACK (server_stopped_cb), window);
+
+  g_signal_connect (default_server, "data-start-requested",
+                    G_CALLBACK (handle_data_request), NULL);
 
   g_main_loop_run(server_loop);
 
