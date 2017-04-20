@@ -89,7 +89,7 @@ pmu_spi_data_get_tail (void)
 
   G_LOCK (spi_data);
 
-  if (spi_data)
+  if (spi_data && !g_queue_is_empty (spi_data))
     bytes = g_bytes_ref (g_queue_peek_tail (spi_data));
 
   G_UNLOCK (spi_data);
@@ -104,7 +104,7 @@ pmu_spi_data_pop_head (void)
 
   G_LOCK (spi_data);
 
-  if (spi_data)
+  if (spi_data && !g_queue_is_empty (spi_data))
     bytes = g_queue_pop_head (spi_data);
 
   G_UNLOCK (spi_data);
