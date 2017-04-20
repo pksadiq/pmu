@@ -109,7 +109,7 @@ pmu_spi_data_pop_head (void)
 
   G_UNLOCK (spi_data);
 
-  return spi_data;
+  return bytes;
 }
 
 static void
