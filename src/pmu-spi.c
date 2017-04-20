@@ -261,7 +261,7 @@ stop_spi_cb (PmuSpi   *self,
 {
   if (spi_data)
     {
-      G_LOCK (spi_dakta);
+      G_LOCK (spi_data);
       g_queue_free_full (spi_data, (GDestroyNotify)g_bytes_unref);
       spi_data = NULL;
       G_UNLOCK (spi_data);
