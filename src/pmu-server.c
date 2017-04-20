@@ -168,6 +168,17 @@ static void
 tcp_request_free (void)
 {
   g_clear_object (&tcp_request->socket_connection);
+
+  if (tcp_request->cancellable &&
+      !g_cancellable_is_cancelled (tcp_request->cancellable))
+    g_cancellable_cancel (tcp_request->cancellable);
+
+  if (tcp_request->cancellable_id)
+    {
+      g_source_remove (tcp_request->cancellable_id);
+      tcp_request->cancellable_id = 0;
+    }
+
   g_clear_object (&tcp_request->cancellable);
 
   g_bytes_unref (tcp_request->header);
@@ -525,6 +536,7 @@ stop_server_cb (PmuServer *self,
   g_autoptr(GError) error = NULL;
   GMainContext *context = NULL;
 
+  tcp_request_free ();
   if (self->service)
     {
       g_socket_service_stop (self->service);
