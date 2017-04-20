@@ -168,6 +168,7 @@ update_list (gpointer user_data)
   cts_conf = cts_data_get_conf (cts_data);
 
   cts_data_populate_from_raw_data (cts_data, &data, FALSE);
+  g_bytes_unref (bytes);
 
   gtk_tree_model_get_iter_first (GTK_TREE_MODEL (list->pmu_data_store), &iter);
   iter_next = iter;
