@@ -20,8 +20,6 @@
 #include "assert.h"
 #include "stdio.h"
 
-#define SYNC_DATA 0xAA
-
 typedef struct _CtsPmuData
 {
   uint16_t stat;
@@ -641,3 +639,46 @@ cts_data_populate_from_raw_data (CtsData     *self,
   free (byte2);
   free (byte4);
 }
+
+void
+cts_data_update_raw_data (CtsData    *self,
+                          const byte *data)
+{
+  uint16_t *byte2;
+  uint32_t *byte4;
+  CtsConf  *conf = cts_data_get_conf (self);
+  const byte *copy;
+  uint16_t  size;
+
+  copy = data;
+  byte2 = malloc (sizeof *byte2);
+  byte4 = malloc (sizeof *byte4);
+
+  *byte2 = htonl (SYNC_DATA);
+  memcpy (byte2, data, 2);
+  data += 2;
+
+  size = cts_conf_calc_total_size (conf);
+  *byte2 = htons (size);
+  memcpy (&size, data, 2);
+  data += 2;
+
+  cts_common_set_time (byte4);
+  *byte4 = htonl (*byte4);
+  memcpy (byte4, data, 4);
+  data += 4;
+
+  cts_common_set_frac_of_second (byte4, cts_conf_get_time_base (conf));
+  *byte4 = htonl (*byte4);
+  memcpy (byte4, data, 4);
+  data += 4;
+
+  *byte2 = cts_common_calc_crc (data, size, NULL);
+  *byte2 = htons (*byte2);
+  copy += size - 2;
+  memcpy (byte2, copy, 2);
+
+  free (byte2);
+  free (byte4);
+}
+
