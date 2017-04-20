@@ -162,7 +162,11 @@ update_list (gpointer user_data)
   gsize         size;
   gshort        value[2];
 
-  bytes = pmu_spi_data_get_tail ();
+  bytes = pmu_spi_data_pop_head ();
+
+  if (bytes == NULL)
+    return G_SOURCE_CONTINUE;
+
   data = g_bytes_get_data (bytes, &size);
 
   cts_data = cts_data_get_default ();
