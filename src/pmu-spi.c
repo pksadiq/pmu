@@ -85,10 +85,16 @@ pmu_spi_get_data (void)
 GBytes *
 pmu_spi_data_get_tail (void)
 {
-  if (spi_data)
-    return g_bytes_ref (g_queue_peek_tail (spi_data));
+  GBytes *bytes = NULL;
 
-  return NULL;
+  G_LOCK (spi_data);
+
+  if (spi_data)
+    bytes = g_bytes_ref (g_queue_peek_tail (spi_data));
+
+  G_UNLOCK (spi_data);
+
+  return bytes;
 }
 
 GBytes *
