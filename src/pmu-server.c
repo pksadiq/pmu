@@ -40,8 +40,10 @@ struct _PmuServer
 
 typedef struct TcpRequest {
   GSocketConnection *socket_connection;
+  GCancellable *cancellable;
   GBytes *header;
   gsize data_length;
+  guint cancellable_id;
 } TcpRequest;
 
 GThread *server_thread = NULL;
@@ -164,8 +166,21 @@ static void
 tcp_request_free (TcpRequest *request)
 {
   g_object_unref (request->socket_connection);
+  g_object_unref (request->cancellable);
   g_bytes_unref (request->header);
   g_free (request);
+}
+
+static gboolean
+cancel_request (TcpRequest *request)
+{
+  if (request != NULL)
+    {
+      g_cancellable_cancel (request->cancellable);
+      request->cancellable_id = 0;
+    }
+
+  return G_SOURCE_REMOVE;
 }
 
 static void
@@ -307,6 +322,12 @@ complete_data_read (GInputStream *stream,
   gsize size;
   gint command;
 
+  if (request->cancellable_id)
+    {
+      g_source_remove (request->cancellable_id);
+      request->cancellable_id = 0;
+    }
+
   /* To read SYNC and FRAME size bytes from header */
   header_data = g_bytes_get_data (request->header, &size);
   real_size = request->data_length;
@@ -408,7 +429,14 @@ data_incoming_cb (GSocketService    *service,
   request->socket_connection = g_object_ref (connection);
   request->header = bytes;
   request->data_length = data_length;
-  g_input_stream_read_bytes_async (in, data_length - REQUEST_HEADER_SIZE, G_PRIORITY_DEFAULT, NULL,
+  request->cancellable = g_cancellable_new ();
+  request->cancellable_id = g_timeout_add_seconds (10,
+                                                   (GSourceFunc)cancel_request,
+                                                   request);
+
+  g_input_stream_read_bytes_async (in, data_length - REQUEST_HEADER_SIZE,
+                                   G_PRIORITY_DEFAULT,
+                                   request->cancellable,
                                    (GAsyncReadyCallback)complete_data_read,
                                    request);
   /* g_bytes_unref (bytes); */
