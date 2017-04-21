@@ -23,6 +23,8 @@ cts_bin_get_type (const byte *data)
 {
   if (data[0] == CTS_TYPE_SYNC)
     data++;
+  else
+    return CTS_TYPE_INVALID;
 
   switch (data[0])
     {
