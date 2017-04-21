@@ -375,7 +375,7 @@ complete_data_read (GInputStream *stream,
       goto out;
     }
 
-  command = cts_command_get_type (data, real_size - REQUEST_HEADER_SIZE - 4);
+  /* command = cts_command_get_type (data, real_size - REQUEST_HEADER_SIZE - 4); */
   if (command == CTS_COMMAND_INVALID)
     {
       g_print ("Invalid request\n");
