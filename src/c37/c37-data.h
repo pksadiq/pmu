@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef C37_DATA_H
+#define C37_DATA_H
+
 
 #include "c37-common.h"
 #include "c37-conf.h"
@@ -71,3 +73,6 @@ bool cts_data_get_analog_value_of_pmu (CtsData  *self,
                                        void     *analog_value);
 
 CtsConf *cts_data_get_conf (CtsData *self);
+
+
+#endif /* C37_DATA_H */

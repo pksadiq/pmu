@@ -1,4 +1,4 @@
-/* c37-config.h
+/* c37-conf.h
  *
  * Copyright (C) 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
  *
@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef C37_CONF_H
+#define C37_CONF_H
+
 
 #include "c37-common.h"
 
@@ -210,3 +212,6 @@ uint16_t cts_conf_calc_total_size (CtsConf *self);
 void       cts_conf_free                   (CtsConf *self);
 CtsConf  *cts_conf_get_default_config_one  (void);
 CtsConf  *cts_conf_get_default_config_two  (void);
+
+
+#endif /* C37_CONF_H */

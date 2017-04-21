@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef C37_COMMAND_H
+#define C37_COMMAND_H
+
 
 #include "c37-common.h"
 
@@ -41,3 +43,6 @@ enum CtsCommand {
 uint16_t
 cts_command_get_type (const byte *command,
                       uint16_t    offset);
+
+
+#endif /* C37_COMMAND_H */

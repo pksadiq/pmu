@@ -16,9 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef C37_H
+#define C37_H
+
 
 #include "c37-common.h"
 #include "c37-conf.h"
 #include "c37-command.h"
 #include "c37-data.h"
+
+
+#endif /* C37_H */

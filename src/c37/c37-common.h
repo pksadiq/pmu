@@ -16,7 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef C37_COMMON_H
+#define C37_COMMON_H
+
 
 #include <stddef.h>
 #include <stdint.h>
@@ -68,3 +70,6 @@ cts_common_set_time (uint32_t *time);
 void
 cts_common_set_frac_of_second (uint32_t *frac_of_second,
                                uint16_t  time_base);
+
+
+#endif /* C37_COMMON_H */
