@@ -20,24 +20,11 @@
 
 
 uint16_t
-cts_command_get_type (const byte *command,
-                      uint16_t    offset)
+cts_command_get_type (uint16_t command)
 {
-  uint16_t command_type;
-
-  if (command == NULL)
-    return CTS_COMMAND_INVALID;
-
-  /* Eg: if command frame size is 20 bytes including SYNC and FRAME size,
-   * offset should be 4.
-   */
-  const byte *offset_data = command + offset;
-  memcpy (&command_type, offset_data, 2);
-
-  command_type = ntohs (command_type);
-
-  switch (command_type)
+  switch (command)
     {
+    case CTS_COMMAND_INVALID:
     case CTS_COMMAND_DATA_ON:
     case CTS_COMMAND_DATA_OFF:
     case CTS_COMMAND_SEND_HDR:
@@ -45,12 +32,15 @@ cts_command_get_type (const byte *command,
     case CTS_COMMAND_SEND_CONFIG2:
     case CTS_COMMAND_SEND_CONFIG3:
     case CTS_COMMAND_EXTENDED_FRAME:
-      return command_type;
+      return command;
     }
 
-  /* These are reserved for user's custom commands */
-  if ((command_type & 0x0F00) == 0xF00)
+  if (command & 0xF000)
+    return CTS_COMMAND_RESERVED;
+  if (command & 0x0F00)
     return CTS_COMMAND_USER;
+  if (command & 0x00FF)
+    return CTS_COMMAND_RESERVED;
 
   return CTS_COMMAND_INVALID;
 }

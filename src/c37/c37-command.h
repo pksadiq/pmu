@@ -36,13 +36,13 @@ enum CtsCommand {
   CTS_COMMAND_SEND_CONFIG2   = 0x05,
   CTS_COMMAND_SEND_CONFIG3   = 0x06,
   CTS_COMMAND_EXTENDED_FRAME = 0x08,
+  CTS_COMMAND_RESERVED       = 0xFE,
   CTS_COMMAND_USER           = 0xFF,
 };
 
 
 uint16_t
-cts_command_get_type (const byte *command,
-                      uint16_t    offset);
+cts_command_get_type (uint16_t command);
 
 
 #endif /* C37_COMMAND_H */
