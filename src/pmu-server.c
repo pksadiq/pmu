@@ -458,9 +458,6 @@ data_incoming_cb (GSocketService    *service,
                                    tcp_request->cancellable,
                                    (GAsyncReadyCallback)complete_data_read,
                                    NULL);
-  /* g_bytes_unref (bytes); */
-
-  /* if (cts_common_get_type (data) == CTS_TYPE_COMMAND) */
 
   return TRUE;
 }
