@@ -249,6 +249,9 @@ pmu_server_respond (const guchar *data,
       break;
     }
 
+  if (response == NULL)
+    return;
+
   out = g_io_stream_get_output_stream (G_IO_STREAM (tcp_request->socket_connection));
   frame_size = cts_common_get_size (response, 2);
   g_output_stream_write_all (out, response,
