@@ -31,10 +31,6 @@ G_DECLARE_FINAL_TYPE (PmuWindow, pmu_window, PMU, WINDOW, GtkApplicationWindow)
 PmuWindow *pmu_window_new (PmuApp *app);
 
 gboolean
-pmu_window_server_started_cb (PmuWindow *self);
-gboolean
-pmu_window_server_stopped_cb (PmuWindow *self);
-gboolean
 pmu_window_spi_failed_cb (PmuWindow *self);
 
 G_END_DECLS
