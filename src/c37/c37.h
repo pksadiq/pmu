@@ -24,6 +24,7 @@
 #include "c37-conf.h"
 #include "c37-command.h"
 #include "c37-data.h"
+#include "c37-bin.h"
 
 
 #endif /* C37_H */
