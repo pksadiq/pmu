@@ -400,7 +400,7 @@ pmu_spi_new (PmuWindow *window)
           static guint k;
           for (int i = 0; i < data_size; i++, k++)
             rx[i] = k % 255;
-          cts_data_update_raw_data (cts_data_get_default (), rx + 1);
+          /* cts_data_update_raw_data (cts_data_get_default (), rx + 1); */
 
           printf ("%d data size", data_size);
           GBytes *data = g_bytes_new (rx + 1, data_size);
