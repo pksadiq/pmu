@@ -220,7 +220,9 @@ pmu_server_respond (const guchar *data,
     case CTS_COMMAND_DATA_OFF:
       if (!g_cancellable_is_cancelled (default_server->cancellable))
         {
-          g_signal_emit_by_name (default_spi, "stop-spi");
+          if (default_spi)
+            g_signal_emit_by_name (default_spi, "stop-spi");
+
           g_cancellable_cancel (default_server->cancellable);
           g_clear_object (&default_server->cancellable);
         }
@@ -229,8 +231,10 @@ pmu_server_respond (const guchar *data,
     case CTS_COMMAND_DATA_ON:
       if (default_server->cancellable == NULL)
         {
+          if (default_spi)
+            g_signal_emit_by_name (default_spi, "start-spi");
+
           default_server->cancellable = g_cancellable_new ();
-          g_signal_emit_by_name (default_spi, "start-spi");
           g_signal_emit_by_name (default_server, "data-start-requested");
         }
       break;
