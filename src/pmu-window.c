@@ -220,8 +220,13 @@ pmu_window_constructed (GObject *object)
 }
 
 gboolean
-pmu_window_server_started_cb (PmuWindow *self)
+pmu_window_server_started_cb (PmuServer *server,
+                              PmuWindow *self)
 {
+
+  if (gtk_widget_get_visible (self->stop_button))
+    return G_SOURCE_REMOVE;
+
   gtk_label_set_label (GTK_LABEL (self->info_label), "PMU Server started successfully");
 
   revealer_timeout (self);
@@ -235,8 +240,10 @@ pmu_window_server_started_cb (PmuWindow *self)
 }
 
 gboolean
-pmu_window_server_stopped_cb (PmuWindow *self)
+pmu_window_server_stopped_cb (PmuServer *server,
+                              PmuWindow *self)
 {
+  g_assert (PMU_IS_WINDOW (self));
   gtk_label_set_label (GTK_LABEL (self->info_label), "PMU Server stopped");
 
   revealer_timeout (self);
@@ -337,6 +344,7 @@ pmu_window_set_subtitle (GBinding     *binding,
 static void
 pmu_window_init (PmuWindow *self)
 {
+  PmuServer *server;
   gchar *subtitle;
 
   g_action_map_add_action_entries (G_ACTION_MAP (self),
@@ -355,7 +363,18 @@ pmu_window_init (PmuWindow *self)
   subtitle = g_strdup_printf ("%s - %u", pmu_details_get_station_name (),
                               pmu_details_get_pmu_id ());
 
+  server = pmu_server_get_default ();
+
+  g_signal_connect (server, "server-started",
+                            G_CALLBACK (pmu_window_server_started_cb), self);
+
+  g_signal_connect (server, "server-stopped",
+                            G_CALLBACK (pmu_window_server_stopped_cb), self);
+
   g_object_set (self->header_bar, "subtitle", subtitle, NULL);
+
+  if (pmu_server_is_running ())
+    pmu_window_server_started_cb (server, self);
 
   g_free (subtitle);
 
