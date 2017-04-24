@@ -135,17 +135,20 @@ pmu_list_update_details (gpointer  user_data,
 }
 
 static gboolean
-pmu_list_setup_details (gpointer user_data)
+pmu_list_setup_details (PmuList *self)
 {
   g_signal_connect (pmu_server_get_default (),
                     "server-started",
                     G_CALLBACK (pmu_list_update_details),
-                    (PmuList *) user_data);
+                    self);
 
   g_signal_connect (pmu_server_get_default (),
                     "server-stopped",
                     G_CALLBACK (pmu_list_update_details),
-                    (PmuList *) user_data);
+                    self);
+
+  pmu_list_update_details (NULL,
+                           self);
 
   return G_SOURCE_REMOVE;
 }
@@ -225,10 +228,7 @@ pmu_list_init (PmuList *self)
   selection = gtk_tree_view_get_selection(GTK_TREE_VIEW (self->tree_view_data));
   gtk_tree_selection_set_mode (selection, GTK_SELECTION_NONE);
 
-  // XXX: Hack to delay until pmu server instance is created
-  g_timeout_add_seconds (1,
-                         pmu_list_setup_details,
-                         self);
+  pmu_list_setup_details (self);
 
   self->update_timeout_id = 0;
   g_signal_connect (self, "notify::update-time", G_CALLBACK (update_time_cb), NULL);
