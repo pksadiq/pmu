@@ -144,11 +144,15 @@ cts_bin_get_crc (const byte *data,
 }
 
 uint16_t
-cts_bin_get_command_type (const byte *data)
+cts_bin_get_command_type (const byte *data,
+                          bool        skip_first)
 {
   uint16_t command;
 
-  memcpy (&command, data + COMMAND_MINIMUM_FRAME_SIZE - 4, 2);
+  if (skip_first)
+    data += 4;
+
+  memcpy (&command, data + COMMAND_MINIMUM_FRAME_SIZE - 8, 2);
   command = htons (command);
 
   return cts_command_get_type (command);
