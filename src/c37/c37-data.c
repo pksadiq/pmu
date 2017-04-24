@@ -658,7 +658,7 @@ cts_data_update_raw_data (CtsData *self,
   memcpy (data, byte2, 2);
   data += 2;
 
-  size = cts_conf_calc_total_size (conf);
+  size = cts_pmu_data_get_default_data_size (1);
   *byte2 = htons (size);
   memcpy (&size, data, 2);
   data += 2;
