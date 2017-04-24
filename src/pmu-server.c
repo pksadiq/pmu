@@ -572,6 +572,8 @@ pmu_server_new (void)
   g_signal_connect (default_server, "data-start-requested",
                     G_CALLBACK (handle_data_request), NULL);
 
+  g_signal_emit_by_name (default_server, "start-server");
+
   g_main_loop_run(server_loop);
 
   g_main_context_pop_thread_default (server_context);
