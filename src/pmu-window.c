@@ -299,6 +299,7 @@ pmu_window_class_init (PmuWindowClass *klass)
   object_class->finalize = pmu_window_finalize;
   object_class->constructed = pmu_window_constructed;
 
+  pmu_server_start_thread ();
   g_type_ensure (PMU_TYPE_LIST);
   g_type_ensure (PMU_TYPE_DETAILS);
 
@@ -358,7 +359,6 @@ pmu_window_init (PmuWindow *self)
 
   g_free (subtitle);
 
-  pmu_server_start_thread (self);
   pmu_spi_start_thread (self);
 }
 

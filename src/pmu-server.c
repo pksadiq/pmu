@@ -487,22 +487,8 @@ pmu_server_is_running (void)
 }
 
 static void
-server_started_cb (PmuServer *self,
-                   PmuWindow *window)
-{
-  g_idle_add((GSourceFunc) pmu_window_server_started_cb, window);
-}
-
-static void
-server_stopped_cb (PmuServer *self,
-                   PmuWindow *window)
-{
-  g_idle_add((GSourceFunc) pmu_window_server_stopped_cb, window);
-}
-
-static void
 start_server_cb (PmuServer *self,
-                 PmuWindow *window)
+                 gpointer   user_data)
 {
   g_autoptr(GError) error = NULL;
   GMainContext *context = NULL;
@@ -539,7 +525,7 @@ start_server_cb (PmuServer *self,
 
 static void
 stop_server_cb (PmuServer *self,
-                PmuWindow *window)
+                gpointer   user_data)
 {
   g_autoptr(GError) error = NULL;
   GMainContext *context = NULL;
@@ -561,7 +547,7 @@ stop_server_cb (PmuServer *self,
 }
 
 static void
-pmu_server_new (PmuWindow *window)
+pmu_server_new (void)
 {
   g_autoptr(GError) error = NULL;
   g_autoptr(GMainContext) server_context = NULL;
@@ -578,16 +564,10 @@ pmu_server_new (PmuWindow *window)
   default_server->context = server_context;
 
   g_signal_connect (default_server, "start-server",
-                    G_CALLBACK (start_server_cb), window);
+                    G_CALLBACK (start_server_cb), NULL);
 
   g_signal_connect (default_server, "stop-server",
-                    G_CALLBACK (stop_server_cb), window);
-
-  g_signal_connect (default_server, "server-started",
-                    G_CALLBACK (server_started_cb), window);
-
-  g_signal_connect (default_server, "server-stopped",
-                    G_CALLBACK (server_stopped_cb), window);
+                    G_CALLBACK (stop_server_cb), NULL);
 
   g_signal_connect (default_server, "data-start-requested",
                     G_CALLBACK (handle_data_request), NULL);
@@ -598,7 +578,7 @@ pmu_server_new (PmuWindow *window)
 }
 
 void
-pmu_server_start_thread (PmuWindow *window)
+pmu_server_start_thread (void)
 {
   g_autoptr(GError) error = NULL;
 
@@ -606,7 +586,7 @@ pmu_server_start_thread (PmuWindow *window)
     {
       server_thread = g_thread_try_new ("server",
                                         (GThreadFunc)pmu_server_new,
-                                        window,
+                                        NULL,
                                         &error);
       if (error != NULL)
         g_warning ("Cannot create server thread. Error: %s", error->message);
@@ -615,10 +595,10 @@ pmu_server_start_thread (PmuWindow *window)
 }
 
 gboolean
-pmu_server_start (PmuWindow *window)
+pmu_server_start (gpointer user_data)
 {
   if (server_thread == NULL)
-    pmu_server_start_thread (window);
+    pmu_server_start_thread ();
 
   if (default_server)
     g_signal_emit_by_name (default_server, "start-server");
