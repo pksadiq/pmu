@@ -226,8 +226,11 @@ pmu_spi_run (void)
             {
              .tx_buf = (unsigned long)tx,
              /*
-              * 2 bytes CRC is not to be skipped for rx. But 2 byte
-              * has to be skipped so total: data_common_size - 2 + 2
+              * DATA_COMMON_SIZE includes 2 bytes CRC, which is at the end of
+              * the data frame (so we don't need to skip that), and the PMU
+              * have 2 bytes STAT which is not included in DATA_COMMON_SIZE
+              * (which we have to skip). So in total, the offset will be
+              * rx + DATA_COMMON_SIZE - 2 + 2 == rx + DATA_COMMON_SIZE
               */
              .rx_buf = (unsigned long)rx + DATA_COMMON_SIZE,
              .len = data_size + 1,
