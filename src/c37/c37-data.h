@@ -57,8 +57,8 @@ uint16_t cts_pmu_data_get_default_data_size (uint16_t pmu_index);
 void cts_data_populate_from_raw_data (CtsData     *self,
                                       const byte **data,
                                       bool         is_data_only);
-void cts_data_update_raw_data        (CtsData     *self,
-                                      const byte  *data);
+void cts_data_update_raw_data        (CtsData *self,
+                                      byte    *data);
 
 bool cts_data_get_rocof_of_pmu        (CtsData  *self,
                                        uint16_t  pmu_index,
