@@ -260,7 +260,7 @@ pmu_server_respond (const guchar *data,
   frame_size = cts_common_get_size (response, 2);
   g_output_stream_write_all (out, response,
                              frame_size,
-                             &byte_size, NULL, &error);
+                             &byte_size, NULL, NULL);
 
   g_free (response);
 }
