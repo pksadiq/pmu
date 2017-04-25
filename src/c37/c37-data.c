@@ -660,7 +660,7 @@ cts_data_update_raw_data (CtsData *self,
 
   size = cts_pmu_data_get_default_data_size (1);
   *byte2 = htons (size);
-  memcpy (data, &byte2, 2);
+  memcpy (data, byte2, 2);
   data += 2;
 
   cts_common_set_time (byte4);
