@@ -200,8 +200,37 @@ static void
 handle_data_request (PmuServer *self,
                      gpointer   user_data)
 {
-  g_print ("data handler\n");
-  // nothing
+  GBytes *bytes;
+  GOutputStream *out;
+  gsize frame_size, byte_size;
+  const guchar *data;
+
+  while (1)
+    {
+      if (g_cancellable_is_cancelled (default_server->cancellable))
+        {
+          g_clear_object (&default_server->cancellable);
+          return;
+        }
+
+      bytes = pmu_spi_data_pop_head ();
+
+      if (bytes == NULL)
+        {
+          g_usleep (100);
+          continue;
+        }
+
+      data = g_bytes_get_data (bytes, &frame_size);
+      out = g_io_stream_get_output_stream (G_IO_STREAM (tcp_request->socket_connection));
+      g_output_stream_write_all (out, data,
+                                 frame_size,
+                                 &byte_size, NULL, NULL);
+
+      g_print ("Here at out\n");
+      g_bytes_unref (bytes);
+      g_usleep (1);
+    }
 }
 
 void
