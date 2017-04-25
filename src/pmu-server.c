@@ -210,7 +210,7 @@ pmu_server_respond (const guchar *data,
 {
   guchar *response = NULL;
   gsize byte_size;
-  gint frame_size;
+  gsize frame_size;
   GOutputStream *out;
 
   default_spi = pmu_spi_get_default ();
@@ -259,8 +259,10 @@ pmu_server_respond (const guchar *data,
   out = g_io_stream_get_output_stream (G_IO_STREAM (tcp_request->socket_connection));
   frame_size = cts_common_get_size (response, 2);
   g_output_stream_write_all (out, response,
-                             cts_common_get_size (response, 2),
-                             &byte_size, NULL, NULL);
+                             frame_size,
+                             &byte_size, NULL, &error);
+
+  g_free (response);
 }
 
 static void complete_data_read (GInputStream *stream,
@@ -324,6 +326,7 @@ complete_data_read_next (GInputStream *stream,
                                    (GAsyncReadyCallback)complete_data_read,
                                    NULL);
 
+  return;
  end:
   tcp_request_free ();
 }
