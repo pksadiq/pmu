@@ -43,6 +43,7 @@ struct _PmuWindow
 };
 
 static GThread *ntp_thread;
+static GMainContext *context;
 
 
 G_DEFINE_TYPE (PmuWindow, pmu_window, GTK_TYPE_APPLICATION_WINDOW)
@@ -219,10 +220,10 @@ pmu_window_constructed (GObject *object)
   G_OBJECT_CLASS (pmu_window_parent_class)->constructed (object);
 }
 
-gboolean
-pmu_window_server_started_cb (PmuServer *server,
-                              PmuWindow *self)
+static gboolean
+server_started (gpointer user_data)
 {
+  PmuWindow *self = PMU_WINDOW (user_data);
 
   if (gtk_widget_get_visible (self->stop_button))
     return G_SOURCE_REMOVE;
@@ -240,10 +241,19 @@ pmu_window_server_started_cb (PmuServer *server,
 }
 
 gboolean
-pmu_window_server_stopped_cb (PmuServer *server,
+pmu_window_server_started_cb (PmuServer *server,
                               PmuWindow *self)
 {
-  g_assert (PMU_IS_WINDOW (self));
+  g_idle_add (server_started, self);
+
+  return G_SOURCE_REMOVE;
+}
+
+static gboolean
+server_stopped (gpointer user_data)
+{
+  PmuWindow *self = PMU_WINDOW (user_data);
+
   gtk_label_set_label (GTK_LABEL (self->info_label), "PMU Server stopped");
 
   revealer_timeout (self);
@@ -252,6 +262,15 @@ pmu_window_server_stopped_cb (PmuServer *server,
 
   gtk_widget_hide (self->stop_button);
   gtk_widget_show (self->start_button);
+
+  return G_SOURCE_REMOVE;
+}
+
+gboolean
+pmu_window_server_stopped_cb (PmuServer *server,
+                              PmuWindow *self)
+{
+  g_idle_add (server_stopped, self);
 
   return G_SOURCE_REMOVE;
 }
