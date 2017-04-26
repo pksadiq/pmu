@@ -215,6 +215,8 @@ handle_data_request (PmuServer *self,
 
       bytes = pmu_spi_data_pop_head ();
 
+      g_usleep (1000);
+
       if (bytes == NULL)
         {
           g_usleep (100);
@@ -450,6 +452,10 @@ data_incoming_cb (GSocketService    *service,
   GInputStream *in;
   const guint8 *data;
   gsize size;
+  GSocket *socket;
+
+  socket = g_socket_connection_get_socket (connection);
+  g_socket_set_blocking (socket, FALSE);
 
   in = g_io_stream_get_input_stream (G_IO_STREAM (connection));
   bytes = g_input_stream_read_bytes(in, REQUEST_HEADER_SIZE, NULL, &error);
