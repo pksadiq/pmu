@@ -88,7 +88,6 @@ pmu_server_class_init (PmuServerClass *klass)
   object_class->finalize = pmu_server_finalize;
 
   g_type_ensure (PMU_TYPE_DETAILS);
-  tcp_request = g_new0 (TcpRequest, 1);
 
   signals [SERVER_STARTED] =
     g_signal_new ("server-started",
@@ -169,11 +168,10 @@ pmu_server_init (PmuServer *self)
 static void
 tcp_request_free (void)
 {
-  g_clear_object (&tcp_request->socket_connection);
+  if (tcp_request == NULL)
+    return;
 
-  if (tcp_request->cancellable &&
-      !g_cancellable_is_cancelled (tcp_request->cancellable))
-    g_cancellable_cancel (tcp_request->cancellable);
+  g_clear_object (&tcp_request->socket_connection);
 
   if (tcp_request->cancellable_id)
     {
@@ -181,9 +179,14 @@ tcp_request_free (void)
       tcp_request->cancellable_id = 0;
     }
 
+  if (tcp_request->cancellable &&
+      !g_cancellable_is_cancelled (tcp_request->cancellable))
+    g_cancellable_cancel (tcp_request->cancellable);
+
   g_clear_object (&tcp_request->cancellable);
 
   g_bytes_unref (tcp_request->header);
+  g_clear_pointer (&tcp_request, g_free);
 }
 
 static gboolean
@@ -493,6 +496,8 @@ data_incoming_cb (GSocketService    *service,
   if (data_length < COMMAND_MINIMUM_FRAME_SIZE)
     return TRUE;
 
+  if (tcp_request == NULL)
+      tcp_request = g_new0 (TcpRequest, 1);
   tcp_request->socket_connection = g_object_ref (connection);
   tcp_request->header = bytes;
   tcp_request->data_length = data_length;
