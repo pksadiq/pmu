@@ -32,6 +32,8 @@ struct _PmuServer
   GMainContext   *context;
   GCancellable   *cancellable;
 
+  GTask *data_task;
+
   char *admin_ip;
   int port;
 
@@ -196,9 +198,11 @@ cancel_request (gpointer user_data)
   return G_SOURCE_REMOVE;
 }
 
-static void
-handle_data_request (PmuServer *self,
-                     gpointer   user_data)
+void
+handle_data_request (GTask        *task,
+                     gpointer      source_object,
+                     gpointer      task_data,
+                     GCancellable *cancellable)
 {
   GBytes *bytes;
   GOutputStream *out;
@@ -260,13 +264,18 @@ pmu_server_respond (const guchar *data,
       break;
 
     case CTS_COMMAND_DATA_ON:
-      if (default_server->cancellable == NULL)
+      if (default_server->data_task == NULL)
         {
           if (default_spi)
             g_signal_emit_by_name (default_spi, "start-spi");
 
-          default_server->cancellable = g_cancellable_new ();
-          g_signal_emit_by_name (default_server, "data-start-requested");
+          if (default_server->cancellable == NULL)
+            default_server->cancellable = g_cancellable_new ();
+
+          default_server->data_task = g_task_new (default_server,
+                                                  default_server->cancellable,
+                                                  NULL, NULL);
+          g_task_run_in_thread (default_server->data_task, handle_data_request);
         }
       break;
 
