@@ -207,10 +207,7 @@ update_time_cb (PmuList  *self,
                 gpointer  user_data)
 {
   if (self->update_timeout_id)
-    {
-      g_source_remove (self->update_timeout_id);
-      self->update_timeout_id = 0;
-    }
+    g_source_remove (self->update_timeout_id);
 
   self->update_timeout_id = g_timeout_add_seconds (self->update_time, update_list, self);
   g_print ("changed here\n");
