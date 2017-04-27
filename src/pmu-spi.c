@@ -265,8 +265,6 @@ pmu_spi_run (void)
       else
         g_usleep (100);
 
-      g_print ("queue size: %d\n", g_queue_get_length (spi_data));
-
     } // while loop
 }
 
