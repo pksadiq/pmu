@@ -173,6 +173,12 @@ tcp_request_free (void)
 
   g_clear_object (&tcp_request->socket_connection);
 
+  if (default_server->cancellable)
+    {
+      g_cancellable_cancel (default_server->cancellable);
+      g_clear_object (&default_server->cancellable);
+    }
+
   if (tcp_request->cancellable_id)
     {
       g_source_remove (tcp_request->cancellable_id);
@@ -214,7 +220,7 @@ handle_data_request (GTask        *task,
 
   while (1)
     {
-      if (g_cancellable_is_cancelled (default_server->cancellable))
+      if (!default_server->cancellable || g_cancellable_is_cancelled (default_server->cancellable))
         {
           g_clear_object (&default_server->cancellable);
           return;
