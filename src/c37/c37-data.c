@@ -60,6 +60,7 @@ typedef struct _CtsPmuData
 
 typedef struct _CtsData
 {
+  uint16_t sync;
   uint16_t frame_size;
   uint16_t id_code;
 
@@ -501,6 +502,11 @@ cts_data_populate_from_raw_data (CtsData    *self,
 
   if (!is_data_only)
     {
+      /* SYNC */
+      memcpy (byte2, data, 2);
+      self->sync = ntohs (*byte2);
+      data += 2;
+
       /* Frame size */
       memcpy (byte2, data, 2);
       self->frame_size = ntohs (*byte2);
