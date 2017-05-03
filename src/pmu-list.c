@@ -167,7 +167,7 @@ update_list (gpointer user_data)
 
   bytes = pmu_spi_data_pop_head ();
 
-  if (bytes == NULL)
+  if (bytes == NULL || !PMU_IS_LIST (list))
     return G_SOURCE_CONTINUE;
 
   data = g_bytes_get_data (bytes, &size);
