@@ -219,7 +219,7 @@ pmu_spi_run (void)
       if (rx[1] == 0xFF && rx[2] == 0xFF)
         {
           GBytes *data;
-          memset (tx, 0xFE, data_size + 1);
+          memset (tx, 0xFE, data_size - DATA_COMMON_SIZE + 1);
           memset (rx, 0x00, 3);         /* Clear debug data */
 
           struct spi_ioc_transfer tr =
@@ -233,7 +233,7 @@ pmu_spi_run (void)
               * rx + DATA_COMMON_SIZE - 2 + 2 == rx + DATA_COMMON_SIZE
               */
              .rx_buf = (unsigned long)rx + DATA_COMMON_SIZE,
-             .len = data_size + 1,
+             .len = data_size - DATA_COMMON_SIZE + 1,
              .delay_usecs = 1,
              .speed_hz = default_spi->speed,
              .bits_per_word = default_spi->bits_per_word,
