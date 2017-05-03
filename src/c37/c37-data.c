@@ -488,9 +488,9 @@ cts_data_get_conf (CtsData *self)
 }
 
 void
-cts_data_populate_from_raw_data (CtsData     *self,
-                                 const byte **data,
-                                 bool         is_data_only)
+cts_data_populate_from_raw_data (CtsData    *self,
+                                 const byte *data,
+                                 bool        is_data_only)
 {
   uint16_t count;
   uint16_t *byte2;
@@ -502,24 +502,24 @@ cts_data_populate_from_raw_data (CtsData     *self,
   if (!is_data_only)
     {
       /* Frame size */
-      memcpy (byte2, *data, 2);
+      memcpy (byte2, data, 2);
       self->frame_size = ntohs (*byte2);
-      *data += 2;
+      data += 2;
 
       /* ID code */
-      memcpy (byte2, *data, 2);
+      memcpy (byte2, data, 2);
       self->id_code = ntohs (*byte2);
-      *data += 2;
+      data += 2;
 
       /* time (in seconds since epoch) */
-      memcpy (byte4, *data, 4);
+      memcpy (byte4, data, 4);
       self->epoch_seconds = ntohl (*byte4);
-      *data += 4;
+      data += 4;
 
       /* Fraction of seconds */
-      memcpy (byte4, *data, 4);
+      memcpy (byte4, data, 4);
       self->frac_of_second = ntohl (*byte4);
-      *data += 4;
+      data += 4;
     }
 
   for (int16_t i = 0; i < self->num_pmu; i++)
@@ -529,9 +529,9 @@ cts_data_populate_from_raw_data (CtsData     *self,
       if (!is_data_only)
         {
           /* Status flags */
-          memcpy (byte2, *data, 2);
+          memcpy (byte2, data, 2);
           pmu_data->stat = ntohs (*byte2);
-          *data += 2;
+          data += 2;
         }
 
       /* Phasors */
@@ -542,14 +542,14 @@ cts_data_populate_from_raw_data (CtsData     *self,
           for (uint16_t i = 0; i < count; i++)
             {
               /* Real or Magnitude */
-              memcpy (byte2, *data, 2);
+              memcpy (byte2, data, 2);
               (*(pmu_data->phasor_int + i)) [0] = ntohs (*byte2);
-              *data += 2;
+              data += 2;
 
               /* Imaginary or Angle */
-              memcpy (byte2, *data, 2);
+              memcpy (byte2, data, 2);
               (*(pmu_data->phasor_int + i)) [1] = ntohs (*byte2);
-              *data += 2;
+              data += 2;
             }
         }
       else if (pmu_data->phasor_type == VALUE_TYPE_FLOAT)
@@ -557,14 +557,14 @@ cts_data_populate_from_raw_data (CtsData     *self,
           for (uint16_t i = 0; i < count; i++)
             {
               /* Real or Magnitude */
-              memcpy (byte4, *data, 4);
+              memcpy (byte4, data, 4);
               (*(pmu_data->phasor_float + i)) [0] = ntohl (*byte4);
-              *data += 4;
+              data += 4;
 
               /* Imaginary or Angle */
-              memcpy (byte4, *data, 4);
+              memcpy (byte4, data, 4);
               (*(pmu_data->phasor_float + i)) [1] = ntohl (*byte4);
-              *data += 4;
+              data += 4;
             }
         }
 
@@ -575,65 +575,65 @@ cts_data_populate_from_raw_data (CtsData     *self,
         {
           for (uint16_t i = 0; i < count; i++)
             {
-              memcpy (byte2, *data, 2);
+              memcpy (byte2, data, 2);
               *(pmu_data->analog_int + i) = ntohs (*byte2);
-              *data += 2;
+              data += 2;
             }
         }
       else if (pmu_data->analog_type == VALUE_TYPE_FLOAT)
         {
           for (uint16_t i = 0; i < count; i++)
             {
-              memcpy (byte4, *data, 4);
+              memcpy (byte4, data, 4);
               *(pmu_data->analog_float + i) = ntohl (*byte4);
-              *data += 4;
+              data += 4;
             }
         }
 
       /* Frequency Deviation */
       if (pmu_data->freq_type == VALUE_TYPE_INT)
         {
-          memcpy (byte2, *data, 2);
+          memcpy (byte2, data, 2);
           pmu_data->freq_deviation.int_val = ntohs (*byte2);
-          *data += 2;
+          data += 2;
         }
       else if (pmu_data->freq_type == VALUE_TYPE_FLOAT)
         {
-          memcpy (byte4, *data, 4);
+          memcpy (byte4, data, 4);
           pmu_data->freq_deviation.float_val = ntohl (*byte4);
-          *data += 4;
+          data += 4;
         }
 
       /* ROCOF */
       if (pmu_data->freq_type == VALUE_TYPE_INT)
         {
-          memcpy (byte2, *data, 2);
+          memcpy (byte2, data, 2);
           pmu_data->rocof.int_val = ntohs (*byte2);
-          *data += 2;
+          data += 2;
         }
       else if (pmu_data->freq_type == VALUE_TYPE_FLOAT)
         {
-          memcpy (byte4, *data, 4);
+          memcpy (byte4, data, 4);
           pmu_data->rocof.float_val = ntohl (*byte4);
-          *data += 4;
+          data += 4;
         }
 
       /* Digital Status words */
       count = pmu_data->num_status_words;
       for (uint16_t i = 0; i < count; i++)
         {
-          memcpy (byte2, *data, 2);
+          memcpy (byte2, data, 2);
           *(pmu_data->status_word + i) = ntohs (*byte2);
-          *data += 2;
+          data += 2;
         }
     }
 
   if (!is_data_only)
     {
       /* Cyclic redundancy check */
-      memcpy (byte2, *data, 2);
+      memcpy (byte2, data, 2);
       self->check = ntohs (*byte2);
-      *data += 2;
+      data += 2;
     }
 
   free (byte2);
