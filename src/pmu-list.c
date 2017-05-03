@@ -175,7 +175,7 @@ update_list (gpointer user_data)
   cts_data = cts_data_get_default ();
   cts_conf = cts_data_get_conf (cts_data);
 
-  cts_data_populate_from_raw_data (cts_data, &data, FALSE);
+  cts_data_populate_from_raw_data (cts_data, data, FALSE);
 
   g_bytes_unref (bytes);
 
