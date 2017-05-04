@@ -216,7 +216,8 @@ pmu_spi_run (void)
 
       g_usleep (10);
 
-      if (rx[1] == 0xFF && rx[2] == 0xFF)
+      g_print ("rx data: %02X %02X %02X\n", rx[0], rx[1], rx[2]);
+      if (rx[0] != 0xFF && rx[1] == 0xFF && rx[2] == 0xFF)
         {
           GBytes *data;
           memset (tx, 0xFE, data_size - DATA_COMMON_SIZE + 1);
@@ -247,7 +248,7 @@ pmu_spi_run (void)
           cts_data_update_raw_data (cts_data_get_default (), rx + 1);
           data = g_bytes_new (rx + 1, data_size);
 
-          for (int i = 1; i < data_size; i++)
+          for (int i = 1; i < data_size + 1; i++)
             {
               g_print ("%02X ", (int) rx[i]);
             }
@@ -409,7 +410,7 @@ pmu_spi_new (PmuWindow *window)
               rx[i] = ((i + 1) % 2) * 5;
             }
           cts_data_update_raw_data (cts_data_get_default (), rx + 1);
-          for (int i = 1; i < data_size; i++)
+          for (int i = 1; i < data_size + 1; i++)
             {
               g_print ("%02X ", (int) rx[i]);
             }
