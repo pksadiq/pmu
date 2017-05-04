@@ -244,6 +244,11 @@ pmu_spi_run (void)
           cts_data_update_raw_data (cts_data_get_default (), rx + 1);
           data = g_bytes_new (rx + 1, data_size);
 
+          for (int i = 1; i < data_size; i++)
+            {
+              g_print ("%02X ", (int) rx[i]);
+            }
+          g_print ("\n");
           G_LOCK (spi_data);
           if (spi_data == NULL)
             spi_data = g_queue_new ();
@@ -396,9 +401,16 @@ pmu_spi_new (PmuWindow *window)
       for (int j = 0; j < 10; j++)
         {
           static guint k;
-          for (int i = 0; i < data_size; i++, k++)
-            rx[i] = k % 255;
+          for (int i = DATA_COMMON_SIZE + 1; i < data_size; i++, k++)
+            {
+              rx[i] = ((i + 1) % 2) * 5;
+            }
           cts_data_update_raw_data (cts_data_get_default (), rx + 1);
+          for (int i = 1; i < data_size; i++)
+            {
+              g_print ("%02X ", (int) rx[i]);
+            }
+          g_print ("\n");
 
           printf ("%d data size", data_size);
           GBytes *data = g_bytes_new (rx + 1, data_size);
