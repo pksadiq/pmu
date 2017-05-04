@@ -233,7 +233,10 @@ pmu_spi_run (void)
               * rx + DATA_COMMON_SIZE - 2 + 2 == rx + DATA_COMMON_SIZE
               */
              .rx_buf = (unsigned long)rx + DATA_COMMON_SIZE,
-             .len = data_size - DATA_COMMON_SIZE + 1,
+             /*
+              * We also need to avoid 2 byte STAT here
+              */
+             .len = data_size - DATA_COMMON_SIZE - 2 + 1,
              .delay_usecs = 1,
              .speed_hz = default_spi->speed,
              .bits_per_word = default_spi->bits_per_word,
