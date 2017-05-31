@@ -95,6 +95,8 @@ revealer_timeout (gpointer user_data)
 {
   PmuWindow *window = PMU_WINDOW (user_data);
 
+  g_return_val_if_fail (window != NULL, G_SOURCE_REMOVE);
+
   if (window->revealer_timeout_id)
     {
       g_source_remove (window->revealer_timeout_id);
