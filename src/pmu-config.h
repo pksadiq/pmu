@@ -21,15 +21,34 @@
 #include <gtk/gtk.h>
 
 char *channel_names[] = {
-  /* 4 Phasors */
-  "VA              ",
+  /* 9 Phasors */
+  "VR              ",
+  "VY              ",
   "VB              ",
-  "VC              ",
 
-  /* 3 Analog values */
-  "ANALOG1         ",
-  "ANALOG2         ",
-  "ANALOG3         ",
+  "IR              ",
+  "IY              ",
+  "IB              ",
+
+  "Pos R           ",
+  "Pos Y           ",
+  "Pos B           ",
+
+  /* 11 Analog values */
+  "PR              ",
+  "PY              ",
+  "PB              ",
+
+  "QR              ",
+  "QY              ",
+  "QB              ",
+
+  "SR              ",
+  "SY              ",
+  "SB              ",
+
+  "Frequency       ",
+  "ROCOF           ",
 
   /* 16 digital breakers */
   "BREAKER 1 STATUS",
