@@ -188,7 +188,7 @@ update_list (gpointer user_data)
 
   count = cts_conf_get_num_of_phasors_of_pmu (cts_conf, 1);
 
-  for (int i = 0, k = 1; i < count; i++, k++)
+  for (int i = 0, k = 1; i < count - 2; i++, k++)
     {
       cts_data_get_phasor_value_of_pmu (cts_data, 1, i + 1, value);
 
@@ -208,6 +208,28 @@ update_list (gpointer user_data)
           gtk_tree_model_iter_next (GTK_TREE_MODEL (list->pmu_data_store), &iter_next);
         }
     }
+
+  cts_data_get_phasor_value_of_pmu (cts_data, 1, count - 1, value);
+
+  value_string = g_strdup_printf ("%d", value[0]);
+  gtk_list_store_set (list->pmu_data_store, &iter, 1, value_string, -1);
+  g_free (value_string);
+
+  value_string = g_strdup_printf ("%d", value[1]);
+  gtk_list_store_set (list->pmu_data_store, &iter, 3, value_string, -1);
+  g_free (value_string);
+
+  gtk_tree_model_iter_next (GTK_TREE_MODEL (list->pmu_data_store), &iter);
+
+  cts_data_get_phasor_value_of_pmu (cts_data, 1, count, value);
+
+  value_string = g_strdup_printf ("%d", value[0]);
+  gtk_list_store_set (list->pmu_data_store, &iter, 1, value_string, -1);
+  g_free (value_string);
+
+  value_string = g_strdup_printf ("%d", value[1]);
+  gtk_list_store_set (list->pmu_data_store, &iter, 3, value_string, -1);
+  g_free (value_string);
 
   iter = iter_next;
   gtk_tree_model_iter_next (GTK_TREE_MODEL (list->pmu_data_store), &iter);
