@@ -669,6 +669,10 @@ cts_data_update_raw_data (CtsData *self,
   memcpy (data, byte2, 2);
   data += 2;
 
+  *byte2 = htons (self->id_code);
+  memcpy (data, byte2, 2);
+  data += 2;
+
   cts_common_set_time (byte4);
   *byte4 = htonl (*byte4);
   memcpy (data, byte4, 4);
