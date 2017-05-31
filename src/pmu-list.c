@@ -161,8 +161,10 @@ update_list (gpointer user_data)
   CtsConf      *cts_conf;
   GBytes       *bytes;
   const guchar *data;
+  gchar        *value_string;
   GtkTreeIter   iter, iter_next;
   gsize         size;
+  int           count;
   gshort        value[2];
 
   bytes = pmu_spi_data_pop_head ();
@@ -184,20 +186,54 @@ update_list (gpointer user_data)
 
   gtk_tree_model_iter_next (GTK_TREE_MODEL (list->pmu_data_store), &iter_next);
 
-  for (int i = cts_conf_get_num_of_phasors_of_pmu (cts_conf, 1); i > 0; i--)
-    {
-      gchar *value_string;
+  count = cts_conf_get_num_of_phasors_of_pmu (cts_conf, 1);
 
-      cts_data_get_phasor_value_of_pmu (cts_data, 1, i, value);
+  for (int i = 0, k = 1; i < count; i++, k++)
+    {
+      cts_data_get_phasor_value_of_pmu (cts_data, 1, i + 1, value);
 
       value_string = g_strdup_printf ("%d", value[0]);
-      gtk_list_store_set (list->pmu_data_store, &iter, i, value_string, -1);
+      gtk_list_store_set (list->pmu_data_store, &iter, i % 3 + 1, value_string, -1);
       g_free (value_string);
 
       value_string = g_strdup_printf ("%d", value[1]);
-      gtk_list_store_set (list->pmu_data_store, &iter_next, i, value_string, -1);
+      gtk_list_store_set (list->pmu_data_store, &iter_next, i % 3 + 1, value_string, -1);
       g_free (value_string);
+
+      if (k % 3 == 0 && k < count)
+        {
+          iter = iter_next;
+          gtk_tree_model_iter_next (GTK_TREE_MODEL (list->pmu_data_store), &iter);
+          iter_next = iter;
+          gtk_tree_model_iter_next (GTK_TREE_MODEL (list->pmu_data_store), &iter_next);
+        }
     }
+
+  iter = iter_next;
+  gtk_tree_model_iter_next (GTK_TREE_MODEL (list->pmu_data_store), &iter);
+
+  count = cts_conf_get_num_of_analogs_of_pmu (cts_conf, 1);
+
+  for (int i = 0, k = 1; i < count; i++, k++)
+    {
+      cts_data_get_analog_value_of_pmu (cts_data, 1, i + 1, value);
+
+      value_string = g_strdup_printf ("%d", value[0]);
+      gtk_list_store_set (list->pmu_data_store, &iter, i % 3 + 1, value_string, -1);
+      g_free (value_string);
+
+      if (k == 10)
+        break;
+
+      if (k % 3 == 0)
+        {
+          gtk_tree_model_iter_next (GTK_TREE_MODEL (list->pmu_data_store), &iter);
+        }
+    }
+
+  cts_data_get_analog_value_of_pmu (cts_data, 1, count, value);
+  value_string = g_strdup_printf ("%d", value[0]);
+  gtk_list_store_set (list->pmu_data_store, &iter, 3, value_string, -1);
 
   return G_SOURCE_CONTINUE;
 }
