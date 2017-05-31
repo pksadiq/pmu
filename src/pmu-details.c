@@ -255,8 +255,8 @@ pmu_details_configure_pmu (PmuDetails *details)
                                     strlen (pmu_details_get_station_name ()));
   cts_conf_set_id_code_of_pmu (config1, 1, pmu_details_get_pmu_id ());
 
-  cts_conf_set_num_of_phasors_of_pmu (config1, 1, 9);
-  cts_conf_set_num_of_analogs_of_pmu (config1, 1, 11);
+  cts_conf_set_num_of_phasors_of_pmu (config1, 1, 8);
+  cts_conf_set_num_of_analogs_of_pmu (config1, 1, 14);
   cts_conf_set_num_of_status_of_pmu (config1, 1, 1);
 
   cts_conf_set_freq_data_type_of_pmu (config1, 1, VALUE_TYPE_INT);
@@ -274,8 +274,8 @@ pmu_details_configure_pmu (PmuDetails *details)
   for (int i = 4; i <= 6; i++)
     cts_conf_set_phasor_measure_type_of_pmu (config1, 1, i, VALUE_TYPE_CURRENT);
 
-  for (int i = 7; i <= 9; i++)
-    cts_conf_set_phasor_measure_type_of_pmu (config1, 1, i, VALUE_TYPE_VOLTAGE);
+  cts_conf_set_phasor_measure_type_of_pmu (config1, 1, 7, VALUE_TYPE_VOLTAGE);
+  cts_conf_set_phasor_measure_type_of_pmu (config1, 1, 8, VALUE_TYPE_CURRENT);
 
   cts_conf_set_all_phasor_conv_of_pmu (config1, 1, 100000);
 
