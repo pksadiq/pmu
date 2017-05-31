@@ -248,15 +248,15 @@ pmu_details_configure_pmu (PmuDetails *details)
 
   cts_conf_set_id_code (config1, pmu_details_get_pmu_id ());
   cts_conf_set_time_base (config1, 100000);
-  cts_conf_set_data_rate (config1, 1000);
+  cts_conf_set_data_rate (config1, 50);
   cts_conf_set_num_of_pmu (config1, 1);
   cts_conf_set_station_name_of_pmu (config1, 1,
                                     pmu_details_get_station_name (),
                                     strlen (pmu_details_get_station_name ()));
   cts_conf_set_id_code_of_pmu (config1, 1, pmu_details_get_pmu_id ());
 
-  cts_conf_set_num_of_phasors_of_pmu (config1, 1, 3);
-  cts_conf_set_num_of_analogs_of_pmu (config1, 1, 3);
+  cts_conf_set_num_of_phasors_of_pmu (config1, 1, 9);
+  cts_conf_set_num_of_analogs_of_pmu (config1, 1, 11);
   cts_conf_set_num_of_status_of_pmu (config1, 1, 1);
 
   cts_conf_set_freq_data_type_of_pmu (config1, 1, VALUE_TYPE_INT);
