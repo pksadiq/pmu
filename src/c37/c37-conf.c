@@ -1515,9 +1515,9 @@ cts_conf_set_nominal_freq_of_pmu (CtsConf  *self,
     return false;
 
   if (freq == 60)
-    freq = 0;
+    freq = NOMINAL_FREQ_60;
   else
-    freq = 1;
+    freq = NOMINAL_FREQ_50;
 
   (self->pmu_config + pmu_index - 1)->nominal_freq = freq;
   return true;
