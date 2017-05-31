@@ -37,7 +37,7 @@
       </row>
 
       <row>
-        <col id="0">Voltage Angle</col>
+        <col id="0">Voltage ∠</col>
         <col id="1">R</col>
         <col id="2">Y</col>
         <col id="3">B</col>
@@ -51,24 +51,24 @@
       </row>
 
       <row>
-        <col id="0">Current Angle</col>
+        <col id="0">Current ∠</col>
         <col id="1">R</col>
         <col id="2">Y</col>
         <col id="3">B</col>
       </row>
 
       <row>
-        <col id="0">Pos</col>
-        <col id="1">R</col>
-        <col id="2">Y</col>
-        <col id="3">B</col>
+        <col id="0">V Pos</col>
+        <col id="1">0</col>
+        <col id="2">V Pos ∠</col>
+        <col id="3">0</col>
       </row>
 
       <row>
-        <col id="0">Pos Angle</col>
-        <col id="1">R</col>
-        <col id="2">Y</col>
-        <col id="3">B</col>
+        <col id="0">I Pos</col>
+        <col id="1">0</col>
+        <col id="2">I Pos ∠</col>
+        <col id="3">0</col>
       </row>
 
       <row>
@@ -90,6 +90,18 @@
         <col id="1">R</col>
         <col id="2">Y</col>
         <col id="3">B</col>
+      </row>
+
+      <row>
+        <col id="0">P 3ϕ</col>
+        <col id="1">0</col>
+        <col id="2">Q 3ϕ</col>
+        <col id="3">0</col>
+      </row>
+
+      <row>
+        <col id="0">S 3ϕ</col>
+        <col id="1">0</col>
       </row>
 
       <row>
