@@ -289,6 +289,7 @@ pmu_server_respond (const guchar *data,
       break;
 
     case CTS_COMMAND_SEND_HDR:
+      response = cts_header_get_bin (cts_conf_get_default_config_one (), "Test");
       break;
     case CTS_COMMAND_SEND_CONFIG1:
       response = cts_conf_get_raw_data (cts_conf_get_default_config_one (), SYNC_CONFIG_ONE);
