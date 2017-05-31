@@ -378,6 +378,29 @@ pmu_spi_setup_device (PmuWindow *window)
 }
 
 static void
+insert_fake_data (uint16_t *fake_data, int length)
+{
+      int i;
+      uint16_t value;
+
+      i = DATA_COMMON_SIZE + 1;
+
+      for (int j = 0; j < length; j++)
+        {
+          value = htons (fake_data[j]);
+          memcpy (rx + i, &value, 2);
+          i += 2;
+        }
+
+      cts_data_update_raw_data (cts_data_get_default (), rx + 1);
+
+      GBytes *data = g_bytes_new (rx + 1, data_size);
+      G_LOCK (spi_data);
+      g_queue_push_tail (spi_data, data);
+      G_UNLOCK (spi_data);
+}
+
+static void
 pmu_spi_new (PmuWindow *window)
 {
   g_autoptr(GError) error = NULL;
@@ -402,27 +425,15 @@ pmu_spi_new (PmuWindow *window)
   /* Debug */
   if (!status)
     {
-      for (int j = 0; j < 10; j++)
-        {
-          static guint k;
-          for (int i = DATA_COMMON_SIZE + 1; i < data_size; i++, k++)
-            {
-              rx[i] = ((i + 1) % 2) * 5;
-            }
-          cts_data_update_raw_data (cts_data_get_default (), rx + 1);
-          for (int i = 1; i < data_size + 1; i++)
-            {
-              g_print ("%02X ", (int) rx[i]);
-            }
-          g_print ("\n");
+      uint16_t data[29];
 
-          printf ("%d data size", data_size);
-          GBytes *data = g_bytes_new (rx + 1, data_size);
-          G_LOCK (spi_data);
-          g_queue_push_tail (spi_data, data);
-          G_UNLOCK (spi_data);
-          g_print ("%d queue size\n", g_queue_get_length (spi_data));
-        }
+      memcpy (data, (uint16_t [29]) {
+          230, 80, 232, -39, 229, -187,
+            5, 80, 4, -39, 5, -159,
+            231, 150, 15, 140,
+        }, 29 * sizeof (uint16_t));
+
+      insert_fake_data (data, 29);
     }
   /* Debug end */
 
