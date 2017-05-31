@@ -23,6 +23,7 @@
 #include "c37-common.h"
 #include "c37-conf.h"
 #include "c37-command.h"
+#include "c37-header.h"
 #include "c37-data.h"
 #include "c37-bin.h"
 
