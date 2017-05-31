@@ -266,9 +266,18 @@ pmu_details_configure_pmu (PmuDetails *details)
   cts_conf_set_all_analog_conv_of_pmu (config1, 1, 10000);
 
   cts_conf_set_phasor_data_type_of_pmu (config1, 1, VALUE_TYPE_INT);
-  cts_conf_set_phasor_complex_type_of_pmu (config1, 1, VALUE_TYPE_POLAR);
-  cts_conf_set_all_phasor_measure_type_of_pmu (config1, 1, VALUE_TYPE_VOLTAGE);
-  cts_conf_set_all_phasor_conv_of_pmu (config1, 1, 10000);
+  cts_conf_set_phasor_complex_type_of_pmu (config1, 1, VALUE_TYPE_RECTANGULAR);
+
+  for (int i = 1; i <= 3; i++)
+    cts_conf_set_phasor_measure_type_of_pmu (config1, 1, i, VALUE_TYPE_VOLTAGE);
+
+  for (int i = 4; i <= 6; i++)
+    cts_conf_set_phasor_measure_type_of_pmu (config1, 1, i, VALUE_TYPE_CURRENT);
+
+  for (int i = 7; i <= 9; i++)
+    cts_conf_set_phasor_measure_type_of_pmu (config1, 1, i, VALUE_TYPE_VOLTAGE);
+
+  cts_conf_set_all_phasor_conv_of_pmu (config1, 1, 100000);
 
   cts_conf_set_channel_names_of_pmu (config1, 1, channel_names);
   cts_conf_update_time (config1);
