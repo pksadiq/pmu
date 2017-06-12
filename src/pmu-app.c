@@ -75,7 +75,7 @@ static void pmu_app_show_about (GSimpleAction *action,
                          "license-type", GTK_LICENSE_GPL_3_0,
                          "authors", authors,
                          // "artists", authors,
-                         "logo-icon-name", "org.gnome.Todo",
+                         "logo-icon-name", "utilities-system-monitor",
                          "translator-credits", ("translator-credits"),
                          NULL);
 }
