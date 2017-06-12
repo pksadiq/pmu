@@ -171,6 +171,7 @@ tcp_request_free (void)
   if (tcp_request == NULL)
     return;
 
+  g_clear_pointer (&default_server->data_task, g_object_unref);
   g_clear_object (&tcp_request->socket_connection);
 
   if (default_server->cancellable)
@@ -223,6 +224,7 @@ handle_data_request (GTask        *task,
       if (!default_server->cancellable || g_cancellable_is_cancelled (default_server->cancellable))
         {
           g_clear_object (&default_server->cancellable);
+          g_clear_pointer (&default_server->data_task, g_object_unref);
           return;
         }
 
