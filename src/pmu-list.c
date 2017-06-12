@@ -253,8 +253,22 @@ update_list (gpointer user_data)
         }
     }
 
-  cts_data_get_analog_value_of_pmu (cts_data, 1, count, value);
+  cts_data_get_analog_value_of_pmu (cts_data, 1, count - 3, value);
   value_string = g_strdup_printf ("%d", value[0]);
+  gtk_list_store_set (list->pmu_data_store, &iter, 3, value_string, -1);
+
+  gtk_tree_model_iter_next (GTK_TREE_MODEL (list->pmu_data_store), &iter);
+  cts_data_get_analog_value_of_pmu (cts_data, 1, count - 2, value);
+  value_string = g_strdup_printf ("%d", value[0]);
+  gtk_list_store_set (list->pmu_data_store, &iter, 1, value_string, -1);
+
+  gtk_tree_model_iter_next (GTK_TREE_MODEL (list->pmu_data_store), &iter);
+  cts_data_get_analog_value_of_pmu (cts_data, 1, count - 1, value);
+  value_string = g_strdup_printf ("%2.1f", value[0] / 10.0);
+  gtk_list_store_set (list->pmu_data_store, &iter, 1, value_string, -1);
+
+  cts_data_get_analog_value_of_pmu (cts_data, 1, count, value);
+  value_string = g_strdup_printf ("%1.1f", value[0] / 10.0);
   gtk_list_store_set (list->pmu_data_store, &iter, 3, value_string, -1);
 
   return G_SOURCE_CONTINUE;
