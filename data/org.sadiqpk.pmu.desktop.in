@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=NIT PMU
+Name=PMU
 Comment=PMU Software
 Exec=pmu
-Icon=gtk3-widget-factory
+Icon=utilities-system-monitor
 Terminal=false
 Type=Application
 StartupNotify=true
