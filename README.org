@@ -1,1 +1,56 @@
 
+* PMU - Phasor Measurement Unit
+
+  PMU is a software that implements IEEE Std C37.118.2-2011 using A Raspberrri
+  Pi. The communication is implemented using SPI protocol. So Any device
+  that would be able to communicate with SPI can be used as a feed for data.
+  This was tested using Arduino (The actual implementation was supposed to be
+  run on FPGA, the work is yet to be complete).
+
+  You would be able to run the PMU software on a computer. If the software doesn't
+  find any SPI port, a single set of fake data is generated just to show that the software
+  is working.
+
+  The data is shown in table. But if the data is sent over the network (via c37 protocol),
+  the table may not be updated.
+
+  The server side implementation of c37 protocol is present in the software.
+
+** C37
+   The src/c37 directory includes C based implementation of IEEE Std C37.118.2-2011.
+   It is almost complete. The optional configuration III response is not implemented.
+
+   The library is not fine tuned for every purpose. Though I hope you'll find the
+   library and the documentation enough mature so that you can work above it.
+
+
+* Build Requirements   
+
+  You require ~Gtk+~ version 3.20+ and a C11 based compiler (GCC v6.1+) to build the project.
+
+  One a debian based system, you may be able to run this:
+
+#+BEGIN_SRC shell
+sudo apt-get build-dep gnome-todo # Install the build dependency of some C based gtk software.
+#+END_src
+
+And building is just as usual: ~./configure && make && sudo make install~
+Or just the way you wish to do.
+
+* License
+
+  Copyright (C) 2017 Mohammed Sadiq <sadiq@sadiqpk.org>
+ 
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but *Without Any Warranty*; without even the implied warranty of
+  *Merchantability* or *Fitness For A Particular Purpose*.  See the
+  GNU General Public License for more details.
+ 
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see [[http://www.gnu.org/licenses/]].
+

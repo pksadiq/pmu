@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include "pmu-window.h"
 #include "pmu-setup-window.h"
 #include "pmu-details.h"
@@ -70,7 +72,7 @@ static void pmu_app_show_about (GSimpleAction *action,
 
   gtk_show_about_dialog (gtk_application_get_active_window (GTK_APPLICATION (self)),
                          "program-name", ("PMU"),
-                         "version", "0.1.0",
+                         "version", VERSION,
                          "copyright", "Copyright \xC2\xA9 2017 Mohammed Sadiq",
                          "license-type", GTK_LICENSE_GPL_3_0,
                          "authors", authors,
