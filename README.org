@@ -1,7 +1,7 @@
 
 * PMU - Phasor Measurement Unit
 
-  PMU is a software that implements IEEE Std C37.118.2-2011 using A Raspberrri
+  PMU is a software that implements IEEE Std C37.118.2-2011 using A Raspberry
   Pi. The communication is implemented using SPI protocol. So Any device
   that would be able to communicate with SPI can be used as a feed for data.
   This was tested using Arduino (The actual implementation was supposed to be
@@ -28,14 +28,27 @@
 
   You require ~Gtk+~ version 3.20+ and a C11 based compiler (GCC v6.1+) to build the project.
 
-  One a debian based system, you may be able to run this:
+  One a Debian based system, you may be able to run this:
 
 #+BEGIN_SRC shell
 sudo apt-get build-dep gnome-todo # Install the build dependency of some C based gtk software.
 #+END_src
 
-And building is just as usual: ~./configure && make && sudo make install~
-Or just the way you wish to do.
+And building is just as usual.
+
+You might have to run the following the bootstrap the build:
+
+#+BEGIN_SRC shell
+./autogen.sh
+#+END_src
+
+And the build is as usual:
+
+#+BEGIN_SRC shell
+./configure --prefix=/usr
+make
+sudo make install
+#+END_src
 
 * License
 
