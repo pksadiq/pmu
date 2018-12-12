@@ -16,6 +16,8 @@
 
   The server side implementation of c37 protocol is present in the software.
 
+  [[file:screenshot/pmu.png][Screenshot]]
+
 ** C37
    The src/c37 directory includes C based implementation of IEEE Std C37.118.2-2011.
    It is almost complete. The optional configuration III response is not implemented.
